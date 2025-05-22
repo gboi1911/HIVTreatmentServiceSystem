@@ -1,3 +1,13 @@
+/* src/index.css */
+
+/* 1. Tailwind Directives - MUST BE AT THE TOP */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 2. Your custom CSS can go here, but be mindful of overrides. */
+/* For now, let's remove some conflicting default styles.   */
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -5,7 +15,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,12 +32,14 @@ a:hover {
   color: #535bf2;
 }
 
+/* IMPORTANT: Remove or modify this 'body' rule for better Tailwind compatibility */
+/* The 'display: flex' and 'place-items: center' on body are causing your layout issues */
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* display: flex;        <-- REMOVE OR COMMENT OUT */
+  /* place-items: center;  <-- REMOVE OR COMMENT OUT */
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100vh; /* Keep min-height to ensure content pushes footer down */
 }
 
 h1 {
@@ -35,6 +47,7 @@ h1 {
   line-height: 1.1;
 }
 
+/* You might want to remove or modify these button styles if you intend to style buttons fully with Tailwind */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
