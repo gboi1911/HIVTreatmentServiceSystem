@@ -1,8 +1,8 @@
 /* src/index.css */
-
+@import "tailwindcss";
 /* 1. Tailwind Directives - MUST BE AT THE TOP */
-@tailwind base;
-@tailwind components;
+/* @tailwind base;
+@tailwind components; */
 @tailwind utilities;
 
 /* 2. Your custom CSS can go here, but be mindful of overrides. */
