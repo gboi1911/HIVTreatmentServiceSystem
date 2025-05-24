@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import AppFooter from "./Footer";
 import { Outlet } from "react-router-dom";
 import NewsSection from "./HomePage/NewsSection";
+import TechSection from "./HomePage/TechSection";
 
 const MainLayout = () => {
   return (
@@ -11,6 +12,7 @@ const MainLayout = () => {
       <main>
         <Outlet />
         <NewsSection/>
+        <TechSection/>
       </main>
       <AppFooter />
     </div>
