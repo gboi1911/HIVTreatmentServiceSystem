@@ -58,17 +58,34 @@ export default function CardSection() {
           bodyStyle={{ padding: 0 }}
         >
           <div
-            className="relative h-64 bg-cover bg-center"
-            style={{ backgroundImage: `url(${card.image})` }}
+            className="relative h-96 bg-cover bg-center brightness-90"
+            style={{ backgroundImage: `url("${card.image}")` }}
           >
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-6 text-white">
-              <h3 className="text-xl font-bold mb-2 leading-tight">
-                {card.title}
-              </h3>
-              <p className="text-sm opacity-90 mb-4 leading-relaxed">
-                {card.description}
-              </p>
-              <button className="self-start px-5 py-2 border border-white rounded text-white text-sm hover:bg-white hover:bg-opacity-20 transition-all duration-200">
+            <div
+              className="
+    absolute bottom-0 left-0 right-0 m-4
+    rounded-xl border border-gray-300 shadow-lg
+    bg-opacity-20 backdrop-blur-md
+    flex flex-col justify-between h-48
+    p-6
+  "
+            >
+              <div>
+                <h3 className="text-xl font-semibold mb-3 leading-tight text-black drop-shadow-md">
+                  {card.title}
+                </h3>
+                <p className="text-sm opacity-90 mb-4 leading-relaxed text-black drop-shadow">
+                  {card.description}
+                </p>
+              </div>
+              <button
+                className="
+      self-start px-6 py-2 border border-white rounded
+      text-white text-sm font-medium
+      hover:bg-white hover:bg-opacity-30 transition-all duration-200
+      drop-shadow
+    "
+              >
                 {card.buttonText}
               </button>
             </div>

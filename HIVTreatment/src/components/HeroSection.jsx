@@ -11,12 +11,11 @@ export default function Hero() {
         </p>
       </div>
 
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center mt-2">
         <img
           src={theme1}
           alt="Nói không với ma túy"
-          className="max-w-full h-auto"
-          style={{ maxHeight: 800, objectFit: "fill" }}
+          className="w-[80%] h-auto object-fill"
         />
       </div>
     </section>
