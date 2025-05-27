@@ -54,7 +54,7 @@ export default function CardSection() {
           hoverable
           // Force card width using flex-shrink-0 to prevent shrinking
           // and a fixed width
-          className="w-[320px] flex-shrink-0 overflow-hidden relative" // w-[320px] is more explicit than w-80
+          className="w-[320px] flex-shrink-0 overflow-hidden relative hover:cursor-none" // w-[320px] is more explicit than w-80
           bodyStyle={{ padding: 0 }}
         >
           <div
@@ -80,8 +80,8 @@ export default function CardSection() {
               </div>
               <button
                 className="
-      self-start px-6 py-2 border border-white rounded
-      text-white text-sm font-medium
+      self-start px-6 py-5 border border-white rounded
+      text-sm font-medium
       hover:bg-white hover:bg-opacity-30 transition-all duration-200
       drop-shadow
     "

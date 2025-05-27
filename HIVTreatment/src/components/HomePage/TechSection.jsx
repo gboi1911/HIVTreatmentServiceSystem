@@ -1,6 +1,8 @@
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Card } from 'antd';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+import { Button, Card, Tag, Typography } from 'antd';
+import { LeftOutlined, RightOutlined, CalendarOutlined, ArrowUpOutlined, HeartOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
 const newsData = [
     {
         id: 1,
@@ -40,93 +42,207 @@ const newsData = [
     }
 ];
 function TechSection() {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const itemsPerPage = 5;
-    // const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [currentIndex, setCurrentIndex] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [itemsPerPage, setItemsPerPage] = useState(4);
 
-    // // Update items per page based on screen size to match your responsive classes
-    // useEffect(() => {
-    //     const updateItemsPerPage = () => {
-    //         const width = window.innerWidth;
-    //         if (width < 640) setItemsPerPage(1);        // w-full (mobile)
-    //         else if (width < 768) setItemsPerPage(2);   // sm:w-1/2
-    //         else if (width < 1024) setItemsPerPage(3);  // md:w-1/3
-    //         else if (width < 1280) setItemsPerPage(4);  // lg:w-1/4
-    //         else setItemsPerPage(5);                    // xl:w-1/5
-    //     };
+    useEffect(() => {
+        const updateItemsPerPage = () => {
+            const width = window.innerWidth;
+            if (width < 640) setItemsPerPage(1);
+            else if (width < 768) setItemsPerPage(2);
+            else if (width < 1024) setItemsPerPage(3);
+            else setItemsPerPage(4);
+        };
 
-    //     updateItemsPerPage();
-    //     window.addEventListener('resize', updateItemsPerPage);
-    //     return () => window.removeEventListener('resize', updateItemsPerPage);
-    // }, []);
+        updateItemsPerPage();
+        window.addEventListener('resize', updateItemsPerPage);
+        return () => window.removeEventListener('resize', updateItemsPerPage);
+    }, []);
+
     const maxIndex = Math.max(0, newsData.length - itemsPerPage);
 
-    const handlePrevious = () => {
-        setCurrentIndex(prev => Math.max(0, prev - 1));
+    const handleSlide = (direction) => {
+        if (isAnimating) return;
+        
+        setIsAnimating(true);
+        
+        if (direction === 'prev') {
+            setCurrentIndex(prev => Math.max(0, prev - 1));
+        } else {
+            setCurrentIndex(prev => Math.min(maxIndex, prev + 1));
+        }
+        
+        setTimeout(() => setIsAnimating(false), 500);
     };
 
-    const handleNext = () => {
-        setCurrentIndex(prev => Math.min(maxIndex, prev + 1));
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+        });
     };
 
-    const visibleItems = newsData.slice(currentIndex, currentIndex + itemsPerPage);
-    
+    const getCategoryColor = (category) => {
+        const colors = {
+            'Hội nghị': 'blue',
+            'Sự kiện': 'green',
+            'Nghiên cứu': 'purple',
+            'Khoa học': 'orange',
+            'Tin tức': 'red',
+            'Công nghệ': 'cyan'
+        };
+        return colors[category] || 'blue';
+    };
+
     return (
-        <div className="w-full max-w-7xl mx-auto p-6 bg-white">
-            <div className='mb-8'>
-                <h2 className='text-2xl font-bold text-blue-600 text-center mb-6'>
+        <div className="w-full max-w-7xl mx-auto p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+            {/* Header Section */}
+            <div className="text-center mb-16">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl mb-6 shadow-lg">
+                    <HeartOutlined className="text-2xl " style={{
+                        color:"white"
+                    }} />
+                </div>
+                <Title 
+                    level={1} 
+                    className="!text-4xl !font-bold !bg-gradient-to-r !from-green-400 !to-indigo-600 !bg-clip-text !text-transparent !mb-4"
+                >
                     Sức khoẻ và đời sống
-                </h2>
+                </Title>
+                <Text className="!text-lg !text-gray-600 max-w-2xl mx-auto block">
+                    Thông tin y tế chuyên nghiệp, cập nhật kiến thức mới nhất trong lĩnh vực chăm sóc sức khỏe
+                </Text>
             </div>
-            <div className="relative mb-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    {visibleItems.map((item, index) => (
-                        <div key={item.id} className="">
+
+            {/* News Cards Container */}
+            <div className="relative mb-12 overflow-hidden rounded-3xl">
+                <div 
+                    className="flex transition-transform duration-500 ease-out gap-6"
+                    style={{ 
+                        transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`,
+                        width: `${(newsData.length / itemsPerPage) * 100}%`
+                    }}
+                >
+                    {newsData.map((item) => (
+                        <div 
+                            key={item.id} 
+                            className="flex-shrink-0 px-3"
+                            style={{ width: `${100 / newsData.length}%` }}
+                        >
                             <Card
                                 hoverable
-                                className="h-full shadow-md hover:shadow-lg transition-shadow duration-300"
+                                className="group h-full !shadow-lg hover:!shadow-2xl !transition-all !duration-500 !border-gray-100 !rounded-2xl overflow-hidden"
                                 cover={
-                                    <div className="overflow-hidden">
+                                    <div className="relative overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
                                         <img
                                             alt={item.title}
                                             src={item.image}
-                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                            className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700"
                                         />
+                                        {/* Gradient Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        
+                                        {/* Category Badge */}
+                                        <div className="absolute top-4 left-4">
+                                            <Tag 
+                                                color={getCategoryColor(item.category)}
+                                                className="!bg-white/90 !backdrop-blur-sm !border-0 !font-medium !shadow-sm"
+                                            >
+                                                {item.category}
+                                            </Tag>
+                                        </div>
+                                        
+                                        {/* Hover Icon */}
+                                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                                            <Button
+                                                type="text"
+                                                shape="circle"
+                                                size="small"
+                                                icon={<ArrowUpOutlined className="text-blue-600" />}
+                                                className="!bg-white/90 !backdrop-blur-sm !border-0 !shadow-sm"
+                                            />
+                                        </div>
                                     </div>
                                 }
-                                bodyStyle={{ padding: '12px' }}
+                                bodyStyle={{ padding: '24px' }}
                             >
-                                <div className="h-20 flex items-start">
-                                    <p className="text-sm text-gray-700 line-clamp-4 leading-tight">
-                                        {item.title}
-                                    </p>
+                                <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                                    <CalendarOutlined />
+                                    <Text type="secondary">{formatDate(item.date)}</Text>
+                                </div>
+                                
+                                <Title 
+                                    level={4} 
+                                    className="!text-lg !font-semibold !text-gray-800 !leading-snug group-hover:!text-blue-600 !transition-colors !duration-300 !mb-4"
+                                    ellipsis={{ rows: 3 }}
+                                >
+                                    {item.title}
+                                </Title>
+                                
+                                {/* Read More Button */}
+                                <div className="pt-4 border-t border-gray-100">
+                                    <Button
+                                        type="link"
+                                        className="!p-0 !h-auto !text-blue-600 hover:!text-blue-700 !font-medium group/btn"
+                                        icon={<ArrowUpOutlined />}
+                                    >
+                                        Đọc thêm
+                                    </Button>
                                 </div>
                             </Card>
                         </div>
                     ))}
                 </div>
             </div>
-            <div className="flex justify-end mt-6 gap-2">
-                <Button
-                    type="default"
-                    shape="circle"
-                    icon={<LeftOutlined />}
-                    onClick={handlePrevious}
-                    disabled={currentIndex === 0}
-                    className="w-10 h-10 flex items-center justify-center border-gray-300 hover:border-blue-400 hover:text-blue-500 disabled:opacity-50"
-                />
-                <Button
-                    type="default"
-                    shape="circle"
-                    icon={<RightOutlined />}
-                    onClick={handleNext}
-                    disabled={currentIndex >= maxIndex}
-                    className="w-10 h-10 flex items-center justify-center border-gray-300 hover:border-blue-400 hover:text-blue-500 disabled:opacity-50"
-                />
-            </div>
-        </div>
 
-    )
+            {/* Navigation Controls */}
+            <div className="flex items-center justify-between">
+                {/* Pagination Dots */}
+                <div className="flex items-center gap-2">
+                    {Array.from({ length: maxIndex + 1 }, (_, i) => (
+                        <Button
+                            key={i}
+                            type="text"
+                            size="small"
+                            onClick={() => !isAnimating && setCurrentIndex(i)}
+                            className={`!w-2 !h-2 !min-w-0 !p-0 !rounded-full !transition-all !duration-300 !border-0 ${
+                                i === currentIndex 
+                                    ? '!bg-blue-600 !w-8' 
+                                    : '!bg-gray-300 hover:!bg-gray-400'
+                            }`}
+                        />
+                    ))}
+                </div>
+
+                {/* Arrow Controls */}
+                <div className="flex items-center gap-3">
+                    <Button
+                        type="default"
+                        shape="circle"
+                        size="large"
+                        icon={<LeftOutlined />}
+                        onClick={() => handleSlide('prev')}
+                        disabled={currentIndex === 0 || isAnimating}
+                        className="!w-12 !h-12 !shadow-lg hover:!shadow-xl !border-gray-200 hover:!border-blue-300 !transition-all !duration-300 disabled:!opacity-40 group/arrow"
+                    />
+                    
+                    <Button
+                        type="default"
+                        shape="circle"
+                        size="large"
+                        icon={<RightOutlined />}
+                        onClick={() => handleSlide('next')}
+                        disabled={currentIndex >= maxIndex || isAnimating}
+                        className="!w-12 !h-12 !shadow-lg hover:!shadow-xl !border-gray-200 hover:!border-blue-300 !transition-all !duration-300 disabled:!opacity-40 group/arrow"
+                    />
+                </div>
+            </div>
+
+        </div>
+    );
 }
 
 export default TechSection
