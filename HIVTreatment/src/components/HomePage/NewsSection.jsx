@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, Tag, Typography } from 'antd';
 import { LeftOutlined, RightOutlined, CalendarOutlined, ArrowUpOutlined } from '@ant-design/icons';
-
+import { formatDate } from '../../utils/formatDate';
 const { Title, Text } = Typography;
 
 const newsData = [
@@ -83,16 +83,6 @@ function NewsSection() {
         
         setTimeout(() => setIsAnimating(false), 500);
     };
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric' 
-        });
-    };
-
     const getCategoryColor = (category) => {
         const colors = {
             'Hội nghị': 'blue',

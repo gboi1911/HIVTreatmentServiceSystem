@@ -10,7 +10,7 @@ import {
   ReadOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-
+import { useNavigate } from "react-router-dom";
 const { Header } = Layout;
 
 const menuItems = [
@@ -24,7 +24,7 @@ const menuItems = [
 
 export default function Navbar() {
   const [current, setCurrent] = useState("home");
-
+  const navigate = useNavigate();
   const onClick = (e) => {
     setCurrent(e.key);
     const el = document.getElementById(e.key);
@@ -67,7 +67,9 @@ export default function Navbar() {
       <Button
         type="primary"
         style={{ backgroundColor: "#1076BD", borderColor: "#1076BD" }}
-        onClick={() => alert("Đăng nhập clicked!")}
+        onClick={() => {
+          navigate("/login");
+        }}
       >
         Đăng nhập
       </Button>

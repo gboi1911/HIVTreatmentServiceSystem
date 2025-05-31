@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, Tag, Typography } from 'antd';
 import { LeftOutlined, CalendarOutlined, RightOutlined, MedicineBoxOutlined, ExperimentOutlined, HeartOutlined, EyeOutlined, StarOutlined, ArrowUpOutlined } from '@ant-design/icons';
-
+import { formatDate } from '../../utils/formatDate';
 const { Title, Text } = Typography;
 
 const techData = [
@@ -59,14 +59,6 @@ export default function NewTechSection() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(3);
     const [isAnimating, setIsAnimating] = useState(false);
-const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric' 
-        });
-    };
     useEffect(() => {
         const updateItemsPerPage = () => {
             const width = window.innerWidth;
