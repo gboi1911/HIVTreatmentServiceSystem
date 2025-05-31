@@ -10,6 +10,7 @@ import {
   ReadOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const { Header } = Layout;
 
@@ -24,11 +25,17 @@ const menuItems = [
 
 export default function Navbar() {
   const [current, setCurrent] = useState("home");
+  const navigate = useNavigate();
 
   const onClick = (e) => {
     setCurrent(e.key);
-    const el = document.getElementById(e.key);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (e.key === "about") {
+      navigate("/about");
+    } else {
+      // Otherwise, scroll to section by ID
+      const el = document.getElementById(e.key);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
