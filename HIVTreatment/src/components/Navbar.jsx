@@ -11,6 +11,7 @@ import {
   TeamOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+
 const { Header } = Layout;
 
 const menuItems = [
@@ -27,8 +28,32 @@ export default function Navbar() {
   const navigate = useNavigate();
   const onClick = (e) => {
     setCurrent(e.key);
-    const el = document.getElementById(e.key);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    // Define routes for each key
+    switch (e.key) {
+      case "home":
+        navigate("/");
+        break;
+      case "report":
+        navigate("/report");
+        break;
+      case "about":
+        navigate("/about");
+        break;
+      case "course":
+        navigate("/course");
+        break;
+      case "blog":
+        navigate("/blog");
+        break;
+      case "consult":
+        navigate("/consult");
+        break;
+      default:
+        // Fallback: scroll to section by ID if exists
+        const el = document.getElementById(e.key);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+        break;
+    }
   };
 
   return (
