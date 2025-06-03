@@ -25,7 +25,7 @@ const NavFooter = () => {
         </div>
       </div>
 
-      <footer className="bg-blue-800 text-white py-12">
+      <footer className="bg-[#1076BD] text-white py-12">
         <div className="max-w-7xl mx-auto px-4">
           <Row gutter={[32, 32]}>
             <Col xs={24} md={6}>
