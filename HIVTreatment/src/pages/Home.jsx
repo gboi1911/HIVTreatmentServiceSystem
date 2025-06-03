@@ -14,11 +14,11 @@ export default function Home() {
         <CardSection />
 
       </div>
-              <NewsSection/>
-                <NewTechSection/>
-                <TechSection/>
-                <CategorySection/>
-                <NavFooter/>
+      <NewsSection />
+      <NewTechSection />
+      <TechSection />
+      <CategorySection />
+      
     </>
   );
 }
