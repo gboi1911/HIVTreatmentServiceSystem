@@ -7,6 +7,8 @@ import RegisterPage from "./pages/RegisterPage";
 import AboutUs from "./pages/About";
 import Guides from "./pages/Guides";
 import BlogDetail from "./pages/BlogDetail";
+import HealthAndLife from "./pages/HealthAndLife";
+import AnnouncementsPage from "./pages/AskAndAnswer";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<AboutUs />} />
+          <Route path="health-and-life" element={<HealthAndLife />} />
+          <Route path="announcements" element={<AnnouncementsPage />} />
           <Route path="/guides" element={<Guides/>}/>
           <Route path="/BlogDetail" element={<BlogDetail/>}/>
         </Route>
