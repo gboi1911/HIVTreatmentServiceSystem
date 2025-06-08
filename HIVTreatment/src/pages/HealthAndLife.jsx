@@ -78,59 +78,69 @@ export default function HealthAndLife() {
       <Title level={2} className="text-center mb-10 text-rose-600">
         Sức khỏe & Đời sống với HIV/AIDS
       </Title>
+
       <Row gutter={[32, 32]}>
         {/* Left: HIV Articles */}
         <Col xs={24} lg={16}>
-          {articles.map((article, index) => (
-            <Card
-              key={index}
-              className="mb-10 shadow-md rounded-lg"
-              hoverable
-              bodyStyle={{ display: "flex", gap: 16 }}
-            >
-              <img
-                src={article.img}
-                alt={article.title}
-                className="w-40 h-28 object-cover rounded"
-              />
-              <div>
-                <Title level={4}>{article.title}</Title>
-                <Paragraph type="secondary">{article.desc}</Paragraph>
-              </div>
-            </Card>
-          ))}
+          <Title level={4} className="mb-4">
+            Bài viết nổi bật
+          </Title>
+          <Row gutter={[0, 24]}>
+            {articles.map((article, index) => (
+              <Col span={24} key={index}>
+                <Card
+                  hoverable
+                  className="shadow-md rounded-lg"
+                  bodyStyle={{ display: "flex", gap: 16, alignItems: "center" }}
+                >
+                  <img
+                    src={article.img}
+                    alt={article.title}
+                    className="w-40 h-28 object-cover rounded"
+                  />
+                  <div>
+                    <Title level={4}>{article.title}</Title>
+                    <Paragraph type="secondary">{article.desc}</Paragraph>
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         </Col>
 
-        {/* Right: HIV News */}
+        {/* Right: HIV News and Prevention */}
         <Col xs={24} lg={8}>
           <Title level={4} className="mb-4">
             Tin tức HIV
           </Title>
-          {sideNews.map((news, index) => (
-            <Card
-              key={index}
-              hoverable
-              className="mb-4 shadow-sm"
-              bodyStyle={{ display: "flex", gap: 16, alignItems: "center" }}
-            >
-              <img
-                src={news.img}
-                alt={news.title}
-                className="w-24 h-24 object-cover rounded"
-              />
-              <div>
-                <Title level={5}>{news.title}</Title>
-                <Paragraph type="secondary" ellipsis={{ rows: 2 }}>
-                  {news.desc}
-                </Paragraph>
-              </div>
-            </Card>
-          ))}
+          <Row gutter={[0, 24]}>
+            {sideNews.map((news, index) => (
+              <Col span={24} key={index}>
+                <Card
+                  hoverable
+                  className="shadow-sm"
+                  bodyStyle={{ display: "flex", gap: 16, alignItems: "center" }}
+                >
+                  <img
+                    src={news.img}
+                    alt={news.title}
+                    className="w-24 h-24 object-cover rounded"
+                  />
+                  <div>
+                    <Title level={5}>{news.title}</Title>
+                    <Paragraph type="secondary" ellipsis={{ rows: 2 }}>
+                      {news.desc}
+                    </Paragraph>
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
 
           <Title level={4} className="mt-8 mb-4">
             Tuyên truyền phòng HIV
           </Title>
-          <Row gutter={[16, 16]}>
+          <Row gutter={[0, 24]}>
             {preventionArticles.map((item, idx) => (
               <Col span={24} key={idx}>
                 <Card

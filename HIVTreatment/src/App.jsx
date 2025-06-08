@@ -4,6 +4,7 @@ import MainLayout from "./components/Layout";
 import Home from "./pages/Home";
 import AboutUs from "./pages/About";
 import HealthAndLife from "./pages/HealthAndLife";
+import AnnouncementsPage from "./pages/AskAndAnswer";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="about" element={<AboutUs />} />
           <Route path="health-and-life" element={<HealthAndLife />} />
+          <Route path="announcements" element={<AnnouncementsPage />} />
         </Route>
       </Routes>
     </Router>
