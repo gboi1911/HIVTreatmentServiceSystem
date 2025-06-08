@@ -29,7 +29,7 @@ const quickLinks = [
 const menuItems = [
   { path: "/about", label: "Giới thiệu" },
   { path: "/guides", label: "Hướng dẫn & Bảng giá" },
-  { path: "/health", label: "Sức khoẻ & đời sống" },
+  { path: "/health-and-life", label: "Sức khoẻ & đời sống" },
   { path: "/faq", label: "Hỏi & Đáp" },
 ];
 
