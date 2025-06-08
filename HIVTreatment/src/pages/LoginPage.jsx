@@ -1,49 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { UserOutlined, LockOutlined, GoogleOutlined, HeartOutlined, MedicineBoxOutlined, SafetyOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useLogin } from '../hooks/useLogin';
 
 const MedicalLoginPage = () => {
-  const [formData, setFormData] = useState({ username: '', password: '', remember: false });
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [focusedField, setFocusedField] = useState('');
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.email) {
-      newErrors.email = 'Hãy nhâp địa chỉ email của bạn!';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email!';
-    }
-    if (!formData.password) {
-      newErrors.password = 'Hãy nhập mật khẩu của bạn!';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setLoading(true);
-      setTimeout(() => {
-        console.log('Login values:', formData);
-        setLoading(false);
-      }, 1500);
-    }
-  };
-
-  const handleGoogleLogin = () => {
-    console.log('Google login clicked');
-  };
+  const {
+    formData,
+    loading,
+    errors,
+    showPassword,
+    setShowPassword,
+    focusedField,
+    setFocusedField,
+    handleInputChange,
+    handleSubmit,
+    handleGoogleLogin,
+  } = useLogin();
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-slate-50 to-blue-50">
@@ -73,42 +45,52 @@ const MedicalLoginPage = () => {
             <p className="text-gray-500 text-lg">Đăng nhập vào tài khoản của bạn</p>
           </div>
 
+          {/* Error Message */}
+          {errors.general && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
+              <p className="text-red-600 text-sm flex items-center">
+                <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                {errors.general}
+              </p>
+            </div>
+          )}
+
           {/* Login Form */}
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="group">
               <label className="block text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
-                Địa chỉ email
+                Tên đăng nhập hoặc số điện thoại
               </label>
               <div className="relative">
                 <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                  focusedField === 'email' ? 'text-blue-500' : 'text-gray-400'
+                  focusedField === 'username' ? 'text-blue-500' : 'text-gray-400'
                 }`}>
                   <UserOutlined className="text-lg" />
                 </div>
                 <input
-                  type="email"
-                  placeholder="Nhập địa chỉ email của bạn"
-                  autoComplete='email'
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  onFocus={() => setFocusedField('email')}
+                  type="text"
+                  placeholder="Nhập tên đăng nhập hoặc số điện thoại"
+                  autoComplete='username'
+                  value={formData.username}
+                  onChange={(e) => handleInputChange('username', e.target.value)}
+                  onFocus={() => setFocusedField('username')}
                   onBlur={() => setFocusedField('')}
                   className={`w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-sm border-2 rounded-2xl focus:outline-none transition-all duration-300 text-gray-800 placeholder-gray-400 ${
-                    errors.email 
+                    errors.username 
                       ? 'border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100' 
-                      : focusedField === 'email'
+                      : focusedField === 'username'
                         ? 'border-blue-500 focus:ring-4 focus:ring-blue-100 shadow-lg'
                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                   }`}
                 />
-                {focusedField === 'email' && (
+                {focusedField === 'username' && (
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 pointer-events-none"></div>
                 )}
               </div>
-              {errors.email && (
+              {errors.username && (
                 <p className="text-red-500 text-sm mt-2 animate-pulse flex items-center">
                   <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
-                  {errors.email}
+                  {errors.username}
                 </p>
               )}
             </div>
@@ -159,26 +141,25 @@ const MedicalLoginPage = () => {
               )}
             </div>
 
-            {/* forgot */}
+            {/* Remember me and forgot password */}
             <div className="flex items-center justify-between py-1">
               <label className="flex items-center cursor-pointer group">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={formData.remember}
-                    onChange={(e) => handleInputChange('remember', e.target.checked)}
-                    className="sr-only"
-                  />
-                </div>
+                <input
+                  type="checkbox"
+                  checked={formData.remember}
+                  onChange={(e) => handleInputChange('remember', e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="ml-2 text-sm text-gray-600">Ghi nhớ đăng nhập</span>
               </label>
-              <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold text-sm hover:underline transition-all duration-200">
+              <Link to="/forgot-password" className="text-blue-600 hover:text-blue-700 font-semibold text-sm hover:underline transition-all duration-200">
                 Quên mật khẩu?
-              </a>
+              </Link>
             </div>
 
             
             <button
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none disabled:hover:shadow-lg"
             >
@@ -196,39 +177,39 @@ const MedicalLoginPage = () => {
                 </span>
               )}
             </button>
+          </form>
 
-            {/* Divider */}
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-gradient-to-r from-slate-50 to-blue-50 text-gray-500 font-medium">
-                  Hoặc đăng nhập bằng
-                </span>
-              </div>
+          {/* Divider */}
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
             </div>
-
-            {/* Google Sign In */}
-            <button
-              onClick={handleGoogleLogin}
-              className="w-full bg-white/80 backdrop-blur-sm border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-semibold py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-            >
-              <GoogleOutlined className="text-xl mr-3 text-red-500" />
-              Đăng nhập với Google
-            </button>
-
-            <div className="text-center pt-6">
-              <span className="text-gray-500">Bạn không có tài khoản? </span>
-              <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-all duration-200">
-                Tạo tài khoản mới ở đây
-              </Link>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-gradient-to-r from-slate-50 to-blue-50 text-gray-500 font-medium">
+                Hoặc đăng nhập bằng
+              </span>
             </div>
+          </div>
+
+          {/* Google Sign In */}
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full bg-white/80 backdrop-blur-sm border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-semibold py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          >
+            <GoogleOutlined className="text-xl mr-3 text-red-500" />
+            Đăng nhập với Google
+          </button>
+
+          <div className="text-center pt-6">
+            <span className="text-gray-500">Bạn không có tài khoản? </span>
+            <Link to="/register" className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-all duration-200">
+              Tạo tài khoản mới ở đây
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Right Panel */}
+      {/* Right Panel - Same as before */}
       <div className="flex-1 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0">
@@ -236,7 +217,6 @@ const MedicalLoginPage = () => {
           <div className="absolute bottom-32 right-16 w-48 h-48 bg-white/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
           <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-white/15 rounded-full blur-2xl animate-pulse delay-500"></div>
         </div>
-
 
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-24 left-16 animate-float">

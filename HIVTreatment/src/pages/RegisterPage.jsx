@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { UserOutlined, LockOutlined, GoogleOutlined, HeartOutlined, MedicineBoxOutlined, SafetyOutlined, EyeOutlined, EyeInvisibleOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { registerUser } from '../api/auth'; // adjust path if needed
 
 const MedicalRegisterPage = () => {
   const [formData, setFormData] = useState({ 
-    username: '', 
+    fullName: '', 
     email: '', 
     phone: '', 
     password: '', 
     confirmPassword: '',
+    Gender: 'Male', 
+    role: 'USER' 
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState('');
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -23,13 +27,13 @@ const MedicalRegisterPage = () => {
     }
   };
 
-   const validateForm = () => {
+  const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.username) {
-      newErrors.username = 'Hãy nhập tên người dùng của bạn!';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Tên người dùng phải có ít nhất 3 ký tự!';
+    if (!formData.fullName) {
+      newErrors.fullName = 'Hãy nhập họ và tên của bạn!';
+    } else if (formData.fullName.length < 3) {
+      newErrors.fullName = 'Họ và tên phải có ít nhất 3 ký tự!';
     }
     
     if (!formData.email) {
@@ -40,8 +44,8 @@ const MedicalRegisterPage = () => {
     
     if (!formData.phone) {
       newErrors.phone = 'Hãy nhập số điện thoại của bạn!';
-    } else if (!/^[0-9]{10,11}$/.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại phải có 10-11 chữ số!';
+    } else if (!/^(84|0[3|5|7|8|9])(\d{8})$/.test(formData.phone)) {
+      newErrors.phone = 'Số điện thoại không đúng định dạng! (VD: 0912345678)';
     }
     
     if (!formData.password) {
@@ -55,24 +59,88 @@ const MedicalRegisterPage = () => {
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Mật khẩu không khớp!';
     }
+
+    if (!['Male', 'Female'].includes(formData.Gender)) {
+      newErrors.Gender = 'Vui lòng chọn giới tính hợp lệ!';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       setLoading(true);
-      setTimeout(() => {
-        console.log('Login values:', formData);
+      try {
+        const registerData = {
+          fullName: formData.fullName,
+          Gender: formData.Gender,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          role: formData.role
+        };
+
+        const result = await registerUser(registerData);
+        console.log('Registration successful:', result);
+        setRegistrationSuccess(true);
+
+        setFormData({
+          fullName: '', 
+          email: '', 
+          phone: '', 
+          password: '', 
+          confirmPassword: '',
+          Gender: 'Male',
+          role: 'USER'
+        });
+
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+
+      } catch (errorData) {
+        if (errorData.message) {
+          if (errorData.message.includes('Duplicate phone')) {
+            setErrors({ phone: 'Số điện thoại đã được sử dụng!' });
+          } else if (errorData.message.includes('Duplicate Email')) {
+            setErrors({ email: 'Email đã được sử dụng!' });
+          } else if (errorData.message.includes('Not Valid Gender')) {
+            setErrors({ Gender: 'Giới tính không hợp lệ!' });
+          } else {
+            setErrors({ general: errorData.message });
+          }
+        } else {
+          setErrors({ general: 'Đăng ký thất bại. Vui lòng thử lại!' });
+        }
+      } finally {
         setLoading(false);
-      }, 1500);
+      }
     }
   };
 
   const handleGoogleLogin = () => {
     console.log('Google login clicked');
+    // Implement Google OAuth if needed
   };
+
+  if (registrationSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">
+        <div className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-md">
+          <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Đăng ký thành công!</h2>
+          <p className="text-gray-600 mb-4">Tài khoản của bạn đã được tạo thành công.</p>
+          <p className="text-sm text-gray-500">Đang chuyển hướng đến trang đăng nhập...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-slate-50 to-blue-50">
@@ -102,43 +170,90 @@ const MedicalRegisterPage = () => {
             <p className="text-gray-500 text-lg">Tạo tài khoản mới để bắt đầu</p>
           </div>
 
+          {/* Display general errors */}
+          {errors.general && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
+              <p className="text-red-600 text-sm flex items-center">
+                <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                {errors.general}
+              </p>
+            </div>
+          )}
+          
           {/* Register Form */}
-          <div className="space-y-6">
-            {/* Username Input */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Full Name Input */}
             <div className="group">
               <label className="block text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
-                Tên người dùng
+                Họ và tên
               </label>
               <div className="relative">
                 <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                  focusedField === 'username' ? 'text-blue-500' : 'text-gray-400'
+                  focusedField === 'fullName' ? 'text-blue-500' : 'text-gray-400'
                 }`}>
                   <UserOutlined className="text-lg" />
                 </div>
                 <input
                   type="text"
-                  placeholder="Nhập tên người dùng của bạn"
-                  autoComplete='username'
-                  value={formData.username}
-                  onChange={(e) => handleInputChange('username', e.target.value)}
-                  onFocus={() => setFocusedField('username')}
+                  placeholder="Nhập họ và tên của bạn"
+                  autoComplete='name'
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  onFocus={() => setFocusedField('fullName')}
                   onBlur={() => setFocusedField('')}
                   className={`w-full pl-12 pr-4 py-4 bg-white/80 backdrop-blur-sm border-2 rounded-2xl focus:outline-none transition-all duration-300 text-gray-800 placeholder-gray-400 ${
-                    errors.username 
+                    errors.fullName 
                       ? 'border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-100' 
-                      : focusedField === 'username'
+                      : focusedField === 'fullName'
                         ? 'border-blue-500 focus:ring-4 focus:ring-blue-100 shadow-lg'
                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                   }`}
                 />
-                {focusedField === 'username' && (
+                {focusedField === 'fullName' && (
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 pointer-events-none"></div>
                 )}
               </div>
-              {errors.username && (
+              {errors.fullName && (
                 <p className="text-red-500 text-sm mt-2 animate-pulse flex items-center">
                   <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
-                  {errors.username}
+                  {errors.fullName}
+                </p>
+              )}
+            </div>
+
+            {/* Gender Selection */}
+            <div className="group">
+              <label className="block text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
+                Giới tính
+              </label>
+              <div className="flex space-x-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Male"
+                    checked={formData.Gender === 'Male'}
+                    onChange={(e) => handleInputChange('Gender', e.target.value)}
+                    className="mr-2"
+                  />
+                  <span className="text-gray-700">Nam</span>
+                </label>
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="Female"
+                    checked={formData.Gender === 'Female'}
+                    onChange={(e) => handleInputChange('Gender', e.target.value)}
+                    className="mr-2"
+                  />
+                  <span className="text-gray-700">Nữ</span>
+                </label>
+              </div>
+              {errors.Gender && (
+                <p className="text-red-500 text-sm mt-2 animate-pulse flex items-center">
+                  <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                  {errors.Gender}
                 </p>
               )}
             </div>
@@ -195,7 +310,7 @@ const MedicalRegisterPage = () => {
                 </div>
                 <input
                   type="tel"
-                  placeholder="Nhập số điện thoại của bạn"
+                  placeholder="Nhập số điện thoại của bạn (VD: 0912345678)"
                   autoComplete='tel'
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
@@ -234,7 +349,7 @@ const MedicalRegisterPage = () => {
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Nhập mật khẩu của bạn"
+                  placeholder="Nhập mật khẩu của bạn (tối thiểu 6 ký tự)"
                   autoComplete='new-password'
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
@@ -248,6 +363,13 @@ const MedicalRegisterPage = () => {
                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                   }`}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                </button>
                 {focusedField === 'password' && (
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 pointer-events-none"></div>
                 )}
@@ -287,6 +409,13 @@ const MedicalRegisterPage = () => {
                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                   }`}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showConfirmPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                </button>
                 {focusedField === 'confirmPassword' && (
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 pointer-events-none"></div>
                 )}
@@ -299,28 +428,21 @@ const MedicalRegisterPage = () => {
               )}
             </div>
 
-            {/* forgot password */}
+            {/* Login link */}
             <div className="flex items-center justify-between py-1">
-              <label className="flex items-center cursor-pointer group">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={formData.remember}
-                    onChange={(e) => handleInputChange('remember', e.target.checked)}
-                    className="sr-only"
-                  />
-                </div>
-              </label>
-              <a href="#" className="text-blue-600 hover:text-blue-700 font-semibold text-sm hover:underline transition-all duration-200">
-                Quên mật khẩu?
-              </a>
+              <span className="text-gray-600 text-sm">
+                Đã có tài khoản? 
+                <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold ml-1 hover:underline transition-all duration-200">
+                  Đăng nhập
+                </Link>
+              </span>
             </div>
 
-            
+            {/* Submit Button */}
             <button
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none disabled:hover:shadow-lg"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none disabled:hover:shadow-lg group"
             >
               {loading ? (
                 <div className="flex items-center">
@@ -336,7 +458,7 @@ const MedicalRegisterPage = () => {
                 </span>
               )}
             </button>
-          </div>
+          </form>
         </div>
       </div>
 
