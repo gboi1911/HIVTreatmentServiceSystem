@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { UserOutlined, LockOutlined, GoogleOutlined, HeartOutlined, MedicineBoxOutlined, SafetyOutlined, EyeOutlined, EyeInvisibleOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import { registerUser } from '../api/auth'; // adjust path if needed
-
+import { Link, useNavigate } from 'react-router-dom';
+import { register } from '../api/auth';
 const MedicalRegisterPage = () => {
   const [formData, setFormData] = useState({ 
     fullName: '', 
@@ -10,8 +9,8 @@ const MedicalRegisterPage = () => {
     phone: '', 
     password: '', 
     confirmPassword: '',
-    Gender: 'Male', 
-    role: 'USER' 
+    role: 'CUSTOMER', 
+    Gender: 'Male'
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -19,7 +18,7 @@ const MedicalRegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState('');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
-
+  const navigate = useNavigate();
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -38,7 +37,8 @@ const MedicalRegisterPage = () => {
     
     if (!formData.email) {
       newErrors.email = 'Hãy nhập địa chỉ email của bạn!';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } 
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Vui lòng nhập email hợp lệ!';
     }
     
@@ -73,48 +73,19 @@ const MedicalRegisterPage = () => {
     if (validateForm()) {
       setLoading(true);
       try {
-        const registerData = {
-          fullName: formData.fullName,
-          Gender: formData.Gender,
+        const data = await register({
+          username: formData.username,
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
-          role: formData.role
-        };
-
-        const result = await registerUser(registerData);
-        console.log('Registration successful:', result);
-        setRegistrationSuccess(true);
-
-        setFormData({
-          fullName: '', 
-          email: '', 
-          phone: '', 
-          password: '', 
-          confirmPassword: '',
-          Gender: 'Male',
-          role: 'USER'
+          role: formData.role,
+          Gender: formData.Gender
         });
-
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
-
-      } catch (errorData) {
-        if (errorData.message) {
-          if (errorData.message.includes('Duplicate phone')) {
-            setErrors({ phone: 'Số điện thoại đã được sử dụng!' });
-          } else if (errorData.message.includes('Duplicate Email')) {
-            setErrors({ email: 'Email đã được sử dụng!' });
-          } else if (errorData.message.includes('Not Valid Gender')) {
-            setErrors({ Gender: 'Giới tính không hợp lệ!' });
-          } else {
-            setErrors({ general: errorData.message });
-          }
-        } else {
-          setErrors({ general: 'Đăng ký thất bại. Vui lòng thử lại!' });
-        }
-      } finally {
+        setLoading(false);
+        navigate('/login'); // Redirect to login after successful registration
+      } catch (err) {
+        console.log(err)
+        setErrors({ email: 'Đăng ký thất bại. Email đã tồn tại hoặc dữ liệu không hợp lệ.' });
         setLoading(false);
       }
     }
@@ -217,43 +188,6 @@ const MedicalRegisterPage = () => {
                 <p className="text-red-500 text-sm mt-2 animate-pulse flex items-center">
                   <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
                   {errors.fullName}
-                </p>
-              )}
-            </div>
-
-            {/* Gender Selection */}
-            <div className="group">
-              <label className="block text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
-                Giới tính
-              </label>
-              <div className="flex space-x-4">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="Male"
-                    checked={formData.Gender === 'Male'}
-                    onChange={(e) => handleInputChange('Gender', e.target.value)}
-                    className="mr-2"
-                  />
-                  <span className="text-gray-700">Nam</span>
-                </label>
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="Female"
-                    checked={formData.Gender === 'Female'}
-                    onChange={(e) => handleInputChange('Gender', e.target.value)}
-                    className="mr-2"
-                  />
-                  <span className="text-gray-700">Nữ</span>
-                </label>
-              </div>
-              {errors.Gender && (
-                <p className="text-red-500 text-sm mt-2 animate-pulse flex items-center">
-                  <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
-                  {errors.Gender}
                 </p>
               )}
             </div>
@@ -428,6 +362,44 @@ const MedicalRegisterPage = () => {
               )}
             </div>
 
+            
+            {/* Gender Selection */}
+            <div className="group">
+              <label className="block text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
+                Giới tính
+              </label>
+              <div className="flex space-x-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="Gender"
+                    value="Male"
+                    checked={formData.Gender === 'Male'}
+                    onChange={(e) => handleInputChange('Gender', e.target.value)}
+                    className="mr-2"
+                  />
+                  <span className="text-gray-700">Nam</span>
+                </label>
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="Gender"
+                    value="Female"
+                    checked={formData.Gender === 'Female'}
+                    onChange={(e) => handleInputChange('Gender', e.target.value)}
+                    className="mr-2"
+                  />
+                  <span className="text-gray-700">Nữ</span>
+                </label>
+              </div>
+              {errors.Gender && (
+                <p className="text-red-500 text-sm mt-2 animate-pulse flex items-center">
+                  <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                  {errors.Gender}
+                </p>
+              )}
+            </div>
+            
             {/* Login link */}
             <div className="flex items-center justify-between py-1">
               <span className="text-gray-600 text-sm">

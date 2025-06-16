@@ -9,6 +9,7 @@ import Guides from "./pages/Guides";
 import BlogDetail from "./pages/BlogDetail";
 import HealthAndLife from "./pages/HealthAndLife";
 import AnnouncementsPage from "./pages/AskAndAnswer";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
         </Route>
         <Route path="/login" element={<LoginPage/>} />
         <Route path="/register" element={<RegisterPage/>} />
-        
+        <Route path="/dashboard" element={<AdminDashboard/>}/>
       </Routes>
     </Router>
   );

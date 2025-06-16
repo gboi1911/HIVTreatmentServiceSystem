@@ -30,48 +30,17 @@ export function useLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
-    setLoading(true);
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify({
-          id: data.id,
-          fullName: data.fullName,
-          email: data.email,
-          phone: data.phone,
-          gender: data.gender
-        }));
-        if (formData.remember) {
-          localStorage.setItem('rememberMe', 'true');
-        }
-        alert('Đăng nhập thành công!');
-        navigate('/dashboard');
-      } else {
-        const errorData = await response.json();
-        setErrors({ 
-          general: errorData.message || 'Tên đăng nhập hoặc mật khẩu không đúng!' 
-        });
+    if (validateForm()) {
+      setLoading(true);
+      try {
+        const data = await login(formData.email, formData.password);
+        localStorage.setItem('token', data.token); // Save token
+        setLoading(false);
+        navigate('/'); // Redirect after login
+      } catch (err) {
+        setErrors({ password: 'Sai email hoặc mật khẩu!' });
+        setLoading(false);
       }
-    } catch (error) {
-      setErrors({ 
-        general: 'Không thể kết nối đến server. Vui lòng thử lại sau!' 
-      });
-    } finally {
-      setLoading(false);
     }
   };
 

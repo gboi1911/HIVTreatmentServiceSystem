@@ -1,26 +1,21 @@
-export async function login({ username, password }) {
-  const response = await fetch('http://localhost:8080/api/login', {
+const API_BASE = "https://hiv.purepixel.io.vn/api";
+
+export async function login(email, password) {
+  const response = await fetch(`${API_BASE}/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({ email, password }),
   });
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Đăng nhập thất bại!');
-  }
+  if (!response.ok) throw new Error('Login failed');
   return response.json();
 }
 
-export async function registerUser(registerData) {
-  const response = await fetch('/api/register', {
+export async function register({ fullName, email, phone, password, role, gender }) {
+  const response = await fetch(`${API_BASE}/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(registerData),
+    body: JSON.stringify({ fullName, email, phone, password, role, gender }),
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw errorData;
-  }
+  if (!response.ok) throw new Error('Register failed');
   return response.json();
 }
