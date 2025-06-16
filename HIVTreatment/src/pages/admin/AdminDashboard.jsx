@@ -24,11 +24,6 @@ export default function AdminDashboard() {
     trainingParticipation: 89
   };
 
-  const appointments = [
-    { id: 1, user: 'Nguyễn Văn An', consultant: 'BS. Trần Thị Mai', date: '2024-06-15', time: '09:00', status: 'Đã xác nhận' },
-    { id: 2, user: 'Lê Thị Hoa', consultant: 'ThS. Nguyễn Văn Bình', date: '2024-06-15', time: '14:30', status: 'Chờ xác nhận' },
-    { id: 3, user: 'Phạm Minh Tuấn', consultant: 'BS. Võ Thị Lan', date: '2024-06-16', time: '10:15', status: 'Đã xác nhận' }
-  ];
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
