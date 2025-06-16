@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserOutlined, LockOutlined, GoogleOutlined, HeartOutlined, MedicineBoxOutlined, SafetyOutlined, EyeOutlined, EyeInvisibleOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../api/auth';
+ import { ToastContainer, toast } from 'react-toastify';
 const MedicalRegisterPage = () => {
   const [formData, setFormData] = useState({ 
     fullName: '', 
@@ -10,7 +11,8 @@ const MedicalRegisterPage = () => {
     password: '', 
     confirmPassword: '',
     role: 'CUSTOMER', 
-    Gender: 'Male'
+    gender: 'Male',
+    code: ''
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -60,8 +62,8 @@ const MedicalRegisterPage = () => {
       newErrors.confirmPassword = 'Mật khẩu không khớp!';
     }
 
-    if (!['Male', 'Female'].includes(formData.Gender)) {
-      newErrors.Gender = 'Vui lòng chọn giới tính hợp lệ!';
+    if (!['Male', 'Female'].includes(formData.gender)) {
+      newErrors.gender = 'Vui lòng chọn giới tính hợp lệ!';
     }
     
     setErrors(newErrors);
@@ -74,15 +76,23 @@ const MedicalRegisterPage = () => {
       setLoading(true);
       try {
         const data = await register({
-          username: formData.username,
+          fullName: formData.fullName,
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
           role: formData.role,
-          Gender: formData.Gender
+          gender: formData.gender,
+          code: formData.code
         });
+        console.log(data)
         setLoading(false);
-        navigate('/login'); // Redirect to login after successful registration
+        
+        navigate('/login', { 
+        state: { 
+          message: 'Đăng ký thành công! Vui lòng đăng nhập.',
+          type: 'success'
+        } 
+      }); // Redirect to login after successful registration
       } catch (err) {
         console.log(err)
         setErrors({ email: 'Đăng ký thất bại. Email đã tồn tại hoặc dữ liệu không hợp lệ.' });
@@ -363,7 +373,7 @@ const MedicalRegisterPage = () => {
             </div>
 
             
-            {/* Gender Selection */}
+            {/* gender Selection */}
             <div className="group">
               <label className="block text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
                 Giới tính
@@ -372,10 +382,10 @@ const MedicalRegisterPage = () => {
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="radio"
-                    name="Gender"
+                    name="gender"
                     value="Male"
-                    checked={formData.Gender === 'Male'}
-                    onChange={(e) => handleInputChange('Gender', e.target.value)}
+                    checked={formData.gender === 'Male'}
+                    onChange={(e) => handleInputChange('gender', e.target.value)}
                     className="mr-2"
                   />
                   <span className="text-gray-700">Nam</span>
@@ -383,19 +393,19 @@ const MedicalRegisterPage = () => {
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="radio"
-                    name="Gender"
+                    name="gender"
                     value="Female"
-                    checked={formData.Gender === 'Female'}
-                    onChange={(e) => handleInputChange('Gender', e.target.value)}
+                    checked={formData.gender === 'Female'}
+                    onChange={(e) => handleInputChange('gender', e.target.value)}
                     className="mr-2"
                   />
                   <span className="text-gray-700">Nữ</span>
                 </label>
               </div>
-              {errors.Gender && (
+              {errors.gender && (
                 <p className="text-red-500 text-sm mt-2 animate-pulse flex items-center">
                   <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
-                  {errors.Gender}
+                  {errors.gender}
                 </p>
               )}
             </div>
@@ -554,6 +564,7 @@ const MedicalRegisterPage = () => {
           animation-delay: 1s;
         }
       `}</style>
+      <ToastContainer/>
     </div>
   );
 };

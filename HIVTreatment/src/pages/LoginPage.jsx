@@ -1,9 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UserOutlined, LockOutlined, GoogleOutlined, HeartOutlined, MedicineBoxOutlined, SafetyOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
+import { ToastContainer, toast } from 'react-toastify';
 
 const MedicalLoginPage = () => {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.message) {
+      toast.success(location.state.message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+    if (location.state?.error) {
+      toast.error(location.state.error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  }, [location.state]);
   const {
     formData,
     loading,
@@ -59,7 +83,7 @@ const MedicalLoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="group">
               <label className="block text-gray-700 font-semibold mb-3 text-sm uppercase tracking-wide">
-                Tên đăng nhập hoặc số điện thoại
+                Số điện thoại
               </label>
               <div className="relative">
                 <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
@@ -69,7 +93,7 @@ const MedicalLoginPage = () => {
                 </div>
                 <input
                   type="text"
-                  placeholder="Nhập tên đăng nhập hoặc số điện thoại"
+                  placeholder="Nhập số điện thoại"
                   autoComplete='username'
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
@@ -328,6 +352,7 @@ const MedicalLoginPage = () => {
           animation-delay: 1s;
         }
       `}</style>
+      <ToastContainer/>
     </div>
   );
 };

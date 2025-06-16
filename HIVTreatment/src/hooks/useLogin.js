@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, useLocation } from 'react-router-dom';
+import { login } from '../api/auth';
+import { ToastContainer, toast } from 'react-toastify';
 export function useLogin() {
   const [formData, setFormData] = useState({ username: '', password: '', remember: false });
   const [loading, setLoading] = useState(false);
@@ -18,8 +19,10 @@ export function useLogin() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.username) {
-      newErrors.username = 'Hãy nhập tên đăng nhập hoặc số điện thoại!';
+   if (!formData.username) {
+      newErrors.username = 'Hãy nhập số điện thoại của bạn!';
+    } else if (!/^(84|0[3|5|7|8|9])(\d{8})$/.test(formData.username)) {
+      newErrors.username = 'Số điện thoại không đúng định dạng! (VD: 0912345678)';
     }
     if (!formData.password) {
       newErrors.password = 'Hãy nhập mật khẩu của bạn!';
@@ -33,12 +36,19 @@ export function useLogin() {
     if (validateForm()) {
       setLoading(true);
       try {
-        const data = await login(formData.email, formData.password);
+        const data = await login(formData.username, formData.password);
         localStorage.setItem('token', data.token); // Save token
         setLoading(false);
-        navigate('/'); // Redirect after login
+      
+        navigate('/', {
+          state: { 
+          message: 'Đăng nhập thành công!',
+          type: 'success'
+        } 
+        });
       } catch (err) {
-        setErrors({ password: 'Sai email hoặc mật khẩu!' });
+        console.log(err)
+        setErrors({ password: 'Sai số điện thoại hoặc mật khẩu!' });
         setLoading(false);
       }
     }

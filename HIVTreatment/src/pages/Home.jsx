@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Collapse } from "antd";
-
+import { useLocation } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import NewsSection from "../components/HomePage/NewsSection";
 import TechSection from "../components/HomePage/TechSection";
 import NewTechSection from "../components/HomePage/NewTechSection";
@@ -21,7 +22,19 @@ import CategorySection from "../components/HomePage/CategorySection";
 
 const useScrollAnimation = () => {
   const [isVisible, setIsVisible] = useState({});
-
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.message) {
+          toast.success(location.state.message, {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+      }, [location.state]);
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -421,6 +434,7 @@ export default function Home() {
           animation: fade-in-up 1s ease-out;
         }
       `}</style>
+      <ToastContainer/>
     </div>
   );
 }
