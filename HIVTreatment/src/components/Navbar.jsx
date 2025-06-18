@@ -18,19 +18,19 @@ import { p, path } from "framer-motion/client";
 const { Header } = Layout;
 
 const quickLinks = [
-  {path: "/news", label: "Tin tức & Sự kiện"},
-  {path: "/success", label: "Thành công & Kỹ thuật mới"},
-  {path: "/healthcare", label: "Nhân viên y tế"},
-  {path: "/tender", label: "Đấu thầu"},
-  {path: "/science", label: "Khoa học"},
-  {path: "/consulting", label: "Tư vấn"},
+  { path: "/news", label: "Tin tức & Sự kiện" },
+  { path: "/success", label: "Thành công & Kỹ thuật mới" },
+  { path: "/healthcare", label: "Nhân viên y tế" },
+  { path: "/tender", label: "Đấu thầu" },
+  { path: "/science", label: "Khoa học" },
+  { path: "/consulting", label: "Tư vấn" },
 ];
 
 const menuItems = [
   { path: "/about", label: "Giới thiệu" },
   { path: "/guides", label: "Hướng dẫn & Bảng giá" },
   { path: "/health-and-life", label: "Sức khoẻ & đời sống" },
-  { path: "/faq", label: "Hỏi & Đáp" },
+  { path: "/announcements", label: "Hỏi & Đáp" },
 ];
 
 export default function Navbar() {
@@ -44,9 +44,7 @@ export default function Navbar() {
   return (
     <div style={{ width: "100%", boxShadow: "0 2px 8px #f0f1f2" }}>
       {/* Top blue bar */}
-      <div
-       className="bg-gradient-to-r from-sky-500 via-blue-700 to-blue-800 text-white text-sm flex items-center justify-between px-10 h-12 backdrop-blur-sm shadow-sm"
-      >
+      <div className="bg-gradient-to-r from-sky-500 via-blue-700 to-blue-800 text-white text-sm flex items-center justify-between px-10 h-12 backdrop-blur-sm shadow-sm">
         <div style={{ display: "flex", gap: 24 }}>
           {/* {quickLinks.map((item) => (
             <span key={item} style={{ cursor: "pointer", opacity: 0.9 }}>
@@ -54,16 +52,16 @@ export default function Navbar() {
             </span>
           ))} */}
           {quickLinks.map((link) => (
-            <Link 
-              key={link.path} 
-              to={link.path} 
-              style={{ 
-                color: "white", 
-                textDecoration: "none", 
-                padding: "8px 16px", 
-                borderRadius: "20px", 
-                transition: "all 0.3s ease", 
-                fontSize: "13px", 
+            <Link
+              key={link.path}
+              to={link.path}
+              style={{
+                color: "white",
+                textDecoration: "none",
+                padding: "8px 16px",
+                borderRadius: "20px",
+                transition: "all 0.3s ease",
+                fontSize: "13px",
                 fontWeight: 500,
               }}
               onMouseEnter={(e) => {
