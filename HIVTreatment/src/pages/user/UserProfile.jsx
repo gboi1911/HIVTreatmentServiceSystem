@@ -42,28 +42,29 @@ import {
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
+import { getCustomer } from '../../api/auth';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
 const { TextArea } = Input;
 
 export const UserProfile = () => {
-  const [activeTab, setActiveTab] = useState('1');
-  const [isEditing, setIsEditing] = useState(false);
-  const [form] = Form.useForm();
   const [userInfo, setUserInfo] = useState({
-    fullName: 'Nguyễn Văn An',
-    email: 'nguyenvanan@email.com',
-    phone: '0123456789',
-    dateOfBirth: '1990-05-15',
-    gender: 'Nam',
-    address: '123 Đường ABC, Quận 1, TP.HCM',
-    emergencyContact: '0987654321',
-    bloodType: 'O+',
-    allergies: 'Không có',
-    avatar: null,
-    memberSince: '2023-01-15'
+    fullName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    gender: '',
+    address: '',
+    avatar: '',
+    memberSince: '',
+    emergencyContact: '',
+    bloodType: '',
+    customerId: null
   });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [healthStats] = useState({
     totalAppointments: 12,
@@ -122,17 +123,96 @@ export const UserProfile = () => {
   ]);
 
   useEffect(() => {
-    // Load user data from localStorage or API
-    const savedUserInfo = localStorage.getItem('userInfo');
-    if (savedUserInfo) {
-      try {
+    const loadUserData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      const token = localStorage.getItem('token');
+      const savedUserInfo = localStorage.getItem('userInfo');
+      
+      if (token) {
+        try {
+          // Decode JWT token to get customerId
+          const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+          console.log('Token payload:', tokenPayload); // Debug log
+          
+          // Try different possible field names for customerId
+          const customerId = tokenPayload.customerId || 
+                           tokenPayload.id || 
+                           tokenPayload.sub || 
+                           tokenPayload.userId ||
+                           tokenPayload.customer_id;
+          
+          console.log('Customer ID:', customerId); // Debug log
+          
+          if (customerId) {
+            try {
+              const customerData = await getCustomer(customerId);
+              console.log('Customer data received:', customerData); // Debug log
+              
+              setUserInfo(prev => ({ 
+                ...prev, 
+                ...customerData,
+                customerId: customerId,
+                // Map API fields to component fields if needed
+                avatar: customerData.avatar || 'https://randomuser.me/api/portraits/men/32.jpg',
+                memberSince: customerData.createdAt || customerData.memberSince || new Date().toISOString()
+              }));
+              
+              // Update localStorage with fresh data
+              localStorage.setItem('userInfo', JSON.stringify({
+                ...customerData,
+                customerId: customerId
+              }));
+              
+            } catch (error) {
+              console.error('Failed to fetch customer data:', error);
+              setError('Không thể tải thông tin người dùng từ server');
+              
+              // Fall back to localStorage data if API fails
+              if (savedUserInfo) {
+                const parsed = JSON.parse(savedUserInfo);
+                setUserInfo(prev => ({ ...prev, ...parsed }));
+              }
+            }
+          } else {
+            console.warn('No customer ID found in token');
+            setError('Không tìm thấy ID người dùng');
+            
+            // Fall back to localStorage
+            if (savedUserInfo) {
+              const parsed = JSON.parse(savedUserInfo);
+              setUserInfo(prev => ({ ...prev, ...parsed }));
+            }
+          }
+          
+        } catch (error) {
+          console.error('Error decoding token:', error);
+          setError('Token không hợp lệ');
+          
+          // Fall back to localStorage
+          if (savedUserInfo) {
+            const parsed = JSON.parse(savedUserInfo);
+            setUserInfo(prev => ({ ...prev, ...parsed }));
+          }
+        }
+      } else if (savedUserInfo) {
+        // No token, use localStorage data
         const parsed = JSON.parse(savedUserInfo);
         setUserInfo(prev => ({ ...prev, ...parsed }));
-      } catch (error) {
-        console.error('Error parsing user info:', error);
+      } else {
+        setError('Không tìm thấy thông tin đăng nhập');
       }
-    }
+      
+      setLoading(false);
+    };
+
+    loadUserData();
   }, []);
+
+  const [activeTab, setActiveTab] = useState('1');
+  const [isEditing, setIsEditing] = useState(false);
+  const [form] = Form.useForm();
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -191,6 +271,39 @@ export const UserProfile = () => {
       default: return 'default';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải thông tin người dùng...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button 
+            type="primary" 
+            onClick={() => window.location.reload()}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            Thử lại
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">

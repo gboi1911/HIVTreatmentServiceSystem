@@ -8,11 +8,8 @@ import {
   Divider, 
   Space, 
   Badge,
-  Row,
-  Col,
-  Statistic,
-  Carousel,
-  Tabs
+  Tabs,
+  Tooltip
 } from 'antd';
 import {
   LeftOutlined,
@@ -28,10 +25,13 @@ import {
   SmileOutlined,
   UserOutlined,
   EyeOutlined,
-  StarFilled
+  StarFilled,
+  FireOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 
 const newsData = [
@@ -130,7 +130,7 @@ export default function Guides() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(3);
     const [activeTab, setActiveTab] = useState('1');
-    const carouselRef = React.useRef();
+    const [hoveredCard, setHoveredCard] = useState(null);
 
     useEffect(() => {
         const updateItemsPerPage = () => {
@@ -150,184 +150,226 @@ export default function Guides() {
             key: '1',
             name: 'Bảng giá', 
             icon: <SafetyCertificateOutlined />, 
-            description: 'Chi phí dịch vụ minh bạch và cạnh tranh'
+            description: 'Chi phí dịch vụ minh bạch và cạnh tranh',
+            color: 'bg-blue-50 text-blue-600 border-blue-200'
         },
         { 
             key: '2',
             name: 'Khám thai', 
             icon: <SmileOutlined />, 
-            description: 'Chăm sóc thai kỳ chuyên nghiệp với công nghệ hiện đại'
+            description: 'Chăm sóc thai kỳ chuyên nghiệp với công nghệ hiện đại',
+            color: 'bg-pink-50 text-pink-600 border-pink-200'
         },
         { 
             key: '3',
             name: 'Dịch vụ sanh/mổ', 
             icon: <HeartOutlined />, 
-            description: 'Dịch vụ sinh nở an toàn với tiêu chuẩn quốc tế'
+            description: 'Dịch vụ sinh nở an toàn với tiêu chuẩn quốc tế',
+            color: 'bg-red-50 text-red-600 border-red-200'
         },
         { 
             key: '4',
             name: 'Khám Phụ Khoa', 
             icon: <MedicineBoxOutlined />, 
-            description: 'Chuyên khoa phụ nữ với đội ngũ bác sĩ giàu kinh nghiệm'
+            description: 'Chuyên khoa phụ nữ với đội ngũ bác sĩ giàu kinh nghiệm',
+            color: 'bg-purple-50 text-purple-600 border-purple-200'
         },
         { 
             key: '5',
             name: 'Khám Hiếm muộn', 
             icon: <HeartOutlined />, 
-            description: 'Hỗ trợ sinh sản và điều trị hiếm muộn hiệu quả'
+            description: 'Hỗ trợ sinh sản và điều trị hiếm muộn hiệu quả',
+            color: 'bg-green-50 text-green-600 border-green-200'
         },
         { 
             key: '6',
             name: 'Khám Nhi', 
             icon: <UserOutlined />, 
-            description: 'Chăm sóc sức khỏe toàn diện cho trẻ em'
+            description: 'Chăm sóc sức khỏe toàn diện cho trẻ em',
+            color: 'bg-orange-50 text-orange-600 border-orange-200'
         }
     ];
 
     const handleNext = () => {
-        carouselRef.current?.next();
+        setCurrentIndex((prev) => 
+            prev >= newsData.length - itemsPerPage ? 0 : prev + 1
+        );
     };
 
     const handlePrev = () => {
-        carouselRef.current?.prev();
+        setCurrentIndex((prev) => 
+            prev <= 0 ? newsData.length - itemsPerPage : prev - 1
+        );
     };
 
-    const renderNewsCard = (item) => (
-        <div key={item.id} className="px-3">
-            <Badge.Ribbon 
-                text={item.featured ? "Nổi bật" : ""} 
-                color="gold"
-                className={!item.featured ? "hidden" : ""}
-            >
-                <Card
-                    hoverable
-                    className="h-full shadow-md hover:shadow-xl transition-all duration-300 border-0"
-                    cover={
-                        <div className="relative overflow-hidden">
-                            <img
-                                alt={item.title}
-                                src={item.image}
-                                className="h-48 w-full object-cover transition-transform duration-300 hover:scale-105"
-                            />
-                            <div className="absolute top-3 left-3">
-                                <Tag color={getCategoryColor(item.category)} className="font-medium">
-                                    {item.category}
-                                </Tag>
-                            </div>
-                            <div className="absolute bottom-3 right-3 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs">
-                                <Space size={4}>
-                                    <EyeOutlined />
-                                    {item.views}
-                                </Space>
-                            </div>
-                        </div>
-                    }
-                    bodyStyle={{ padding: '20px' }}
-                >
-                    <div className="mb-4">
-                        <Space className="text-gray-500 text-sm mb-3" split={<Divider type="vertical" />}>
-                            <Space size={4}>
-                                <CalendarOutlined />
-                                {formatDate(item.date)}
-                            </Space>
-                            <Space size={4}>
-                                <TeamOutlined />
-                                {item.participants}
-                            </Space>
-                            <Space size={4}>
-                                <ClockCircleOutlined />
-                                {item.readTime}
-                            </Space>
-                        </Space>
-                        
-                        <Title level={4} className="!mb-3 !text-gray-800 leading-tight" ellipsis={{ rows: 2 }}>
-                            {item.title}
-                        </Title>
-                        
-                        <div className="flex items-center justify-between">
-                            <Space size={4}>
-                                <StarFilled className="text-yellow-500" />
-                                <Text strong className="text-gray-700">{item.rating}</Text>
-                            </Space>
-                            
-                            <Button 
-                                type="link" 
-                                className="!p-0 !text-blue-600 hover:!text-blue-700 font-medium"
-                                icon={<ArrowRightOutlined />}
-                            >
-                                Xem chi tiết
-                            </Button>
+    const getCurrentNews = () => {
+        return newsData.slice(currentIndex, currentIndex + itemsPerPage);
+    };
+
+    const renderNewsCard = (item, index) => (
+        <motion.div 
+            key={item.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="group"
+            onMouseEnter={() => setHoveredCard(item.id)}
+            onMouseLeave={() => setHoveredCard(null)}
+        >
+            <div className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-gray-100">
+                {/* Featured Badge */}
+                {item.featured && (
+                    <div className="absolute top-4 left-4 z-10">
+                        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg">
+                            <FireOutlined className="text-xs" />
+                            Nổi bật
                         </div>
                     </div>
-                </Card>
-            </Badge.Ribbon>
-        </div>
+                )}
+
+                {/* Image Section */}
+                <div className="relative h-52 overflow-hidden">
+                    <img
+                        alt={item.title}
+                        src={item.image}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    {/* Category Tag */}
+                    <div className="absolute top-4 right-4">
+                        <Tag 
+                            color={getCategoryColor(item.category)} 
+                            className="border-0 shadow-md font-medium"
+                        >
+                            {item.category}
+                        </Tag>
+                    </div>
+
+                    {/* Views Counter */}
+                    <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm text-gray-700 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                        <EyeOutlined />
+                        {item.views.toLocaleString()}
+                    </div>
+                </div>
+
+                {/* Content Section */}
+                <div className="p-6">
+                    {/* Meta Information */}
+                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                        <div className="flex items-center gap-1">
+                            <CalendarOutlined className="text-xs" />
+                            {formatDate(item.date)}
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <ClockCircleOutlined className="text-xs" />
+                            {item.readTime}
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <TeamOutlined className="text-xs" />
+                            {item.participants}
+                        </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors duration-300">
+                        {item.title}
+                    </h3>
+
+                    {/* Bottom Section */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2">
+                            <div className="flex text-yellow-400">
+                                <StarFilled />
+                            </div>
+                            <span className="text-sm font-semibold text-gray-700">{item.rating}</span>
+                        </div>
+                        
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg"
+                        >
+                            Xem chi tiết
+                            <ArrowRightOutlined className="text-xs" />
+                        </motion.button>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
     );
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Professional Header */}
-            <div className="bg-white shadow-sm border-b border-gray-200">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+            {/* Enhanced Header */}
+            <div className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between py-6">
-                        <div className="flex items-center space-x-4">
-                            <Avatar 
-                                size={48} 
-                                className="bg-blue-600 flex items-center justify-center"
-                                icon={<MedicineBoxOutlined className="text-xl" />}
-                            />
+                        <motion.div 
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="flex items-center space-x-4"
+                        >
+                            <div className="relative">
+                                <Avatar 
+                                    size={56} 
+                                    className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg"
+                                    icon={<MedicineBoxOutlined className="text-2xl" />}
+                                />
+                                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                            </div>
                             <div>
-                                <Title level={3} className="!mb-0 !text-gray-900">
+                                <Title level={2} className="!mb-1 !text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                                     Bệnh viện Từ Dũ
                                 </Title>
-                                <Text className="text-gray-600">
-                                    Chăm sóc sức khỏe chuyên nghiệp
+                                <Text className="text-gray-600 font-medium">
+                                    Chăm sóc sức khỏe chuyên nghiệp • Tin cậy hàng đầu
                                 </Text>
                             </div>
-                        </div>
+                        </motion.div>
                         
-                        <div className="hidden md:flex items-center space-x-8">
-                            <Space size={16} className="text-sm">
-                                <Space size={4} className="text-green-600">
-                                    <SafetyCertificateOutlined />
-                                    <Text>Chứng nhận ISO 9001</Text>
-                                </Space>
-                                <Space size={4} className="text-blue-600">
-                                    <TrophyOutlined />
-                                    <Text>Tiêu chuẩn Châu Âu</Text>
-                                </Space>
-                            </Space>
+                        <div className="hidden md:flex items-center space-x-6">
+                            <motion.div 
+                                whileHover={{ scale: 1.05 }}
+                                className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-lg border border-green-200"
+                            >
+                                <CheckCircleOutlined />
+                                <span className="font-medium">Chứng nhận ISO 9001</span>
+                            </motion.div>
+                            <motion.div 
+                                whileHover={{ scale: 1.05 }}
+                                className="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg border border-blue-200"
+                            >
+                                <TrophyOutlined />
+                                <span className="font-medium">Tiêu chuẩn Châu Âu</span>
+                            </motion.div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="bg-white border-b border-gray-200">
+            {/* Enhanced Navigation */}
+            <div className="bg-white border-b border-gray-200 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <Tabs 
-                        activeKey={activeTab} 
-                        onChange={setActiveTab}
-                        size="large"
-                        className="professional-tabs"
-                    >
-                        {sections.map((section) => (
-                            <TabPane
-                                tab={
-                                    <div className="flex items-center space-x-2 py-2">
-                                        <span className="text-lg">{section.icon}</span>
-                                        <div className="text-left">
-                                            <div className="font-medium">{section.name}</div>
-                                            <div className="text-xs text-gray-500 hidden lg:block">
-                                                {section.description}
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
+                    <div className="flex space-x-1 overflow-x-auto py-4 scrollbar-hide">
+                        {sections.map((section, index) => (
+                            <motion.button
                                 key={section.key}
-                            />
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                    duration: 0.3,
+                                    delay: index * 0.1
+                                }}
+                                onClick={() => setActiveTab(section.key)}
+                                className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300
+                                ${activeTab === section.key ? section.color : 'text-gray-700 hover:bg-gray-100'}`}
+                            >
+                                <span className="text-xl">{section.icon}</span>
+                                <span className="hidden sm:inline">{section.name}</span>
+                            </motion.button>
                         ))}
-                    </Tabs>
+                    </div>
                 </div>
             </div>
 
@@ -340,12 +382,10 @@ export default function Guides() {
                             {sections.find(s => s.key === activeTab)?.icon}
                         </div>
                         <div className="text-left">
-                            <Title level={2} className="!mb-1 !text-gray-900">
-                                {sections.find(s => s.key === activeTab)?.name}
-                            </Title>
-                            <Text className="text-gray-600">
+                            <div className="font-medium">{sections.find(s => s.key === activeTab)?.name}</div>
+                            <div className="text-xs text-gray-500 hidden lg:block">
                                 {sections.find(s => s.key === activeTab)?.description}
-                            </Text>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -372,29 +412,9 @@ export default function Guides() {
                         </Space>
                     </div>
 
-                    <Carousel
-                        ref={carouselRef}
-                        dots={true}
-                        slidesToShow={itemsPerPage}
-                        slidesToScroll={1}
-                        responsive={[
-                            {
-                                breakpoint: 1024,
-                                settings: {
-                                    slidesToShow: 2,
-                                }
-                            },
-                            {
-                                breakpoint: 640,
-                                settings: {
-                                    slidesToShow: 1,
-                                }
-                            }
-                        ]}
-                        className="professional-carousel"
-                    >
-                        {newsData.map(renderNewsCard)}
-                    </Carousel>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {getCurrentNews().map(renderNewsCard)}
+                    </div>
                 </div>
 
                 {/* Additional Info */}

@@ -184,7 +184,7 @@ export default function Home() {
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
-                onClick={() => window.location.href = '/ask'}
+                onClick={() => window.location.href = '/consultation-booking'}
                 className="group border-2 border-white px-8 py-4 rounded-full font-semibold hover:bg-white text-indigo-700 transition-all duration-300 flex items-center gap-2"
               >
                 <MessageCircle className="w-5 h-5" />

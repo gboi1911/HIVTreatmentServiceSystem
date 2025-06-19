@@ -41,3 +41,27 @@ export async function register({ fullName, email, phone, password, role, gender,
     throw error;
   }
 }
+
+export async function getCustomer(customerId) {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/customer/${customerId}`, {
+      method: 'GET',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Add authorization header if needed
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Get customer error:', response.status, errorData);
+      throw new Error(`Get customer failed: ${response.status} - ${errorData}`);
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error('Get customer request failed:', error);
+    throw error;
+  }
+}
