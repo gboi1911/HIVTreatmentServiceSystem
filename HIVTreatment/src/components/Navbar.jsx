@@ -18,12 +18,12 @@ import { useAuthStatus } from "../hooks/useAuthStatus";
 const { Header } = Layout;
 
 const quickLinks = [
-  {path: "/news", label: "Tin tức & Sự kiện"},
+  {path: "/consultation-booking", label: "Đặt lịch tư vấn"},
+  {path: "/guides", label: "Tin tức & Sự kiện"},
   {path: "/success", label: "Thành công & Kỹ thuật mới"},
   {path: "/healthcare", label: "Nhân viên y tế"},
   {path: "/tender", label: "Đấu thầu"},
   {path: "/science", label: "Khoa học"},
-  {path: "/consulting", label: "Tư vấn"},
 ];
 
 const menuItems = [

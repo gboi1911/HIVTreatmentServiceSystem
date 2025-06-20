@@ -302,7 +302,7 @@ export default function Guides() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
             {/* Enhanced Header */}
-            <div className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+            <div className="shadow-lg border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between py-6">
                         <motion.div 
@@ -319,7 +319,7 @@ export default function Guides() {
                                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                             </div>
                             <div>
-                                <Title level={2} className="!mb-1 !text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                <Title level={2} className="!mb-1  bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                                     Bệnh viện Từ Dũ
                                 </Title>
                                 <Text className="text-gray-600 font-medium">
