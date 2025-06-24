@@ -42,14 +42,37 @@ import {
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
-import { getCustomer } from '../../api/auth';
+import { useAuthStatus } from '../../hooks/useAuthStatus';
+import { getCustomer, updateCustomer } from '../../api/auth';
+import { uploadAvatar } from '../../api/upload';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
 const { TextArea } = Input;
+const getStatusColor = (status) => {
+    switch (status) {
+      case 'Hoàn thành': return 'green';
+      case 'Sắp tới': return 'blue';
+      case 'Đã hủy': return 'red';
+      default: return 'default';
+    }
+  };
 
+  const getTestStatusColor = (status) => {
+    switch (status) {
+      case 'Bình thường': return 'green';
+      case 'Tốt': return 'blue';
+      case 'Cần theo dõi': return 'orange';
+      case 'Bất thường': return 'red';
+      default: return 'default';
+    }
+  };
 export const UserProfile = () => {
+  // ✅ Use auth hook to get current user data
+  const { userInfo: authUserInfo, isLoggedIn, loading: authLoading } = useAuthStatus();
+  
   const [userInfo, setUserInfo] = useState({
+    id: null,
     fullName: '',
     email: '',
     phone: '',
@@ -65,6 +88,9 @@ export const UserProfile = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('1');
+  const [isEditing, setIsEditing] = useState(false);
+  const [form] = Form.useForm();
 
   const [healthStats] = useState({
     totalAppointments: 12,
@@ -122,97 +148,84 @@ export const UserProfile = () => {
     }
   ]);
 
+  
+  // ✅ Enhanced useEffect to handle user data loading
   useEffect(() => {
     const loadUserData = async () => {
+      if (authLoading) {
+        return; // Wait for auth hook to finish loading
+      }
+
+      if (!isLoggedIn) {
+        setError('Vui lòng đăng nhập để xem thông tin cá nhân');
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
-      
-      const token = localStorage.getItem('token');
-      const savedUserInfo = localStorage.getItem('userInfo');
-      
-      if (token) {
-        try {
-          // Decode JWT token to get customerId
-          const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-          console.log('Token payload:', tokenPayload); // Debug log
-          
-          // Try different possible field names for customerId
-          const customerId = tokenPayload.customerId || 
-                           tokenPayload.id || 
-                           tokenPayload.sub || 
-                           tokenPayload.userId ||
-                           tokenPayload.customer_id;
-          
-          console.log('Customer ID:', customerId); // Debug log
-          
-          if (customerId) {
-            try {
-              const customerData = await getCustomer(customerId);
-              console.log('Customer data received:', customerData); // Debug log
-              
-              setUserInfo(prev => ({ 
-                ...prev, 
-                ...customerData,
-                customerId: customerId,
-                // Map API fields to component fields if needed
-                avatar: customerData.avatar || 'https://randomuser.me/api/portraits/men/32.jpg',
-                memberSince: customerData.createdAt || customerData.memberSince || new Date().toISOString()
-              }));
-              
-              // Update localStorage with fresh data
-              localStorage.setItem('userInfo', JSON.stringify({
-                ...customerData,
-                customerId: customerId
-              }));
-              
-            } catch (error) {
-              console.error('Failed to fetch customer data:', error);
-              setError('Không thể tải thông tin người dùng từ server');
-              
-              // Fall back to localStorage data if API fails
-              if (savedUserInfo) {
-                const parsed = JSON.parse(savedUserInfo);
-                setUserInfo(prev => ({ ...prev, ...parsed }));
-              }
-            }
-          } else {
-            console.warn('No customer ID found in token');
-            setError('Không tìm thấy ID người dùng');
-            
-            // Fall back to localStorage
-            if (savedUserInfo) {
-              const parsed = JSON.parse(savedUserInfo);
-              setUserInfo(prev => ({ ...prev, ...parsed }));
-            }
-          }
-          
-        } catch (error) {
-          console.error('Error decoding token:', error);
-          setError('Token không hợp lệ');
-          
-          // Fall back to localStorage
-          if (savedUserInfo) {
-            const parsed = JSON.parse(savedUserInfo);
-            setUserInfo(prev => ({ ...prev, ...parsed }));
+
+      try {
+        console.log('🔍 Auth user info:', authUserInfo);
+
+        // Start with auth data as base
+        const baseUserInfo = {
+          id: authUserInfo?.id,
+          fullName: authUserInfo?.fullName || authUserInfo?.username || 'Chưa cập nhật',
+          email: authUserInfo?.email || 'Chưa cập nhật',
+          phone: authUserInfo?.phone || 'Chưa cập nhật',
+          dateOfBirth: authUserInfo?.dateOfBirth || '',
+          gender: authUserInfo?.gender || 'Chưa cập nhật',
+          address: authUserInfo?.address || 'Chưa cập nhật',
+          avatar: authUserInfo?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(authUserInfo?.fullName || authUserInfo?.username || 'User')}&background=3b82f6&color=fff&size=200`,
+          memberSince: authUserInfo?.memberSince || authUserInfo?.createdAt || new Date().toISOString(),
+          emergencyContact: authUserInfo?.emergencyContact || 'Chưa cập nhật',
+          bloodType: authUserInfo?.bloodType || 'Chưa cập nhật',
+          customerId: authUserInfo?.id || authUserInfo?.customerId
+        };
+
+        setUserInfo(baseUserInfo);
+
+        // Try to fetch additional data from API if we have an ID
+        if (authUserInfo?.id) {
+          try {
+            console.log('🔄 Fetching additional user data from API...');
+            const apiUserData = await getCustomer(authUserInfo.id);
+            console.log('✅ API user data:', apiUserData);
+
+            // Merge API data with base data
+            const mergedUserInfo = {
+              ...baseUserInfo,
+              ...apiUserData,
+              // Ensure these critical fields don't get overwritten with empty values
+              fullName: apiUserData.fullName || baseUserInfo.fullName,
+              email: apiUserData.email || baseUserInfo.email,
+              phone: apiUserData.phone || baseUserInfo.phone,
+              avatar: apiUserData.avatar || baseUserInfo.avatar
+            };
+
+            setUserInfo(mergedUserInfo);
+
+            // Update localStorage with fresh data
+            const updatedAuthInfo = { ...authUserInfo, ...apiUserData };
+            localStorage.setItem('userInfo', JSON.stringify(updatedAuthInfo));
+
+          } catch (apiError) {
+            console.warn('⚠️ Failed to fetch additional user data:', apiError);
+            // Continue with base data from auth
           }
         }
-      } else if (savedUserInfo) {
-        // No token, use localStorage data
-        const parsed = JSON.parse(savedUserInfo);
-        setUserInfo(prev => ({ ...prev, ...parsed }));
-      } else {
-        setError('Không tìm thấy thông tin đăng nhập');
+
+      } catch (error) {
+        console.error('❌ Error loading user data:', error);
+        setError('Không thể tải thông tin người dùng');
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     loadUserData();
-  }, []);
-
-  const [activeTab, setActiveTab] = useState('1');
-  const [isEditing, setIsEditing] = useState(false);
-  const [form] = Form.useForm();
+  }, [authUserInfo, isLoggedIn, authLoading]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -230,11 +243,27 @@ export const UserProfile = () => {
         ...values,
         dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : userInfo.dateOfBirth
       };
+
+      // Try to update via API
+      if (userInfo.id && updateCustomer) {
+        try {
+          await updateCustomer(userInfo.id, updatedInfo);
+          message.success('Cập nhật thông tin thành công!');
+        } catch (apiError) {
+          console.warn('API update failed, updating localStorage only:', apiError);
+          message.warning('Cập nhật cục bộ thành công, sẽ đồng bộ với server sau!');
+        }
+      }
+
+      // Update local state and localStorage
       setUserInfo(updatedInfo);
-      localStorage.setItem('userInfo', JSON.stringify(updatedInfo));
+      const currentAuthInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      const mergedAuthInfo = { ...currentAuthInfo, ...updatedInfo };
+      localStorage.setItem('userInfo', JSON.stringify(mergedAuthInfo));
+
       setIsEditing(false);
-      message.success('Cập nhật thông tin thành công!');
     } catch (error) {
+      console.error('Save error:', error);
       message.error('Vui lòng kiểm tra lại thông tin!');
     }
   };
@@ -243,12 +272,38 @@ export const UserProfile = () => {
     setIsEditing(false);
     form.resetFields();
   };
-
-  const handleAvatarUpload = (info) => {
+  const handleAvatarUpload = async (info) => {
+    if (info.file.status === 'uploading') {
+      message.loading('Đang tải ảnh lên...', 0);
+      return;
+    }
+    
     if (info.file.status === 'done') {
-      message.success('Cập nhật ảnh đại diện thành công!');
-      // Handle avatar upload logic here
+      message.destroy();
+      
+      try {
+        // Use the new upload API
+        const uploadResult = await uploadAvatar(info.file.originFileObj);
+        const newAvatarUrl = uploadResult.url || uploadResult.data?.url;
+        
+        if (newAvatarUrl) {
+          setUserInfo(prev => ({ ...prev, avatar: newAvatarUrl }));
+          
+          // Update localStorage
+          const currentAuthInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+          const updatedAuthInfo = { ...currentAuthInfo, avatar: newAvatarUrl };
+          localStorage.setItem('userInfo', JSON.stringify(updatedAuthInfo));
+          
+          message.success('Cập nhật ảnh đại diện thành công!');
+        } else {
+          throw new Error('Không nhận được URL ảnh từ server');
+        }
+      } catch (error) {
+        console.error('Avatar upload error:', error);
+        message.error('Tải ảnh thất bại!');
+      }
     } else if (info.file.status === 'error') {
+      message.destroy();
       message.error('Tải ảnh thất bại!');
     }
   };
@@ -262,17 +317,8 @@ export const UserProfile = () => {
     }
   };
 
-  const getTestStatusColor = (status) => {
-    switch (status) {
-      case 'Bình thường': return 'green';
-      case 'Tốt': return 'blue';
-      case 'Cần theo dõi': return 'orange';
-      case 'Bất thường': return 'red';
-      default: return 'default';
-    }
-  };
-
-  if (loading) {
+  // ✅ Enhanced loading state
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 flex items-center justify-center">
         <div className="text-center">
@@ -283,7 +329,8 @@ export const UserProfile = () => {
     );
   }
 
-  if (error) {
+  // ✅ Enhanced error state
+  if (error || !isLoggedIn) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 flex items-center justify-center">
         <div className="text-center">
@@ -292,14 +339,19 @@ export const UserProfile = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button 
-            type="primary" 
-            onClick={() => window.location.reload()}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            Thử lại
-          </Button>
+          <p className="text-red-600 mb-4">{error || 'Vui lòng đăng nhập để xem thông tin cá nhân'}</p>
+          <Space>
+            <Button 
+              type="primary" 
+              onClick={() => window.location.href = '/login'}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Đăng nhập
+            </Button>
+            <Button onClick={() => window.location.reload()}>
+              Thử lại
+            </Button>
+          </Space>
         </div>
       </div>
     );
@@ -308,7 +360,7 @@ export const UserProfile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
+        {/* ✅ Enhanced Header Section with Real User Data */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -323,10 +375,34 @@ export const UserProfile = () => {
                   src={userInfo.avatar}
                   icon={<UserOutlined />}
                   className="border-4 border-white shadow-lg"
-                />
-                <Upload
+                />                <Upload
+                  name="avatar"
                   showUploadList={false}
-                  onChange={handleAvatarUpload}
+                  beforeUpload={(file) => {
+                    // Validate file type
+                    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+                    if (!isJpgOrPng) {
+                      message.error('Chỉ hỗ trợ file JPG/PNG!');
+                      return false;
+                    }
+                    // Validate file size (max 5MB)
+                    const isLt5M = file.size / 1024 / 1024 < 5;
+                    if (!isLt5M) {
+                      message.error('Kích thước file phải nhỏ hơn 5MB!');
+                      return false;
+                    }
+                    return true;
+                  }}
+                  customRequest={async ({ file, onSuccess, onError }) => {
+                    try {
+                      const result = await uploadAvatar(file);
+                      onSuccess(result);
+                      handleAvatarUpload({ file: { status: 'done', originFileObj: file } });
+                    } catch (error) {
+                      onError(error);
+                      handleAvatarUpload({ file: { status: 'error' } });
+                    }
+                  }}
                   accept="image/*"
                 >
                   <Button
@@ -340,26 +416,30 @@ export const UserProfile = () => {
               </div>
               
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold text-black mb-2">{userInfo.fullName}</h1>
-                <p className="text-blue-500 text-lg mb-4">Tạo tài khoản từ {dayjs(userInfo.memberSince).format('DD/MM/YYYY')}</p>
+                <h1 className="text-3xl font-bold text-black mb-2">
+                  {userInfo.fullName || 'Người dùng'}
+                </h1>
+                <p className="text-blue-600 text-lg mb-4">
+                  Thành viên từ {dayjs(userInfo.memberSince).format('DD/MM/YYYY')}
+                </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
                     <div className="flex items-center space-x-2">
-                      <MailOutlined className="text-black" />
+                      <MailOutlined className="text-white" />
                       <span className="text-black text-sm">{userInfo.email}</span>
                     </div>
                   </div>
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
                     <div className="flex items-center space-x-2">
-                      <PhoneOutlined className="text-black" />
+                      <PhoneOutlined className="text-white" />
                       <span className="text-black text-sm">{userInfo.phone}</span>
                     </div>
                   </div>
                   <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
                     <div className="flex items-center space-x-2">
-                      <EnvironmentOutlined className="text-black" />
-                      <span className="text-black text-sm">TP.HCM</span>
+                      <EnvironmentOutlined className="text-white" />
+                      <span className="text-black text-sm">{userInfo.address || 'Chưa cập nhật'}</span>
                     </div>
                   </div>
                 </div>
@@ -426,7 +506,7 @@ export const UserProfile = () => {
           </Row>
         </motion.div>
 
-        {/* Main Content Tabs */}
+        {/* Main Content Tabs with Real Data */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -439,7 +519,7 @@ export const UserProfile = () => {
               size="large"
               className="profile-tabs"
             >
-              {/* Personal Information Tab */}
+              {/* ✅ Updated Personal Information Tab with Real Data */}
               <TabPane
                 tab={
                   <span>
@@ -523,7 +603,8 @@ export const UserProfile = () => {
                         </Col>
                       </Row>
                     ) : (
-                      <Form form={form} layout="vertical">
+                      // ✅ Edit form with current user data
+                      <Form form={form} layout="vertical" initialValues={userInfo}>
                         <Row gutter={[24, 24]}>
                           <Col xs={24} md={12}>
                             <Form.Item
@@ -556,20 +637,20 @@ export const UserProfile = () => {
                           </Col>
                           <Col xs={24} md={12}>
                             <Form.Item name="gender" label="Giới tính">
-                              <Select size="large">
+                              <Select size="large" placeholder="Chọn giới tính">
                                 <Option value="Nam">Nam</Option>
                                 <Option value="Nữ">Nữ</Option>
                                 <Option value="Khác">Khác</Option>
                               </Select>
                             </Form.Item>
                             <Form.Item name="address" label="Địa chỉ">
-                              <TextArea rows={3} />
+                              <TextArea rows={3} placeholder="Nhập địa chỉ của bạn" />
                             </Form.Item>
                             <Form.Item name="emergencyContact" label="Liên hệ khẩn cấp">
-                              <Input size="large" />
+                              <Input size="large" placeholder="Số điện thoại người thân" />
                             </Form.Item>
                             <Form.Item name="bloodType" label="Nhóm máu">
-                              <Select size="large">
+                              <Select size="large" placeholder="Chọn nhóm máu">
                                 <Option value="A+">A+</Option>
                                 <Option value="A-">A-</Option>
                                 <Option value="B+">B+</Option>

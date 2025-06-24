@@ -1,28 +1,30 @@
 import React from 'react'
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-export const Charts = () => {
+
+export const Charts = ({ data }) => {
     
-      const riskLevelData = [
-        { name: 'Thấp', value: 850, color: '#10B981' },
-        { name: 'Trung bình', value: 381, color: '#F59E0B' },
-        { name: 'Cao', value: 17, color: '#EF4444' }
-      ];
-    
-      const participationData = [
-        { ageGroup: '13-17', participants: 245 },
-        { ageGroup: '18-25', participants: 432 },
-        { ageGroup: '26-35', participants: 356 },
-        { ageGroup: '36-45', participants: 215 }
-      ];
-    
-      const monthlyTrends = [
-        { month: 'T1', users: 65, sessions: 24 },
-        { month: 'T2', users: 78, sessions: 31 },
-        { month: 'T3', users: 90, sessions: 28 },
-        { month: 'T4', users: 108, sessions: 35 },
-        { month: 'T5', users: 125, sessions: 42 },
-        { month: 'T6', users: 142, sessions: 38 }
-      ];
+  // Use API data or fallback to default data
+  const riskLevelData = data?.riskLevels || [
+    { name: 'Thấp', value: 850, color: '#10B981' },
+    { name: 'Trung bình', value: 381, color: '#F59E0B' },
+    { name: 'Cao', value: 17, color: '#EF4444' }
+  ];
+
+  const participationData = data?.participationData || [
+    { ageGroup: '13-17', participants: 245 },
+    { ageGroup: '18-25', participants: 432 },
+    { ageGroup: '26-35', participants: 356 },
+    { ageGroup: '36-45', participants: 215 }
+  ];
+
+  const monthlyTrends = data?.monthlyTrends || [
+    { month: 'T1', users: 65, sessions: 24 },
+    { month: 'T2', users: 78, sessions: 31 },
+    { month: 'T3', users: 90, sessions: 28 },
+    { month: 'T4', users: 108, sessions: 35 },
+    { month: 'T5', users: 125, sessions: 42 },
+    { month: 'T6', users: 142, sessions: 38 }
+  ];
     
     return (
         <div>

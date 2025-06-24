@@ -48,6 +48,7 @@ export default function Navbar() {
     if (isLoggedIn) {
       // Try to get user info from localStorage
       const savedUserInfo = localStorage.getItem('userInfo');
+      console.log("Saved User Info:", savedUserInfo);
       if (savedUserInfo) {
         setUserInfo(JSON.parse(savedUserInfo));
       } else {
