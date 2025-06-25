@@ -21,6 +21,11 @@ const RegisterPage = React.lazy(() => import('./pages/RegisterPage'));
 const ConsultationBooking = React.lazy(() => import('./pages/ConsultationBooking'));
 const UserProfile = React.lazy(() => import('./pages/user/UserProfile'));
 
+// Assessment pages
+const RiskAssessment = React.lazy(() => import('./pages/assessment/RiskAssessment'));
+const AssessmentResults = React.lazy(() => import('./pages/assessment/AssessmentResults'));
+const AssessmentHistory = React.lazy(() => import('./pages/assessment/AssessmentHistory'));
+
 // Admin only pages
 const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
 const UserManagement = React.lazy(() => import('./pages/admin/UserManagement'));
@@ -54,8 +59,44 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            
+            {/* Assessment routes */}
+            <Route 
+              path="assessment/risk-assessment" 
+              element={
+                <ProtectedRoute>
+                  <RiskAssessment />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="assessment/results/:assessmentId" 
+              element={
+                <ProtectedRoute>
+                  <AssessmentResults />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* User routes */}
+            <Route 
+              path="user/assessment-history" 
+              element={
+                <UserRoute>
+                  <AssessmentHistory />
+                </UserRoute>
+              } 
+            />
             <Route 
               path="profile" 
+              element={
+                <UserRoute>
+                  <UserProfile />
+                </UserRoute>
+              } 
+            />
+            <Route 
+              path="user/profile" 
               element={
                 <UserRoute>
                   <UserProfile />

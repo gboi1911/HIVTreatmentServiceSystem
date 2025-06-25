@@ -43,7 +43,7 @@ import {
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
 import { useAuthStatus } from '../../hooks/useAuthStatus';
-import { getCustomer, updateCustomer } from '../../api/auth';
+import { getCustomerById, updateCustomer } from '../../api/customer';
 import { uploadAvatar } from '../../api/upload';
 
 const { TabPane } = Tabs;
@@ -190,7 +190,7 @@ export const UserProfile = () => {
         if (authUserInfo?.id) {
           try {
             console.log('🔄 Fetching additional user data from API...');
-            const apiUserData = await getCustomer(authUserInfo.id);
+            const apiUserData = await getCustomerById(authUserInfo.id);
             console.log('✅ API user data:', apiUserData);
 
             // Merge API data with base data

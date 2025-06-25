@@ -33,6 +33,29 @@ export const getAllCustomers = async () => {
   }
 };
 
+// Update customer
+export const updateCustomer = async (customerId, userData) => {
+  try {
+    const response = await fetch(`${API_BASE}/customers/${customerId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Update failed: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Update customer error:', error);
+    throw error;
+  }
+};
+
 // Get customer by ID
 export const getCustomerById = async (customerId) => {
   try {

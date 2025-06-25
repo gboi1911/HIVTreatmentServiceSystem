@@ -82,11 +82,68 @@ export const AdminRoute = ({ children }) => (
 );
 
 // User Only Route
-export const UserRoute = ({ children }) => (
-  <ProtectedRoute requiredRoles={['user', 'customer', 'USER', 'CUSTOMER']}>
-    {children}
-  </ProtectedRoute>
-);
+export const UserRoute = ({ children }) => {
+  const { isLoggedIn, userRole, loading, userInfo } = useAuthStatus();
+  const location = useLocation();
+
+  // Enhanced debugging
+  const token = localStorage.getItem('token');
+  const savedUserInfo = localStorage.getItem('userInfo');
+  
+  console.log('🔍 UserRoute Debug - DETAILED:', {
+    pathname: location.pathname,
+    isLoggedIn,
+    userRole,
+    userInfo,
+    loading,
+    hasToken: !!token,
+    hasSavedUserInfo: !!savedUserInfo,
+    tokenLength: token ? token.length : 0,
+    savedUserInfoContent: savedUserInfo ? savedUserInfo.substring(0, 100) + '...' : 'null'
+  });
+
+  // Show loading while checking auth status
+  if (loading) {
+    console.log('⏳ UserRoute: Still loading authentication status');
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang kiểm tra quyền truy cập...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not logged in, redirect to login
+  if (!isLoggedIn) {
+    console.log('❌ UserRoute: Not logged in, redirecting to login');
+    console.log('❌ UserRoute: Auth check details:', {
+      token: !!token,
+      tokenLength: token ? token.length : 0,
+      savedUserInfo: !!savedUserInfo,
+      isLoggedIn,
+      userRole,
+      userInfo
+    });
+    
+    return (
+      <Navigate 
+        to="/login" 
+        state={{ 
+          from: location.pathname,
+          message: 'Vui lòng đăng nhập để truy cập trang này',
+          type: 'warning'
+        }} 
+        replace 
+      />
+    );
+  }
+
+  // For UserRoute, allow access for any logged-in user
+  console.log('✅ UserRoute: Allowing access for user role:', userRole);
+  return children;
+};
 
 // Staff Route
 export const StaffRoute = ({ children }) => (

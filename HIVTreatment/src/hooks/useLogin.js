@@ -48,14 +48,43 @@ export function useLogin() {
           throw new Error("No token received from server");
         }
 
-        const userInfo = {
-          id: data.id,
-          email: data.email,
-          phone: data.phone,
-          fullName: data.fullName,
-          username: data.fullName || data.email || formData.username,
-          role: data.role || 'user' // Default role if not provided
-        };
+        // Construct user info from login response and token
+        let userInfo;
+        
+        // Try to get user info from login response first
+        if (data.id || data.email || data.fullName) {
+          userInfo = {
+            id: data.id,
+            email: data.email,
+            phone: data.phone,
+            fullName: data.fullName,
+            username: data.fullName || data.email || formData.username,
+            role: data.role || 'CUSTOMER'
+          };
+        } else {
+          // If no user data in response, try to decode from JWT token
+          try {
+            const payload = JSON.parse(atob(data.token.split('.')[1]));
+            userInfo = {
+              id: payload.sub || payload.userId || Date.now(),
+              email: payload.email || formData.username,
+              phone: payload.phone || formData.username,
+              fullName: payload.fullName || payload.name || payload.username || 'Người dùng',
+              username: payload.username || payload.email || formData.username,
+              role: payload.role || payload.authorities?.[0] || 'CUSTOMER'
+            };
+          } catch (tokenError) {
+            // Final fallback
+            userInfo = {
+              id: Date.now(),
+              email: formData.username,
+              phone: formData.username,
+              fullName: 'Người dùng',
+              username: formData.username,
+              role: 'CUSTOMER'
+            };
+          }
+        }
 
         // Save user info
         localStorage.setItem("userInfo", JSON.stringify(userInfo));

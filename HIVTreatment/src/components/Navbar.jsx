@@ -30,6 +30,7 @@ const menuItems = [
   { path: "/about", label: "Giới thiệu" },
   { path: "/guides", label: "Hướng dẫn & Bảng giá" },
   { path: "/health-and-life", label: "Sức khoẻ & đời sống" },
+  { path: "/assessment/risk-assessment", label: "Đánh giá rủi ro" },
   { path: "/faq", label: "Hỏi & Đáp" },
 ];
 
@@ -91,6 +92,12 @@ export default function Navbar() {
       label: 'Thông tin cá nhân',
       icon: <UserOutlined />,
       onClick: () => navigate('/profile')
+    },
+    {
+      key: 'assessment-history',
+      label: 'Lịch sử đánh giá',
+      icon: <FileTextOutlined />,
+      onClick: () => navigate('/user/assessment-history')
     },
     {
       type: 'divider',
