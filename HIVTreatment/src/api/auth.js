@@ -1,90 +1,59 @@
 const API_BASE = "https://hiv.purepixel.io.vn/api";
 
-export async function login(username, password) {
+// Login user
+export const loginUser = async (credentials) => {
   try {
     const response = await fetch(`${API_BASE}/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: credentials.email || credentials.username,
+        password: credentials.password
+      })
     });
-    
+
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Login error:', response.status, errorData);
-      throw new Error(`Login failed: ${response.status} - ${errorData}`);
+      const errorText = await response.text();
+      throw new Error(`Login failed: ${response.status} - ${errorText}`);
     }
-    
-    return response.json();
+
+    const token = await response.text(); // API returns token as string
+    return { token };
   } catch (error) {
-    console.error('Login request failed:', error);
+    console.error('Login error:', error);
     throw error;
   }
-}
+};
 
-export async function register({ fullName, email, phone, password, role, gender, code }) {
+// Register user
+export const registerUser = async (userData) => {
   try {
     const response = await fetch(`${API_BASE}/register`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName, email, phone, password, role, gender, code }),
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Register error:', response.status, errorData);
-      throw new Error(`Register failed: ${response.status} - ${errorData}`);
-    }
-    
-    return response.json();
-  } catch (error) {
-    console.error('Register request failed:', error);
-    throw error;
-  }
-}
-
-export async function getCustomer(customerId) {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/customer/${customerId}`, {
-      method: 'GET',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // Add authorization header if needed
-      },
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Get customer error:', response.status, errorData);
-      throw new Error(`Get customer failed: ${response.status} - ${errorData}`);
-    }
-    
-    return response.json();
-  } catch (error) {
-    console.error('Get customer request failed:', error);
-    throw error;
-  }
-}
-
-
-export const updateCustomer = async (customerId, userData) => {
-  try {
-    const response = await fetch(`${API_BASE}/customers/${customerId}`, {
-      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
-      body: JSON.stringify(userData)
+      body: JSON.stringify({
+        fullName: userData.fullName,
+        email: userData.email,
+        phone: userData.phone,
+        password: userData.password,
+        role: userData.role || 'CUSTOMER', // CUSTOMER, STAFF, MANAGER, DOCTOR
+        gender: userData.gender
+      })
     });
 
     if (!response.ok) {
-      throw new Error(`Update failed: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`Registration failed: ${response.status} - ${errorText}`);
     }
 
-    return await response.json();
+    const result = await response.text();
+    return { message: result };
   } catch (error) {
-    console.error('Update customer error:', error);
+    console.error('Registration error:', error);
     throw error;
   }
 };
