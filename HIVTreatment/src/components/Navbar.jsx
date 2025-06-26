@@ -22,8 +22,8 @@ const quickLinks = [
   { path: "/success", label: "Thành công & Kỹ thuật mới" },
   { path: "/healthcare", label: "Nhân viên y tế" },
   { path: "/tender", label: "Đấu thầu" },
-  { path: "/science", label: "Khoa học" },
-  {path: "/consultation-booking", label: "Đặt lịch tư vấn"},
+  { path: "/education", label: "Giáo dục" },
+  { path: "/consultation-booking", label: "Đặt lịch tư vấn" },
   { path: "/medical-records", label: "Hồ sơ bệnh án" },
 ];
 
@@ -49,23 +49,24 @@ export default function Navbar() {
   useEffect(() => {
     if (isLoggedIn) {
       // Try to get user info from localStorage
-      const savedUserInfo = localStorage.getItem('userInfo');
+      const savedUserInfo = localStorage.getItem("userInfo");
       console.log("Saved User Info:", savedUserInfo);
       if (savedUserInfo) {
         setUserInfo(JSON.parse(savedUserInfo));
       } else {
         // If no saved user info, try to decode from token (if it's JWT)
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
           try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
+            const payload = JSON.parse(atob(token.split(".")[1]));
             setUserInfo({
-              username: payload.username || payload.email || payload.sub || 'User',
-              email: payload.email
+              username:
+                payload.username || payload.email || payload.sub || "User",
+              email: payload.email,
             });
           } catch (error) {
             // If token is not JWT or can't decode, set default
-            setUserInfo({ username: 'User' });
+            setUserInfo({ username: "User" });
           }
         }
       }
@@ -75,46 +76,46 @@ export default function Navbar() {
   }, [isLoggedIn]);
 
   const handleLogout = () => {
-    
-    localStorage.removeItem('token');
-    localStorage.removeItem('userInfo');
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
     setUserInfo(null);
-    navigate('/login', {
+    navigate("/login", {
       state: {
-        message: 'Đăng xuất thành công!',
-        type: 'success'
-      }});
+        message: "Đăng xuất thành công!",
+        type: "success",
+      },
+    });
   };
 
   // User dropdown menu items
   const userMenuItems = [
     {
-      key: 'profile',
-      label: 'Thông tin cá nhân',
+      key: "profile",
+      label: "Thông tin cá nhân",
       icon: <UserOutlined />,
-      onClick: () => navigate('/profile')
+      onClick: () => navigate("/profile"),
     },
     {
-      key: 'assessment-history',
-      label: 'Lịch sử đánh giá',
+      key: "assessment-history",
+      label: "Lịch sử đánh giá",
       icon: <FileTextOutlined />,
-      onClick: () => navigate('/user/assessment-history')
+      onClick: () => navigate("/user/assessment-history"),
     },
     {
-      key: 'medical-records',
-      label: 'Hồ sơ bệnh án',
+      key: "medical-records",
+      label: "Hồ sơ bệnh án",
       icon: <FileTextOutlined />,
-      onClick: () => navigate('/medical-records')
+      onClick: () => navigate("/medical-records"),
     },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      key: 'logout',
-      label: 'Đăng xuất',
+      key: "logout",
+      label: "Đăng xuất",
       icon: <LogoutOutlined />,
-      onClick: handleLogout
-    }
+      onClick: handleLogout,
+    },
   ];
 
   return (
@@ -150,35 +151,36 @@ export default function Navbar() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <SearchOutlined style={{ fontSize: 16, cursor: "pointer" }} />
-          
+
           {/* Conditional rendering based on login status */}
           {isLoggedIn && userInfo ? (
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <Dropdown
                 menu={{ items: userMenuItems }}
                 placement="bottomRight"
-                trigger={['click']}
+                trigger={["click"]}
               >
-                <div style={{ 
-                  cursor: "pointer", 
-                  display: "flex", 
-                  alignItems: "center", 
-                  gap: 8,
-                  padding: "6px 12px",
-                  borderRadius: "20px",
-                  transition: "all 0.3s ease",
-                  background: "rgba(255,255,255,0.1)"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                }}
+                <div
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    transition: "all 0.3s ease",
+                    background: "rgba(255,255,255,0.1)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+                  }}
                 >
                   <UserOutlined />
                   <span style={{ fontWeight: 500, fontSize: "14px" }}>
-                    {userInfo.username || 'User'}
+                    {userInfo.username || "User"}
                   </span>
                 </div>
               </Dropdown>
@@ -191,7 +193,7 @@ export default function Navbar() {
               Đăng nhập
             </button>
           )}
-          
+
           <Dropdown
             menu={{
               items: [
@@ -207,7 +209,7 @@ export default function Navbar() {
           </Dropdown>
         </div>
       </div>
-      
+
       {/* Main navbar */}
       <Header
         style={{

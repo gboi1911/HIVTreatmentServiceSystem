@@ -1,39 +1,62 @@
-import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import { EnhancedPageLoader } from './components/LoadingComponents';
-import { ProtectedRoute, AdminRoute, UserRoute, StaffRoute } from './routes/ProtectedRoute';
+import React, { Suspense } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import { EnhancedPageLoader } from "./components/LoadingComponents";
+import {
+  ProtectedRoute,
+  AdminRoute,
+  UserRoute,
+  StaffRoute,
+} from "./routes/ProtectedRoute";
 
 // Public pages (no authentication required)
-const Home = React.lazy(() => import('./pages/Home'));
-const About = React.lazy(() => import('./pages/About'));
-const Guides = React.lazy(() => import('./pages/Guides'));
-const HealthAndLife = React.lazy(() => import('./pages/HealthAndLife'));
-const AskAndAnswer = React.lazy(() => import('./pages/AskAndAnswer'));
-const EducationalMaterials = React.lazy(() => import('./pages/EducationalMaterials'));
-const BlogDetail = React.lazy(() => import('./pages/BlogDetail'));
+const Home = React.lazy(() => import("./pages/Home"));
+const About = React.lazy(() => import("./pages/About"));
+const Guides = React.lazy(() => import("./pages/Guides"));
+const HealthAndLife = React.lazy(() => import("./pages/HealthAndLife"));
+const AskAndAnswer = React.lazy(() => import("./pages/AskAndAnswer"));
+const EducationalMaterials = React.lazy(() =>
+  import("./pages/EducationalMaterials")
+);
+const BlogDetail = React.lazy(() => import("./pages/BlogDetail"));
+const EducationPage = React.lazy(() => import("./pages/EducationContent"));
+const EducationDetail = React.lazy(() => import("./pages/EducationDetail"));
 
 // Auth pages
-const LoginPage = React.lazy(() => import('./pages/LoginPage'));
-const RegisterPage = React.lazy(() => import('./pages/RegisterPage'));
+const LoginPage = React.lazy(() => import("./pages/LoginPage"));
+const RegisterPage = React.lazy(() => import("./pages/RegisterPage"));
 
 // Protected pages (require login)
-const ConsultationBooking = React.lazy(() => import('./pages/ConsultationBooking'));
-const UserProfile = React.lazy(() => import('./pages/user/UserProfile'));
+const ConsultationBooking = React.lazy(() =>
+  import("./pages/ConsultationBooking")
+);
+const UserProfile = React.lazy(() => import("./pages/user/UserProfile"));
 
 // Assessment pages
-const RiskAssessment = React.lazy(() => import('./pages/assessment/RiskAssessment'));
-const AssessmentResults = React.lazy(() => import('./pages/assessment/AssessmentResults'));
-const AssessmentHistory = React.lazy(() => import('./pages/assessment/AssessmentHistory'));
+const RiskAssessment = React.lazy(() =>
+  import("./pages/assessment/RiskAssessment")
+);
+const AssessmentResults = React.lazy(() =>
+  import("./pages/assessment/AssessmentResults")
+);
+const AssessmentHistory = React.lazy(() =>
+  import("./pages/assessment/AssessmentHistory")
+);
 
 // Medical Record pages
-const MedicalRecords = React.lazy(() => import('./pages/medical/MedicalRecords'));
-const MedicalRecordForm = React.lazy(() => import('./pages/medical/MedicalRecordForm'));
-const MedicalRecordDetail = React.lazy(() => import('./pages/medical/MedicalRecordDetail'));
+const MedicalRecords = React.lazy(() =>
+  import("./pages/medical/MedicalRecords")
+);
+const MedicalRecordForm = React.lazy(() =>
+  import("./pages/medical/MedicalRecordForm")
+);
+const MedicalRecordDetail = React.lazy(() =>
+  import("./pages/medical/MedicalRecordDetail")
+);
 
 // Admin only pages
-const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
-const UserManagement = React.lazy(() => import('./pages/admin/UserManagement'));
+const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
+const UserManagement = React.lazy(() => import("./pages/admin/UserManagement"));
 // const SystemSettings = React.lazy(() => import('./pages/admin/SystemSettings'));
 
 // // Staff only pages
@@ -52,120 +75,125 @@ function App() {
             <Route path="guides" element={<Guides />} />
             <Route path="health-and-life" element={<HealthAndLife />} />
             <Route path="faq" element={<AskAndAnswer />} />
-            <Route path="educational-materials" element={<EducationalMaterials />} />
+            <Route
+              path="educational-materials"
+              element={<EducationalMaterials />}
+            />
+            <Route path="education" element={<EducationPage />} />
+            <Route path="education/:postId" element={<EducationDetail />} />
             <Route path="blog/:id" element={<BlogDetail />} />
-            
+
             {/* Protected routes (require login) */}
-            <Route 
-              path="consultation-booking" 
+            <Route
+              path="consultation-booking"
               element={
                 <ProtectedRoute>
                   <ConsultationBooking />
                 </ProtectedRoute>
-              } 
+              }
             />
-            
+
             {/* Assessment routes */}
-            <Route 
-              path="assessment/risk-assessment" 
+            <Route
+              path="assessment/risk-assessment"
               element={
                 <ProtectedRoute>
                   <RiskAssessment />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="assessment/results/:assessmentId" 
+            <Route
+              path="assessment/results/:assessmentId"
               element={
                 <ProtectedRoute>
                   <AssessmentResults />
                 </ProtectedRoute>
-              } 
+              }
             />
-            
+
             {/* User routes */}
-            <Route 
-              path="user/assessment-history" 
+            <Route
+              path="user/assessment-history"
               element={
                 <UserRoute>
                   <AssessmentHistory />
                 </UserRoute>
-              } 
+              }
             />
-            <Route 
-              path="profile" 
+            <Route
+              path="profile"
               element={
                 <UserRoute>
                   <UserProfile />
                 </UserRoute>
-              } 
+              }
             />
-            <Route 
-              path="user/profile" 
+            <Route
+              path="user/profile"
               element={
                 <UserRoute>
                   <UserProfile />
                 </UserRoute>
-              } 
+              }
             />
-            
+
             {/* Medical Records routes */}
-            <Route 
-              path="medical-records" 
+            <Route
+              path="medical-records"
               element={
                 <ProtectedRoute>
                   <MedicalRecords />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="medical-records/new" 
+            <Route
+              path="medical-records/new"
               element={
                 <ProtectedRoute>
                   <MedicalRecordForm />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="medical-records/edit/:id" 
+            <Route
+              path="medical-records/edit/:id"
               element={
                 <ProtectedRoute>
                   <MedicalRecordForm />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="medical-records/:id" 
+            <Route
+              path="medical-records/:id"
               element={
                 <ProtectedRoute>
                   <MedicalRecordDetail />
                 </ProtectedRoute>
-              } 
+              }
             />
           </Route>
-          
+
           {/* Auth routes without layout */}
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
-          
+
           {/* Admin routes */}
-          <Route 
-            path="admin/dashboard" 
+          <Route
+            path="admin/dashboard"
             element={
               // <AdminRoute>
-                <AdminDashboard />
+              <AdminDashboard />
               // {/* </AdminRoute> */}
-            } 
+            }
           />
-          <Route 
-            path="admin/users" 
+          <Route
+            path="admin/users"
             element={
               // <AdminRoute>
-                <UserManagement />
+              <UserManagement />
               // </AdminRoute>
-            } 
+            }
           />
-          
+
           {/* Staff routes
           <Route 
             path="staff/dashboard" 
