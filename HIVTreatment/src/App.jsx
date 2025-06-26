@@ -1,27 +1,193 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import MainLayout from "./components/Layout";
-import Home from "./pages/Home";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import AboutUs from "./pages/About";
-import Guides from "./pages/Guides";
-import BlogDetail from "./pages/BlogDetail";
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import { EnhancedPageLoader } from './components/LoadingComponents';
+import { ProtectedRoute, AdminRoute, UserRoute, StaffRoute } from './routes/ProtectedRoute';
+
+// Public pages (no authentication required)
+const Home = React.lazy(() => import('./pages/Home'));
+const About = React.lazy(() => import('./pages/About'));
+const Guides = React.lazy(() => import('./pages/Guides'));
+const HealthAndLife = React.lazy(() => import('./pages/HealthAndLife'));
+const AskAndAnswer = React.lazy(() => import('./pages/AskAndAnswer'));
+const EducationalMaterials = React.lazy(() => import('./pages/EducationalMaterials'));
+const BlogDetail = React.lazy(() => import('./pages/BlogDetail'));
+
+// Auth pages
+const LoginPage = React.lazy(() => import('./pages/LoginPage'));
+const RegisterPage = React.lazy(() => import('./pages/RegisterPage'));
+
+// Protected pages (require login)
+const ConsultationBooking = React.lazy(() => import('./pages/ConsultationBooking'));
+const UserProfile = React.lazy(() => import('./pages/user/UserProfile'));
+
+// Assessment pages
+const RiskAssessment = React.lazy(() => import('./pages/assessment/RiskAssessment'));
+const AssessmentResults = React.lazy(() => import('./pages/assessment/AssessmentResults'));
+const AssessmentHistory = React.lazy(() => import('./pages/assessment/AssessmentHistory'));
+
+// Medical Record pages
+const MedicalRecords = React.lazy(() => import('./pages/medical/MedicalRecords'));
+const MedicalRecordForm = React.lazy(() => import('./pages/medical/MedicalRecordForm'));
+const MedicalRecordDetail = React.lazy(() => import('./pages/medical/MedicalRecordDetail'));
+
+// Admin only pages
+const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
+const UserManagement = React.lazy(() => import('./pages/admin/UserManagement'));
+// const SystemSettings = React.lazy(() => import('./pages/admin/SystemSettings'));
+
+// // Staff only pages
+// const StaffDashboard = React.lazy(() => import('./pages/staff/StaffDashboard'));
+// const PatientManagement = React.lazy(() => import('./pages/staff/PatientManagement'));
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<AboutUs />} />
-          <Route path="/guides" element={<Guides/>}/>
-          <Route path="/BlogDetail" element={<BlogDetail/>}/>
-        </Route>
-        <Route path="/login" element={<LoginPage/>} />
-        <Route path="/register" element={<RegisterPage/>} />
-        
-      </Routes>
+      <Suspense fallback={<EnhancedPageLoader />}>
+        <Routes>
+          {/* Public routes with layout */}
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="guides" element={<Guides />} />
+            <Route path="health-and-life" element={<HealthAndLife />} />
+            <Route path="faq" element={<AskAndAnswer />} />
+            <Route path="educational-materials" element={<EducationalMaterials />} />
+            <Route path="blog/:id" element={<BlogDetail />} />
+            
+            {/* Protected routes (require login) */}
+            <Route 
+              path="consultation-booking" 
+              element={
+                <ProtectedRoute>
+                  <ConsultationBooking />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Assessment routes */}
+            <Route 
+              path="assessment/risk-assessment" 
+              element={
+                <ProtectedRoute>
+                  <RiskAssessment />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="assessment/results/:assessmentId" 
+              element={
+                <ProtectedRoute>
+                  <AssessmentResults />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* User routes */}
+            <Route 
+              path="user/assessment-history" 
+              element={
+                <UserRoute>
+                  <AssessmentHistory />
+                </UserRoute>
+              } 
+            />
+            <Route 
+              path="profile" 
+              element={
+                <UserRoute>
+                  <UserProfile />
+                </UserRoute>
+              } 
+            />
+            <Route 
+              path="user/profile" 
+              element={
+                <UserRoute>
+                  <UserProfile />
+                </UserRoute>
+              } 
+            />
+            
+            {/* Medical Records routes */}
+            <Route 
+              path="medical-records" 
+              element={
+                <ProtectedRoute>
+                  <MedicalRecords />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="medical-records/new" 
+              element={
+                <ProtectedRoute>
+                  <MedicalRecordForm />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="medical-records/edit/:id" 
+              element={
+                <ProtectedRoute>
+                  <MedicalRecordForm />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="medical-records/:id" 
+              element={
+                <ProtectedRoute>
+                  <MedicalRecordDetail />
+                </ProtectedRoute>
+              } 
+            />
+          </Route>
+          
+          {/* Auth routes without layout */}
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          
+          {/* Admin routes */}
+          <Route 
+            path="admin/dashboard" 
+            element={
+              // <AdminRoute>
+                <AdminDashboard />
+              // {/* </AdminRoute> */}
+            } 
+          />
+          <Route 
+            path="admin/users" 
+            element={
+              // <AdminRoute>
+                <UserManagement />
+              // </AdminRoute>
+            } 
+          />
+          
+          {/* Staff routes
+          <Route 
+            path="staff/dashboard" 
+            element={
+              <StaffRoute>
+                <StaffDashboard />
+              </StaffRoute>
+            } 
+          />
+          <Route 
+            path="staff/patients" 
+            element={
+              <StaffRoute>
+                <PatientManagement />
+              </StaffRoute>
+            } 
+          /> */}
+
+          {/* Fallback route */}
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

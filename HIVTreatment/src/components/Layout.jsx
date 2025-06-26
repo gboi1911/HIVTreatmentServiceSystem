@@ -10,7 +10,6 @@ const MainLayout = () => {
       <Navbar />
       <main>
         <Outlet />
-        
       </main>
       <NavFooter />
       <AppFooter />

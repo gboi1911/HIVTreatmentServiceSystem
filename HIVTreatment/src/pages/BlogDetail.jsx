@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Button, Tag, Avatar, Divider, Image } from 'antd';
-import { PlayCircleOutlined, CalendarOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
+import { Card, Button, Tag, Avatar, Divider, Badge, Image } from 'antd';
+import { CalendarOutlined, UserOutlined, EyeOutlined, ShareAltOutlined, ClockCircleOutlined, EnvironmentOutlined, PhoneOutlined, MailOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 const BlogDetail = () => {
@@ -87,114 +87,132 @@ const BlogDetail = () => {
 
                     {/* Main Content */}
                     <div className="lg:col-span-3">
+                               <article className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
+                            
+                            {/* Article Header */}
+                            <div className="p-8 pb-0">
+                                <div className="flex items-center justify-between mb-6">
+                                    <Tag color="red" className="text-sm font-medium">TIN NỔI BẬT</Tag>
+                                    <div className="flex items-center space-x-2">
+                                        
+                                        <Button type="text" size="small" icon={<ShareAltOutlined />} className="text-gray-500 hover:text-blue-600" />
+                                    </div>
+                                </div>
+                                
+                                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-6">
+                                    TP.HCM được bệnh viện Singapore 'chọn mặt gửi vàng' cho ca thông tim bào thai nguy kịch
+                                </h1>
+                                
+                                <div className="flex items-center space-x-6 text-sm text-gray-600 pb-6 border-b border-gray-100">
+                                    <div className="flex items-center space-x-2">
+                                        <CalendarOutlined />
+                                        <span>28/05/2024</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <EyeOutlined />
+                                        <span>2,456 lượt xem</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <ClockCircleOutlined />
+                                        <span>5 phút đọc</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                        {/* Featured Article */}
-                        <Card className="mb-6">
-                            <Tag color="blue">Tin nổi bật</Tag>
-                            <h2 className="text-2xl font-bold text-blue-500 my-6">
-                                TP.HCM được bệnh viện Singapore 'chọn mặt gửi vàng' cho ca thông tin bào thai nguy kịch (Theo Thanh Niên)
-                            </h2>
-                            <div className="grid grid-rows-[3fr_1fr] gap-6">
-                                <div>
+                            {/* Article Content */}
+                            <div className="p-8">
+                                <div className="mb-8">
                                     <img
-                                        src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=300&h=200&fit=crop"
+                                        src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=800&h=400&fit=crop"
                                         alt="Featured surgery"
-                                        className="w-full h-64 object-cover rounded-lg"
+                                        className="w-full h-64 md:h-80 object-cover rounded-lg mb-4"
                                     />
+                                    <div className="text-center text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
+                                        <p className="italic mb-2">
+                                            Ê kíp các chuyên gia can thiệp bào thai của Bệnh viện Từ Dũ và chuyên gia can thiệp tim bẩm sinh của
+                                            Bệnh viện Nhi Đồng 1 thực hiện ca thông tim bào thai cho trường hợp người bệnh Singapore
+                                        </p>
+                                        <p className="text-xs text-gray-500">ẢNH: SỞ Y TẾ TP.HCM</p>
+                                    </div>
                                 </div>
-                                <div className="text-center">
-                                    <p>
-                                        Ê kíp các chuyên gia can thiệp bào thai của Bệnh viện Từ Dũ và chuyên gia can thiệp tim bẩm sinh của
-                                        Bệnh viện Nhi Đồng 1 thực hiện ca thông tim bào thai cho trường hợp người bệnh Singapore do Bệnh viện
-                                        KK Women's and Children's Hospital (Singapore) giới thiệu đến TP.HCM
+
+                                <div className="prose max-w-none">
+                                    <p className="text-lg text-gray-800 leading-relaxed mb-6 font-medium">
+                                        Một bệnh viện hàng đầu của Singapore chủ động giới thiệu người bệnh sang TP.HCM để can thiệp thông
+                                        tim bào thai mắc bệnh tim bẩm sinh nặng, nguy cơ thai chết lưu.
                                     </p>
-                                    <p>ẢNH: SỞ Y TẾ TP.HCM</p>
+                                    
+                                    <div className="space-y-4 text-gray-700 leading-relaxed">
+                                        <p>
+                                            Ngày 28/5, các chuyên gia <span className='font-semibold text-blue-700'>can thiệp bào thai</span> của bệnh viện Từ Dũ phối hợp chuyên gia can thiệp tim mạch trẻ em của Bệnh viện Nhi đồng 1 thực hiện <span className='font-semibold text-green-700'>thành công</span> ca thông tim cho thai nhi 22 tuần tuổi bị dị tật bẩm sinh phức tạp của sản phụ người Singapore.
+                                        </p>
+                                        
+                                        <p>
+                                            Đây là minh chứng cho sự phát triển vượt bậc của ngành y tế Việt Nam trong lĩnh vực can thiệp tim mạch. Ca phẫu thuật này đòi hỏi sự phối hợp chặt chẽ giữa các chuyên khoa và kỹ thuật cao.
+                                        </p>
+                                        
+                                        <p>
+                                            Theo các chuyên gia, việc thực hiện thành công ca can thiệp này không chỉ cứu sống thai nhi mà còn khẳng định vị thế của y học Việt Nam trên trường quốc tế. Bệnh viện Singapore đã tin tưởng và lựa chọn đội ngũ y bác sĩ Việt Nam thực hiện ca phẫu thuật phức tạp này.
+                                        </p>
+                                        
+                                        <p>
+                                            Sự hợp tác y tế quốc tế như vậy mở ra nhiều cơ hội để ngành y tế Việt Nam tiếp tục học hỏi, phát triển và nâng cao chất lượng dịch vụ chăm sóc sức khỏe cho người dân.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <Divider />
+
+                                {/* Source */}
+                                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                                    <h4 className="font-semibold text-gray-900 mb-2">Nguồn</h4>
+                                    <p className="text-sm text-gray-600 break-all">
+                                        <a href="#" className="text-blue-600 hover:text-blue-800 hover:underline">
+                                            Báo Thanh Niên - thanhnien.vn
+                                        </a>
+                                    </p>
+                                </div>
+
+                                {/* Comments Section */}
+                                <div className="border-t border-gray-100 pt-6">
+                                    <h4 className="font-semibold text-gray-900 mb-3">Bình luận (0)</h4>
+                                    <p className="text-gray-600 text-sm">
+                                        Vui lòng <a href="/login" className="text-blue-600 hover:text-blue-800 hover:underline">đăng nhập</a> để bình luận
+                                    </p>
                                 </div>
                             </div>
-                            <div className="space-y-4 mt-10">
-                                <p className="leading-relaxed">
-                                    Một bệnh viện hàng đầu của Singapore chủ động giới thiệu người bệnh sang TP.HCM để can thiệp thông
-                                    tim bào thai mắc bệnh tim bẩm sinh nặng, nguy cơ thai chết lưu.
-                                </p>
-                                <p className="leading-relaxed">
-                                    Ngày 28/5, các chuyên gia can <span className='text-pink-500'>can thiệp bào thai</span> của bệnh viện Từ Dũ phối hợp chuyên gia can thiệp tim mạch trẻ em của Bệnh viện Nhi đồng 1 thực hiện <span className='text-pink-500'>thành công</span>                    ca thông tim cho thai nhi 22 tuần tuổi bị dị tật bẩm sinh phức tạp của sản phụ người Singapore.
-                                </p>
-                                <p className="leading-relaxed">
-                                    Một bệnh viện hàng đầu của Singapore chủ động giới thiệu người bệnh sang TP.HCM để can thiệp thông
-                                    tim bào thai mắc bệnh tim bẩm sinh nặng, nguy cơ thai chết lưu.
-                                </p>
-                                <p className="leading-relaxed">
-                                    Một bệnh viện hàng đầu của Singapore chủ động giới thiệu người bệnh sang TP.HCM để can thiệp thông
-                                    tim bào thai mắc bệnh tim bẩm sinh nặng, nguy cơ thai chết lưu.
-                                </p>
-                                <p className="leading-relaxed">
-                                    Một bệnh viện hàng đầu của Singapore chủ động giới thiệu người bệnh sang TP.HCM để can thiệp thông
-                                    tim bào thai mắc bệnh tim bẩm sinh nặng, nguy cơ thai chết lưu.
-                                </p>
-                                <p className="leading-relaxed">
-                                    Ngày 28/5, các chuyên gia can <span className='text-pink-500'>can thiệp bào thai</span> của bệnh viện Từ Dũ phối hợp chuyên gia can thiệp tim mạch trẻ em của Bệnh viện Nhi đồng 1 thực hiện <span className='text-pink-500'>thành công</span>                    ca thông tim cho thai nhi 22 tuần tuổi bị dị tật bẩm sinh phức tạp của sản phụ người Singapore.
-                                </p>
-                                <p className="leading-relaxed">
-                                    Một bệnh viện hàng đầu của Singapore chủ động giới thiệu người bệnh sang TP.HCM để can thiệp thông
-                                    tim bào thai mắc bệnh tim bẩm sinh nặng, nguy cơ thai chết lưu.
-                                </p>
-                                <p className="leading-relaxed">
-                                    Một bệnh viện hàng đầu của Singapore chủ động giới thiệu người bệnh sang TP.HCM để can thiệp thông
-                                    tim bào thai mắc bệnh tim bẩm sinh nặng, nguy cơ thai chết lưu.
-                                </p>
-                                <div>
-                                    <p className='font-bold text-xl italic'>
-                                        Nguồn
-                                    </p>
-                                    <p>
-                                        singapore-chon-mat-gui-vang-cho-ca-thong-tim-bao-thai-nguy-kich-185250528141032938.htm-https://thanhnien.vn/tphcm-duoc-benh-vien-singapore-chon-mat-
-                                        gui-vang-cho-ca-thong-tim-bao-thai-nguy-kich-185250528141032938.htm
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className='font-mono text-2xl'>
-                                        Bình luận(0)
-                                        </p>
-                                    <p>
-                                        Vui lòng thực hiện <Link to="/login" style={{
-                                            color:"#d42cbb"
-                                        }}>đăng nhập</Link> để bình luận
-                                        </p>
-                                </div>
-                            </div>
-                        </Card>
+                        </article>
 
-
-                        {/* News Grid */}
-                        <Card>
-                            <h2 className='text-4xl font-sans mb-5 text-blue-500'>
-                                Các bài viết khác
-                            </h2>
+                        {/* Related Articles */}
+                        <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                            <h2 className="text-xl font-bold text-gray-900 mb-6">Bài viết liên quan</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {newsItems.map((item) => (
-                                    <div key={item.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                                        <img
-                                            src={item.image}
-                                            alt={item.title}
-                                            className="w-full h-32 object-cover rounded-lg mb-3"
-                                        />
-                                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                                            {item.title}
-                                        </h3>
-                                        <div className="flex items-center justify-between text-sm text-gray-500">
-                                            <span className="flex items-center space-x-1">
-                                                <CalendarOutlined />
-                                                <span>{item.date}</span>
-                                            </span>
-                                            <span className="flex items-center space-x-1">
-                                                <EyeOutlined />
-                                                <span>{item.views}</span>
-                                            </span>
+                                    <article key={item.id} className="group cursor-pointer">
+                                        <div className="border border-gray-100 rounded-lg p-4 hover:border-gray-200 hover:shadow-sm transition-all duration-200">
+                                            <img
+                                                src={item.image}
+                                                alt={item.title}
+                                                className="w-full h-32 object-cover rounded-lg mb-3"
+                                            />
+                                            <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                                {item.title}
+                                            </h3>
+                                            <div className="flex items-center justify-between text-xs text-gray-500">
+                                                <span className="flex items-center space-x-1">
+                                                    <CalendarOutlined />
+                                                    <span>{item.date}</span>
+                                                </span>
+                                                <span className="flex items-center space-x-1">
+                                                    <EyeOutlined />
+                                                    <span>{item.views}</span>
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </article>
                                 ))}
                             </div>
-                        </Card>
+                        </section>
                     </div>
 
                     {/* Sidebar */}
