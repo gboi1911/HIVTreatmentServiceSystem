@@ -26,6 +26,11 @@ const RiskAssessment = React.lazy(() => import('./pages/assessment/RiskAssessmen
 const AssessmentResults = React.lazy(() => import('./pages/assessment/AssessmentResults'));
 const AssessmentHistory = React.lazy(() => import('./pages/assessment/AssessmentHistory'));
 
+// Medical Record pages
+const MedicalRecords = React.lazy(() => import('./pages/medical/MedicalRecords'));
+const MedicalRecordForm = React.lazy(() => import('./pages/medical/MedicalRecordForm'));
+const MedicalRecordDetail = React.lazy(() => import('./pages/medical/MedicalRecordDetail'));
+
 // Admin only pages
 const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
 const UserManagement = React.lazy(() => import('./pages/admin/UserManagement'));
@@ -101,6 +106,40 @@ function App() {
                 <UserRoute>
                   <UserProfile />
                 </UserRoute>
+              } 
+            />
+            
+            {/* Medical Records routes */}
+            <Route 
+              path="medical-records" 
+              element={
+                <ProtectedRoute>
+                  <MedicalRecords />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="medical-records/new" 
+              element={
+                <ProtectedRoute>
+                  <MedicalRecordForm />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="medical-records/edit/:id" 
+              element={
+                <ProtectedRoute>
+                  <MedicalRecordForm />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="medical-records/:id" 
+              element={
+                <ProtectedRoute>
+                  <MedicalRecordDetail />
+                </ProtectedRoute>
               } 
             />
           </Route>

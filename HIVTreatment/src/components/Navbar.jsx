@@ -23,8 +23,8 @@ const quickLinks = [
   { path: "/healthcare", label: "Nhân viên y tế" },
   { path: "/tender", label: "Đấu thầu" },
   { path: "/science", label: "Khoa học" },
-  { path: "/consulting", label: "Tư vấn" },
   {path: "/consultation-booking", label: "Đặt lịch tư vấn"},
+  { path: "/medical-records", label: "Hồ sơ bệnh án" },
 ];
 
 const menuItems = [
@@ -33,7 +33,6 @@ const menuItems = [
   { path: "/health-and-life", label: "Sức khoẻ & đời sống" },
   { path: "/assessment/risk-assessment", label: "Đánh giá rủi ro" },
   { path: "/faq", label: "Hỏi & Đáp" },
-  { path: "/announcements", label: "Hỏi & Đáp" },
 ];
 
 export default function Navbar() {
@@ -100,6 +99,12 @@ export default function Navbar() {
       label: 'Lịch sử đánh giá',
       icon: <FileTextOutlined />,
       onClick: () => navigate('/user/assessment-history')
+    },
+    {
+      key: 'medical-records',
+      label: 'Hồ sơ bệnh án',
+      icon: <FileTextOutlined />,
+      onClick: () => navigate('/medical-records')
     },
     {
       type: 'divider',
