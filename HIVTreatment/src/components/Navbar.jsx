@@ -18,12 +18,13 @@ import { useAuthStatus } from "../hooks/useAuthStatus";
 const { Header } = Layout;
 
 const quickLinks = [
+  { path: "/news", label: "Tin tức & Sự kiện" },
+  { path: "/success", label: "Thành công & Kỹ thuật mới" },
+  { path: "/healthcare", label: "Nhân viên y tế" },
+  { path: "/tender", label: "Đấu thầu" },
+  { path: "/science", label: "Khoa học" },
+  { path: "/consulting", label: "Tư vấn" },
   {path: "/consultation-booking", label: "Đặt lịch tư vấn"},
-  {path: "/guides", label: "Tin tức & Sự kiện"},
-  {path: "/success", label: "Thành công & Kỹ thuật mới"},
-  {path: "/healthcare", label: "Nhân viên y tế"},
-  {path: "/tender", label: "Đấu thầu"},
-  {path: "/science", label: "Khoa học"},
 ];
 
 const menuItems = [
@@ -32,6 +33,7 @@ const menuItems = [
   { path: "/health-and-life", label: "Sức khoẻ & đời sống" },
   { path: "/assessment/risk-assessment", label: "Đánh giá rủi ro" },
   { path: "/faq", label: "Hỏi & Đáp" },
+  { path: "/announcements", label: "Hỏi & Đáp" },
 ];
 
 export default function Navbar() {
@@ -116,16 +118,16 @@ export default function Navbar() {
       <div className="bg-gradient-to-r from-sky-500 via-blue-700 to-blue-800 text-white text-sm flex items-center justify-between px-10 h-12 backdrop-blur-sm shadow-sm">
         <div style={{ display: "flex", gap: 24 }}>
           {quickLinks.map((link) => (
-            <Link 
-              key={link.path} 
-              to={link.path} 
-              style={{ 
-                color: "white", 
-                textDecoration: "none", 
-                padding: "8px 16px", 
-                borderRadius: "20px", 
-                transition: "all 0.3s ease", 
-                fontSize: "13px", 
+            <Link
+              key={link.path}
+              to={link.path}
+              style={{
+                color: "white",
+                textDecoration: "none",
+                padding: "8px 16px",
+                borderRadius: "20px",
+                transition: "all 0.3s ease",
+                fontSize: "13px",
                 fontWeight: 500,
               }}
               onMouseEnter={(e) => {
