@@ -1,7 +1,10 @@
 import React from "react";
-import { Row, Col, Card, Typography } from "antd";
+import { Row, Col, Card, Typography, Spin } from "antd";
+import { getBlogs } from "../api/blog";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 const articles = [
   {
@@ -73,96 +76,147 @@ const preventionArticles = [
 ];
 
 export default function HealthAndLife() {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await getBlogs(token);
+        setBlogs(data);
+      } catch (err) {
+        message.error("Không thể tải blog");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+
+  const getFirstSentence = (text) => {
+    const match = text.match(/^(.*?\.)\s/);
+    return match ? match[1] : text;
+  };
+
   return (
     <div className="px-8 py-12 bg-gray-50 min-h-screen">
       <Title level={2} className="text-center mb-10 text-rose-600">
         Sức khỏe & Đời sống với HIV/AIDS
       </Title>
 
-      <Row gutter={[32, 32]}>
-        {/* Left: HIV Articles */}
-        <Col xs={24} lg={16}>
-          <Title level={4} className="mb-4">
-            Bài viết nổi bật
-          </Title>
-          <Row gutter={[0, 24]}>
-            {articles.map((article, index) => (
-              <Col span={24} key={index}>
-                <Card
-                  hoverable
-                  className="shadow-md rounded-lg"
-                  bodyStyle={{ display: "flex", gap: 16, alignItems: "center" }}
-                >
-                  <img
-                    src={article.img}
-                    alt={article.title}
-                    className="w-40 h-28 object-cover rounded"
-                  />
-                  <div>
-                    <Title level={4}>{article.title}</Title>
-                    <Paragraph type="secondary">{article.desc}</Paragraph>
-                  </div>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
+      {loading ? (
+        <div className="text-center py-20">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <Row gutter={[32, 32]}>
+          {/* Left: HIV Articles */}
+          <Col xs={24} lg={16}>
+            <Title level={4} className="mb-4">
+              Bài viết nổi bật
+            </Title>
+            <Row gutter={[0, 24]}>
+              {blogs.map((blog, index) => (
+                <Col span={24} key={index}>
+                  <Card
+                    hoverable
+                    className="shadow-md rounded-lg"
+                    bodyStyle={{
+                      display: "flex",
+                      gap: 16,
+                      alignItems: "center",
+                    }}
+                    onClick={() =>
+                      navigate(`/blog/${blog.blogId}`, { state: blog })
+                    }
+                  >
+                    <img
+                      src="https://images.ctfassets.net/rufp5n9kfzfi/RhEwTxojbTvmh9HAskBIg/5508933c4f10fcb057e614b6fc28b41b/Queer_Liberation_March_2023-3000x2000.jpg?fm=webp&fit=thumb&q=65&w=1728&h=1152"
+                      alt={blog.title}
+                      className="w-40 h-28 object-cover rounded"
+                    />
+                    <div>
+                      <Title level={4}>{blog.title}</Title>
+                      <Paragraph type="secondary">
+                        {getFirstSentence(blog.content)}
+                      </Paragraph>
+                      <Text type="secondary">Đăng bởi: {blog.staffName}</Text>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Col>
 
-        {/* Right: HIV News and Prevention */}
-        <Col xs={24} lg={8}>
-          <Title level={4} className="mb-4">
-            Tin tức HIV
-          </Title>
-          <Row gutter={[0, 24]}>
-            {sideNews.map((news, index) => (
-              <Col span={24} key={index}>
-                <Card
-                  hoverable
-                  className="shadow-sm"
-                  bodyStyle={{ display: "flex", gap: 16, alignItems: "center" }}
-                >
-                  <img
-                    src={news.img}
-                    alt={news.title}
-                    className="w-24 h-24 object-cover rounded"
-                  />
-                  <div>
-                    <Title level={5}>{news.title}</Title>
-                    <Paragraph type="secondary" ellipsis={{ rows: 2 }}>
-                      {news.desc}
-                    </Paragraph>
-                  </div>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+          {/* Right: HIV News and Prevention */}
+          <Col xs={24} lg={8}>
+            <Title level={4} className="mb-4">
+              Tin tức HIV
+            </Title>
+            <Row gutter={[0, 24]}>
+              {sideNews.map((news, index) => (
+                <Col span={24} key={index}>
+                  <Card
+                    hoverable
+                    className="shadow-sm"
+                    bodyStyle={{
+                      display: "flex",
+                      gap: 16,
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src={news.img}
+                      alt={news.title}
+                      className="w-24 h-24 object-cover rounded"
+                    />
+                    <div>
+                      <Title level={5}>{news.title}</Title>
+                      <Paragraph type="secondary" ellipsis={{ rows: 2 }}>
+                        {news.desc}
+                      </Paragraph>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
 
-          <Title level={4} className="mt-8 mb-4">
-            Tuyên truyền phòng HIV
-          </Title>
-          <Row gutter={[0, 24]}>
-            {preventionArticles.map((item, idx) => (
-              <Col span={24} key={idx}>
-                <Card
-                  hoverable
-                  className="shadow-sm"
-                  bodyStyle={{ display: "flex", gap: 16, alignItems: "center" }}
-                >
-                  <img
-                    src={item.img}
-                    alt={item.title}
-                    className="w-24 h-24 object-cover rounded"
-                  />
-                  <div>
-                    <Title level={5}>{item.title}</Title>
-                    <Paragraph type="secondary">{item.desc}</Paragraph>
-                  </div>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
+            <Title level={4} className="mt-8 mb-4">
+              Tuyên truyền phòng HIV
+            </Title>
+            <Row gutter={[0, 24]}>
+              {preventionArticles.map((item, idx) => (
+                <Col span={24} key={idx}>
+                  <Card
+                    hoverable
+                    className="shadow-sm"
+                    bodyStyle={{
+                      display: "flex",
+                      gap: 16,
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src={item.img}
+                      alt={item.title}
+                      className="w-24 h-24 object-cover rounded"
+                    />
+                    <div>
+                      <Title level={5}>{item.title}</Title>
+                      <Paragraph type="secondary">{item.desc}</Paragraph>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Col>
+        </Row>
+      )}
     </div>
   );
 }
