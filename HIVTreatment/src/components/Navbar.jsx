@@ -30,7 +30,6 @@ const quickLinks = [
   { path: "/news", label: "Tin tức & Sự kiện" },
   { path: "/success", label: "Thành công & Kỹ thuật mới" },
   { path: "/healthcare", label: "Nhân viên y tế" },
-  { path: "/education", label: "Giáo dục" },
   { path: "/science", label: "Khoa học" },
   { path: "/consultation-booking", label: "Đặt lịch tư vấn" },
 ];
@@ -96,11 +95,10 @@ export default function Navbar() {
         const token = localStorage.getItem('token');
         if (token) {
           try {
-            const payload = JSON.parse(atob(token.split(".")[1]));
+            const payload = JSON.parse(atob(token.split('.')[1]));
             setUserInfo({
-              username:
-                payload.username || payload.email || payload.sub || "User",
-              email: payload.email,
+              username: payload.username || payload.email || payload.sub || 'User',
+              email: payload.email
             });
           } catch (error) {
             setUserInfo({ username: 'User' });
@@ -116,7 +114,7 @@ export default function Navbar() {
     localStorage.removeItem('token');
     localStorage.removeItem('userInfo');
     setUserInfo(null);
-    navigate("/login", {
+    navigate('/login', {
       state: {
         message: 'Đăng xuất thành công!',
         type: 'success'
@@ -300,10 +298,6 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <SearchOutlined style={{ fontSize: 16, cursor: "pointer" }} />
-
-          {/* Conditional rendering based on login status */}
         
         {/* Right side controls */}
         <div className="flex items-center gap-4 relative z-10">
@@ -313,37 +307,6 @@ export default function Navbar() {
           
           {/* User dropdown or login button */}
           {isLoggedIn && userInfo ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <Dropdown
-                menu={{ items: userMenuItems }}
-                placement="bottomRight"
-                trigger={["click"]}
-              >
-                <div
-                  style={{
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "6px 12px",
-                    borderRadius: "20px",
-                    transition: "all 0.3s ease",
-                    background: "rgba(255,255,255,0.1)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.2)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                  }}
-                >
-                  <UserOutlined />
-                  <span style={{ fontWeight: 500, fontSize: "14px" }}>
-                    {userInfo.username || "User"}
-                  </span>
-                </div>
-              </Dropdown>
-            </div>
             <Dropdown
               menu={userMenuItems}
               placement="bottomRight"
@@ -376,7 +339,6 @@ export default function Navbar() {
               Đăng nhập
             </button>
           )}
-
           
           {/* Language selector */}
           <Dropdown
@@ -399,8 +361,6 @@ export default function Navbar() {
           </Dropdown>
         </div>
       </div>
-
-      {/* Main navbar */}
       
       {/* Main navbar with dropdown menus */}
       <Header
