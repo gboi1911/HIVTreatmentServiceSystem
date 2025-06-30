@@ -203,3 +203,74 @@ export const countAppointmentsByDoctor = async (doctorId) => {
     throw error;
   }
 };
+
+// Update appointment
+export const updateAppointment = async (appointmentId, appointmentData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/appointment/${appointmentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(appointmentData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Update appointment failed: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Update appointment error:', error);
+    throw error;
+  }
+};
+
+// Cancel appointment
+export const cancelAppointment = async (appointmentId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/appointment/${appointmentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Cancel appointment failed: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Cancel appointment error:', error);
+    throw error;
+  }
+};
+
+// Update appointment status
+export const updateAppointmentStatus = async (appointmentId, status) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/appointment/${appointmentId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Update appointment status failed: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Update appointment status error:', error);
+    throw error;
+  }
+};

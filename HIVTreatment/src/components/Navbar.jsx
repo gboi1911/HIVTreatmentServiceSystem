@@ -161,6 +161,16 @@ export default function Navbar() {
         ),
         onClick: () => navigate('/user/assessment-history')
       },
+      {
+        key: 'appointment-history',
+        label: (
+          <div className="flex items-center gap-2 py-1">
+            <CalendarOutlined className="text-orange-500" />
+            <span>Lịch sử cuộc hẹn</span>
+          </div>
+        ),
+        onClick: () => navigate('/user/appointment-history')
+      },
       ...(canAccessMedicalRecords ? [{
         key: 'medical-records',
         label: (

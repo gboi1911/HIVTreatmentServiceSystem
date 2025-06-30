@@ -30,6 +30,12 @@ const RegisterPage = React.lazy(() => import("./pages/RegisterPage"));
 const ConsultationBooking = React.lazy(() =>
   import("./pages/ConsultationBooking")
 );
+const AppointmentHistory = React.lazy(() =>
+  import("./pages/AppointmentHistory")
+);
+const BookingSuccess = React.lazy(() =>
+  import("./pages/BookingSuccess")
+);
 const UserProfile = React.lazy(() => import("./pages/user/UserProfile"));
 
 // Assessment pages
@@ -97,6 +103,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="booking-success"
+              element={
+                <ProtectedRoute>
+                  <BookingSuccess />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Assessment routes */}
             <Route
@@ -122,6 +136,14 @@ function App() {
               element={
                 <UserRoute>
                   <AssessmentHistory />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="user/appointment-history"
+              element={
+                <UserRoute>
+                  <AppointmentHistory />
                 </UserRoute>
               }
             />
