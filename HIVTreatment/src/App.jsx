@@ -54,6 +54,11 @@ const MedicalRecordDetail = React.lazy(() =>
   import("./pages/medical/MedicalRecordDetail")
 );
 
+// Treatment Plan pages
+const TreatmentPlans = React.lazy(() => import('./pages/treatment/TreatmentPlans'));
+const TreatmentPlanForm = React.lazy(() => import('./pages/treatment/TreatmentPlanForm'));
+const TreatmentPlanDetail = React.lazy(() => import('./pages/treatment/TreatmentPlanDetail'));
+
 // Admin only pages
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
 const UserManagement = React.lazy(() => import("./pages/admin/UserManagement"));

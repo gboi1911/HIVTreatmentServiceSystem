@@ -50,9 +50,6 @@ export const login = async (username, password) => {
 export const getCurrentUser = async (token) => {
   try {
     console.log('🔄 Fetching current user info...');
-    
-    // Since there's no /user/current endpoint, we'll try to get user info from customers endpoint
-    // The API should return the current user's data when using their token
     const customersResponse = await fetch(`${API_BASE}/customers`, {
       method: 'GET',
       headers: {
@@ -79,7 +76,7 @@ export const getCurrentUser = async (token) => {
           phone: user.phone,
           gender: user.gender,
           username: user.fullName || user.name || user.email || 'Người dùng',
-          role: user.role || 'CUSTOMER'
+          role: user.role || 'STAFF'
         };
         
         console.log('✅ Processed user info:', processedUser);

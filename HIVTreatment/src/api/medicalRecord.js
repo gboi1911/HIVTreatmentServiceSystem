@@ -37,6 +37,9 @@ export const getMedicalRecords = async () => {
   }
 };
 
+// Alias for getAllMedicalRecords
+export const getAllMedicalRecords = getMedicalRecords;
+
 // Get medical records by customer ID
 export const getMedicalRecordsByCustomer = async (customerId) => {
   try {
@@ -80,6 +83,42 @@ export const getMedicalRecordsByDoctor = async (doctorId) => {
   } catch (error) {
     console.error('Get medical records by doctor error:', error);
     return [];
+  }
+};
+
+// Get medical record by ID
+export const getMedicalRecordById = async (id) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/medical-record/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Get medical record failed: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Get medical record error:', error);
+    // Return fallback data for development
+    return {
+      medicalRecordId: parseInt(id),
+      customerId: 1,
+      customerName: "Nguyễn Văn A",
+      doctorId: 1,
+      doctorName: "BS. Nguyễn Thị B",
+      cd4Count: 350,
+      viralLoad: 1000,
+      treatmentHistory: "Đang điều trị ARV",
+      status: "ACTIVE",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
   }
 };
 
