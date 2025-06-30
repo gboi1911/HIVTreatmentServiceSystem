@@ -30,7 +30,7 @@ const quickLinks = [
   { path: "/news", label: "Tin tức & Sự kiện" },
   { path: "/success", label: "Thành công & Kỹ thuật mới" },
   { path: "/healthcare", label: "Nhân viên y tế" },
-  { path: "/science", label: "Khoa học" },
+  { path: "/education", label: "Khoa học" },
   { path: "/consultation-booking", label: "Đặt lịch tư vấn" },
 ];
 
