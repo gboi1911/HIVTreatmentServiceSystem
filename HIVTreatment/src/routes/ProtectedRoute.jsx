@@ -147,7 +147,7 @@ export const UserRoute = ({ children }) => {
 
 // Staff Route
 export const StaffRoute = ({ children }) => (
-  <ProtectedRoute requiredRoles={['staff', 'doctor', 'nurse', 'STAFF', 'DOCTOR', 'NURSE']}>
+  <ProtectedRoute requiredRoles={['staff', 'doctor', 'STAFF', 'DOCTOR']}>
     {children}
   </ProtectedRoute>
 );

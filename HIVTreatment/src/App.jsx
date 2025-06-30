@@ -31,6 +31,11 @@ const MedicalRecords = React.lazy(() => import('./pages/medical/MedicalRecords')
 const MedicalRecordForm = React.lazy(() => import('./pages/medical/MedicalRecordForm'));
 const MedicalRecordDetail = React.lazy(() => import('./pages/medical/MedicalRecordDetail'));
 
+// Treatment Plan pages
+const TreatmentPlans = React.lazy(() => import('./pages/treatment/TreatmentPlans'));
+const TreatmentPlanForm = React.lazy(() => import('./pages/treatment/TreatmentPlanForm'));
+const TreatmentPlanDetail = React.lazy(() => import('./pages/treatment/TreatmentPlanDetail'));
+
 // Admin only pages
 const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
 const UserManagement = React.lazy(() => import('./pages/admin/UserManagement'));
@@ -109,37 +114,71 @@ function App() {
               } 
             />
             
-            {/* Medical Records routes */}
+            {/* Medical Records routes - Staff/Consultant/Manager/Admin only */}
             <Route 
               path="medical-records" 
               element={
-                <ProtectedRoute>
+                <StaffRoute>
                   <MedicalRecords />
-                </ProtectedRoute>
+                </StaffRoute>
               } 
             />
             <Route 
               path="medical-records/new" 
               element={
-                <ProtectedRoute>
+                <StaffRoute>
                   <MedicalRecordForm />
-                </ProtectedRoute>
+                </StaffRoute>
               } 
             />
             <Route 
               path="medical-records/edit/:id" 
               element={
-                <ProtectedRoute>
+                <StaffRoute>
                   <MedicalRecordForm />
-                </ProtectedRoute>
+                </StaffRoute>
               } 
             />
             <Route 
               path="medical-records/:id" 
               element={
-                <ProtectedRoute>
+                <StaffRoute>
                   <MedicalRecordDetail />
-                </ProtectedRoute>
+                </StaffRoute>
+              } 
+            />
+
+            {/* Treatment Plans routes - Staff/Consultant/Manager/Admin/Doctor only */}
+            <Route 
+              path="treatment-plans" 
+              element={
+                <StaffRoute>
+                  <TreatmentPlans />
+                </StaffRoute>
+              } 
+            />
+            <Route 
+              path="treatment-plans/new" 
+              element={
+                <StaffRoute>
+                  <TreatmentPlanForm />
+                </StaffRoute>
+              } 
+            />
+            <Route 
+              path="treatment-plans/edit/:id" 
+              element={
+                <StaffRoute>
+                  <TreatmentPlanForm />
+                </StaffRoute>
+              } 
+            />
+            <Route 
+              path="treatment-plans/:id" 
+              element={
+                <StaffRoute>
+                  <TreatmentPlanDetail />
+                </StaffRoute>
               } 
             />
           </Route>
