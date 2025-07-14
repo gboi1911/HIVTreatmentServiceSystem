@@ -67,7 +67,8 @@ const TreatmentPlanDetail = React.lazy(() => import('./pages/treatment/Treatment
 
 // Admin only pages
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
-const UserManagement = React.lazy(() => import("./pages/admin/UserManagement"));
+const UserManagement = React.lazy(() => import("./pages/admin/UserManagement").then(module => ({ default: module.UserManagement })));
+const StaffManagement = React.lazy(() => import("./pages/admin/StaffManagement").then(module => ({ default: module.StaffManagement })));
 // const SystemSettings = React.lazy(() => import('./pages/admin/SystemSettings'));
 
 // // Staff only pages
@@ -168,33 +169,33 @@ function App() {
             <Route
               path="medical-records"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <MedicalRecords />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
             <Route
               path="medical-records/new"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <MedicalRecordForm />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
             <Route
               path="medical-records/edit/:id"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <MedicalRecordForm />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
             <Route
               path="medical-records/:id"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <MedicalRecordDetail />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
           </Route>
@@ -207,17 +208,25 @@ function App() {
           <Route
             path="admin/dashboard"
             element={
-              // <AdminRoute>
+              <AdminRoute>
               <AdminDashboard />
-              // {/* </AdminRoute> */}
+            </AdminRoute>
             }
           />
           <Route
             path="admin/users"
             element={
-              // <AdminRoute>
+              <AdminRoute>
               <UserManagement />
-              // </AdminRoute>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin/staff"
+            element={
+              <AdminRoute>
+              <StaffManagement />
+              </AdminRoute>
             }
           />
 

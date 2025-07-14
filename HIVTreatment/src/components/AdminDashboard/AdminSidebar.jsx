@@ -9,20 +9,15 @@ import {
   MessageSquare,
   Settings,
   BarChart3,
-  LogOut
+  LogOut,
+  UserCog
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const navItems = [
   { key: "dashboard", label: "Tổng quan", icon: BarChart3, path: "/admin/dashboard" },
   { key: "users", label: "Quản lý người dùng", icon: Users, path: "/admin/users" },
-  { key: "courses", label: "Khóa đào tạo", icon: BookOpen, path: "/admin/courses" },
-  { key: "assessments", label: "Công cụ đánh giá", icon: ClipboardList, path: "/admin/assessments" },
-  { key: "appointments", label: "Lịch tư vấn", icon: Calendar, path: "/admin/appointments" },
-  { key: "programs", label: "Chương trình cộng đồng", icon: UserCheck, path: "/admin/programs" },
-  { key: "content", label: "Quản lý nội dung", icon: FileText, path: "/admin/content" },
-  { key: "reports", label: "Báo cáo & Khảo sát", icon: MessageSquare, path: "/admin/reports" },
-  { key: "settings", label: "Cài đặt", icon: Settings, path: "/admin/settings" },
+  { key: "staff", label: "Quản lý nhân viên", icon: UserCog, path: "/admin/staff" },
   {key: "home", label: "Trang chủ", icon: Users, path: "/" }
 ];
 
