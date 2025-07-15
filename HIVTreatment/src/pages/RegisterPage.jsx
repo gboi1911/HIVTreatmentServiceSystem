@@ -12,7 +12,7 @@ import {
   PhoneOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { register } from "../api/auth"; // Adjust the import path as necessary
+import { registerUser } from "../api/auth";
 import { ToastContainer, toast } from "react-toastify";
 const MedicalRegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -85,7 +85,7 @@ const MedicalRegisterPage = () => {
     if (validateForm()) {
       setLoading(true);
       try {
-        const data = await register({
+        const data = await registerUser({
           fullName: formData.fullName,
           email: formData.email,
           phone: formData.phone,

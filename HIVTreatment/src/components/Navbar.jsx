@@ -26,13 +26,23 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStatus } from "../hooks/useAuthStatus";
 const { Header } = Layout;
 
-const quickLinks = [
-  { path: "/news", label: "Tin tức & Sự kiện" },
-  { path: "/success", label: "Thành công & Kỹ thuật mới" },
-  { path: "/healthcare", label: "Nhân viên y tế" },
-  { path: "/education", label: "Khoa học" },
-  { path: "/consultation-booking", label: "Đặt lịch tư vấn" },
-];
+// Function to get quick links based on user role
+const getQuickLinks = (userRole) => {
+  const baseLinks = [
+    { path: "/news", label: "Tin tức & Sự kiện" },
+    { path: "/success", label: "Thành công & Kỹ thuật mới" },
+    { path: "/healthcare", label: "Nhân viên y tế" },
+    { path: "/education", label: "Khoa học" },
+    { path: "/consultation-booking", label: "Đặt lịch tư vấn" },
+  ];
+
+  // Add dashboard link only for admin and manager
+  if (userRole && ['ADMIN', 'MANAGER'].includes(userRole.toUpperCase())) {
+    baseLinks.push({ path: "/admin/dashboard", label: "Dashboard" });
+  }
+
+  return baseLinks;
+};
 
 // Organize menu items into categories
 const getOrganizedMenuItems = (canAccessMedicalRecords) => {
@@ -73,6 +83,9 @@ export default function Navbar() {
   const [userInfo, setUserInfo] = useState(null);
   const [hoveredDropdown, setHoveredDropdown] = useState(null);
   const navigate = useNavigate();
+
+  // Get dynamic quick links based on user role
+  const quickLinks = getQuickLinks(userRole);
 
   // Set current path when location changes
   useEffect(() => {
@@ -160,6 +173,16 @@ export default function Navbar() {
           </div>
         ),
         onClick: () => navigate('/user/assessment-history')
+      },
+      {
+        key: 'appointment-history',
+        label: (
+          <div className="flex items-center gap-2 py-1">
+            <CalendarOutlined className="text-orange-500" />
+            <span>Lịch sử cuộc hẹn</span>
+          </div>
+        ),
+        onClick: () => navigate('/user/appointment-history')
       },
       ...(canAccessMedicalRecords ? [{
         key: 'medical-records',
@@ -332,7 +355,7 @@ export default function Navbar() {
             </Dropdown>
           ) : (
             <button
-              className="bg-white/10 hover:bg-white/20 text-white border-none rounded-full font-medium px-4 h-8 transition-all duration-200 flex items-center gap-1.5 backdrop-blur-md"
+              className="bg-white hover:bg-gray-50 text-blue-600 border border-white/30 rounded-full font-semibold px-5 h-9 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
               onClick={() => navigate("/login")}
             >
               <UserOutlined style={{ fontSize: 14 }} />

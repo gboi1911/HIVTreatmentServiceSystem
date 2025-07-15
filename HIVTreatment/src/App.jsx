@@ -32,6 +32,12 @@ const RegisterPage = React.lazy(() => import("./pages/RegisterPage"));
 const ConsultationBooking = React.lazy(() =>
   import("./pages/ConsultationBooking")
 );
+const AppointmentHistory = React.lazy(() =>
+  import("./pages/AppointmentHistory")
+);
+const BookingSuccess = React.lazy(() =>
+  import("./pages/BookingSuccess")
+);
 const UserProfile = React.lazy(() => import("./pages/user/UserProfile"));
 
 // Assessment pages
@@ -69,7 +75,8 @@ const TreatmentPlanDetail = React.lazy(() =>
 
 // Admin only pages
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
-const UserManagement = React.lazy(() => import("./pages/admin/UserManagement"));
+const UserManagement = React.lazy(() => import("./pages/admin/UserManagement").then(module => ({ default: module.UserManagement })));
+const StaffManagement = React.lazy(() => import("./pages/admin/StaffManagement").then(module => ({ default: module.StaffManagement })));
 // const SystemSettings = React.lazy(() => import('./pages/admin/SystemSettings'));
 
 // // Staff only pages
@@ -107,6 +114,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="booking-success"
+              element={
+                <ProtectedRoute>
+                  <BookingSuccess />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Assessment routes */}
             <Route
@@ -136,6 +151,14 @@ function App() {
               }
             />
             <Route
+              path="user/appointment-history"
+              element={
+                <UserRoute>
+                  <AppointmentHistory />
+                </UserRoute>
+              }
+            />
+            <Route
               path="profile"
               element={
                 <UserRoute>
@@ -156,33 +179,33 @@ function App() {
             <Route
               path="medical-records"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <MedicalRecords />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
             <Route
               path="medical-records/new"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <MedicalRecordForm />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
             <Route
               path="medical-records/edit/:id"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <MedicalRecordForm />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
             <Route
               path="medical-records/:id"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <MedicalRecordDetail />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
           </Route>
@@ -195,17 +218,25 @@ function App() {
           <Route
             path="admin/dashboard"
             element={
-              // <AdminRoute>
+              <AdminRoute>
               <AdminDashboard />
-              // {/* </AdminRoute> */}
+            </AdminRoute>
             }
           />
           <Route
             path="admin/users"
             element={
-              // <AdminRoute>
+              <AdminRoute>
               <UserManagement />
-              // </AdminRoute>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin/staff"
+            element={
+              <AdminRoute>
+              <StaffManagement />
+              </AdminRoute>
             }
           />
 
