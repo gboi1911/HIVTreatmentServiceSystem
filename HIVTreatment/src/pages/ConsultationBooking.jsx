@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Button, Form, Input, DatePicker, TimePicker, Select, Typography, Avatar, Tag, Rate, Space, Divider, Badge, message, Spin } from 'antd';
-import { UserOutlined, CalendarOutlined, ClockCircleOutlined, PhoneOutlined, VideoCameraOutlined, StarFilled, CheckCircleOutlined, LoadingOutlined, TeamOutlined, MailOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Button, Form, Input, DatePicker, TimePicker, Select, Typography, Avatar, Tag, Rate, Space, Divider, Badge, message, Spin, Modal } from 'antd';
+import { UserOutlined, CalendarOutlined, ClockCircleOutlined, PhoneOutlined, VideoCameraOutlined, StarFilled, CheckCircleOutlined, LoadingOutlined, TeamOutlined, MailOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { bookAppointment } from '../api/appointment';
 import { getAllDoctors } from '../api/doctor';
+import { getCurrentUser } from '../api/auth';
 import { useNavigate } from 'react-router-dom';
+import { isLoggedIn } from '../utils/auth';
+import { formatAppointmentData, validateAppointmentData } from '../utils/appointmentValidation.js';
 import dayjs from 'dayjs';
 
 const { Title, Text, Paragraph } = Typography;
@@ -42,36 +45,96 @@ export default function ConsultationBooking() {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+
+  // Check authentication and load user data
+  useEffect(() => {
+    checkAuthAndLoadUser();
+  }, []);
 
   // Load doctors from API
   useEffect(() => {
     loadDoctors();
   }, []);
 
+  const checkAuthAndLoadUser = async () => {
+    try {
+      setUserLoading(true);
+      
+      if (!isLoggedIn()) {
+        Modal.confirm({
+          title: 'Yêu cầu đăng nhập',
+          content: 'Bạn cần đăng nhập để đặt lịch tư vấn. Bạn có muốn chuyển đến trang đăng nhập không?',
+          icon: <ExclamationCircleOutlined />,
+          okText: 'Đăng nhập',
+          cancelText: 'Hủy',
+          onOk: () => navigate('/login'),
+          onCancel: () => navigate('/')
+        });
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      const user = await getCurrentUser(token);
+      setCurrentUser(user);
+      
+      // Pre-fill form with user data
+      form.setFieldsValue({
+        name: user.fullName || user.username,
+        phone: user.phone || '',
+        email: user.email || ''
+      });
+      
+    } catch (error) {
+      console.error('Failed to load user data:', error);
+      message.warning('Không thể tải thông tin người dùng. Vui lòng nhập thông tin thủ công.');
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
   const loadDoctors = async () => {
     try {
       setLoading(true);
       const response = await getAllDoctors();
+      
+      // Handle different response structures
+      let doctorsData = [];
+      if (response.data && Array.isArray(response.data)) {
+        doctorsData = response.data;
+      } else if (Array.isArray(response)) {
+        doctorsData = response;
+      } else if (response.doctors && Array.isArray(response.doctors)) {
+        doctorsData = response.doctors;
+      }
+
       // Transform API data to match UI structure
-      const doctorsData = response.data?.map(doctor => ({
+      const transformedDoctors = doctorsData.map(doctor => ({
         id: doctor.id,
-        name: doctor.name || doctor.fullName,
-        specialty: doctor.specialty || "Chuyên khoa HIV/AIDS",
+        name: doctor.name || doctor.fullName || `BS. ${doctor.lastName || 'Bác sĩ'}`,
+        specialty: doctor.specialty || doctor.specialization || "Chuyên khoa HIV/AIDS",
         experience: doctor.experience || "5+ năm kinh nghiệm",
-        rating: doctor.rating || 4.5,
+        rating: doctor.rating || (4 + Math.random()).toFixed(1),
         reviews: doctor.reviews || Math.floor(Math.random() * 100) + 20,
-        avatar: doctor.avatar || `https://randomuser.me/api/portraits/${doctor.gender === 'female' ? 'women' : 'men'}/${doctor.id || 1}.jpg`,
+        avatar: doctor.avatar || `https://randomuser.me/api/portraits/${doctor.gender === 'female' ? 'women' : 'men'}/${(doctor.id % 10) + 1}.jpg`,
         available: doctor.availableDays || ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
         consultationType: doctor.consultationTypes || ["Video call", "Điện thoại", "Trực tiếp"],
         status: doctor.status || "online",
         department: doctor.department,
         phone: doctor.phone,
         email: doctor.email
-      })) || consultants; // Fallback to static data
+      }));
       
-      setDoctors(doctorsData);
+      // If no doctors from API, use fallback data
+      setDoctors(transformedDoctors.length > 0 ? transformedDoctors : consultants);
+      
+      if (transformedDoctors.length === 0) {
+        message.info('Đang sử dụng dữ liệu mẫu. Vui lòng kiểm tra kết nối backend.');
+      }
+      
     } catch (error) {
       console.error('Failed to load doctors:', error);
       // Use fallback static data
@@ -84,52 +147,68 @@ export default function ConsultationBooking() {
 
   const handleBooking = async (values) => {
     if (!selectedConsultant) {
-      message.error('Vui lòng chọn bác sĩ tư vấn');
+      message.error('Vui lòng chọn chuyên gia tư vấn!');
+      return;
+    }
+
+    if (!currentUser) {
+      message.error('Vui lòng đăng nhập để đặt lịch!');
       return;
     }
 
     try {
       setBookingLoading(true);
       
-      // Combine date and time
-      const appointmentDateTime = dayjs(values.date)
-        .hour(values.time.hour())
-        .minute(values.time.minute())
-        .format('YYYY-MM-DD HH:mm:ss');
+      // Validate form data
+      const validation = validateAppointmentData(values);
+      if (!validation.isValid) {
+        Object.keys(validation.errors).forEach(key => {
+          message.error(validation.errors[key]);
+        });
+        return;
+      }
 
-      const bookingData = {
-        doctorId: selectedConsultant.id,
-        type: values.consultationType,
-        note: values.reason || '',
-        datetime: appointmentDateTime,
-        // Add customer info if needed
-        customerInfo: {
-          name: values.name,
-          phone: values.phone,
-          email: values.email
-        }
-      };
-
-      const response = await bookAppointment(bookingData);
+      console.log('📋 Form values:', values);
+      console.log('👤 Current user:', currentUser);
+      console.log('👨‍⚕️ Selected consultant:', selectedConsultant);
       
-      // Navigate to success page with booking data
-      navigate('/booking-success', {
-        state: {
-          bookingData: {
-            doctorName: selectedConsultant.name,
-            datetime: dayjs(values.date).format('DD/MM/YYYY') + ' ' + values.time.format('HH:mm'),
-            consultationType: values.consultationType,
-            customerName: values.name,
-            phone: values.phone,
-            email: values.email,
-            note: values.reason
+      // Format appointment data with correct datetime format
+      const appointmentData = formatAppointmentData(values, selectedConsultant, currentUser);
+      
+      // Submit booking
+      const response = await bookAppointment(appointmentData);
+      
+      if (response && (response.success || response.id)) {
+        message.success('Đặt lịch tư vấn thành công!');
+        
+        // Navigate to success page with booking details
+        navigate('/booking-success', {
+          state: {
+            bookingData: {
+              ...appointmentData,
+              consultant: selectedConsultant,
+              appointmentId: response.id || response.appointmentId,
+              status: response.status || 'PENDING'
+            }
           }
-        }
-      });
+        });
+      } else {
+        throw new Error('Booking response invalid');
+      }
       
     } catch (error) {
-      console.error('Booking error:', error);
-      message.error('Đặt lịch thất bại. Vui lòng thử lại sau.');
+      console.error('❌ Booking error:', error);
+      
+      // Show user-friendly error messages
+      if (error.message.includes('Invalid date format')) {
+        message.error('Có lỗi với định dạng thời gian. Vui lòng thử lại.');
+      } else if (error.message.includes('Missing required')) {
+        message.error('Thiếu thông tin bắt buộc. Vui lòng kiểm tra lại.');
+      } else if (error.message.includes('Network Error') || error.message.includes('Failed to fetch')) {
+        message.warning('Không thể kết nối đến server. Đặt lịch trong chế độ offline.');
+      } else {
+        message.error(error.message || 'Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.');
+      }
     } finally {
       setBookingLoading(false);
     }
@@ -154,20 +233,36 @@ export default function ConsultationBooking() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Header Section */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Show loading screen while checking authentication */}
+      {userLoading ? (
+        <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <Title level={1} className="!text-3xl !font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent !mb-4">
-              Đặt lịch tư vấn chuyên nghiệp
-            </Title>
-            <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Kết nối với các chuyên gia tâm lý và công tác xã hội có kinh nghiệm về HIV/AIDS. 
-              Tất cả thông tin được bảo mật tuyệt đối.
-            </Paragraph>
+            <Spin size="large" />
+            <p className="mt-4 text-gray-600">Đang kiểm tra thông tin đăng nhập...</p>
           </div>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Header Section */}
+          <div className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <div className="text-center">
+                <Title level={1} className="!text-3xl !font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent !mb-4">
+                  Đặt lịch tư vấn chuyên nghiệp
+                </Title>
+                <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  Kết nối với các chuyên gia tâm lý và công tác xã hội có kinh nghiệm về HIV/AIDS. 
+                  Tất cả thông tin được bảo mật tuyệt đối.
+                </Paragraph>
+                {currentUser && (
+                  <div className="mt-4 inline-flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full">
+                    <UserOutlined className="text-blue-600" />
+                    <Text className="text-blue-800">Xin chào, {currentUser.fullName || currentUser.username}</Text>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Row gutter={[24, 24]}>
@@ -352,8 +447,14 @@ export default function ConsultationBooking() {
                         <DatePicker
                           className="w-full"
                           placeholder="Chọn ngày"
-                          disabledDate={(current) => current && current < dayjs().startOf('day')}
+                          disabledDate={(current) => {
+                            // Disable past dates and Sundays
+                            const isWeekend = current && current.day() === 0; // Sunday
+                            const isPast = current && current < dayjs().startOf('day');
+                            return isPast || isWeekend;
+                          }}
                           format="DD/MM/YYYY"
+                          showToday={false}
                         />
                       </Form.Item>
 
@@ -366,13 +467,14 @@ export default function ConsultationBooking() {
                           className="w-full"
                           placeholder="Chọn giờ"
                           format="HH:mm"
-                          minuteStep={15}
+                          minuteStep={30}
                           disabledHours={() => {
                             const hours = [];
                             for (let i = 0; i < 8; i++) hours.push(i); // Before 8 AM
                             for (let i = 18; i < 24; i++) hours.push(i); // After 6 PM
                             return hours;
                           }}
+                          hideDisabledOptions
                         />
                       </Form.Item>
 
@@ -410,8 +512,13 @@ export default function ConsultationBooking() {
 
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                       <Text className="text-sm text-yellow-800">
-                        <strong>Lưu ý:</strong> Tất cả thông tin của bạn được bảo mật tuyệt đối. 
-                        Chúng tôi sẽ liên hệ xác nhận lịch hẹn trong vòng 24h.
+                        <strong>Lưu ý:</strong> 
+                        <ul className="mt-2 space-y-1 text-xs">
+                          <li>• Tất cả thông tin của bạn được bảo mật tuyệt đối</li>
+                          <li>• Chúng tôi sẽ liên hệ xác nhận lịch hẹn trong vòng 2-4 giờ</li>
+                          <li>• Vui lòng có mặt đúng giờ hoặc thông báo trước 24h nếu cần hủy</li>
+                          <li>• Giờ làm việc: 8:00 - 18:00 (Thứ 2 - Thứ 7)</li>
+                        </ul>
                       </Text>
                     </div>
 
@@ -420,9 +527,10 @@ export default function ConsultationBooking() {
                       htmlType="submit"
                       size="large"
                       loading={bookingLoading}
-                      className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 border-none"
+                      disabled={!selectedConsultant || userLoading}
+                      className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 border-none disabled:from-gray-400 disabled:to-gray-500"
                     >
-                      {bookingLoading ? 'Đang xử lý...' : 'Đặt lịch tư vấn'}
+                      {bookingLoading ? 'Đang xử lý...' : userLoading ? 'Đang tải...' : 'Đặt lịch tư vấn'}
                     </Button>
                   </Form>
                 </>
@@ -431,6 +539,8 @@ export default function ConsultationBooking() {
           </Col>
         </Row>
       </div>
+        </>
+      )}
     </div>
   );
 }
