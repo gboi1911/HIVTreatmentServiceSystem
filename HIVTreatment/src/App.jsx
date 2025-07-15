@@ -21,6 +21,8 @@ const EducationalMaterials = React.lazy(() =>
 const BlogDetail = React.lazy(() => import("./pages/BlogDetail"));
 const EducationPage = React.lazy(() => import("./pages/EducationContent"));
 const EducationDetail = React.lazy(() => import("./pages/EducationDetail"));
+const EducationStaff = React.lazy(() => import("./pages/EducationStaff"));
+const BlogStaff = React.lazy(() => import("./pages/BlogStaff"));
 
 // Auth pages
 const LoginPage = React.lazy(() => import("./pages/LoginPage"));
@@ -61,9 +63,15 @@ const MedicalRecordDetail = React.lazy(() =>
 );
 
 // Treatment Plan pages
-const TreatmentPlans = React.lazy(() => import('./pages/treatment/TreatmentPlans'));
-const TreatmentPlanForm = React.lazy(() => import('./pages/treatment/TreatmentPlanForm'));
-const TreatmentPlanDetail = React.lazy(() => import('./pages/treatment/TreatmentPlanDetail'));
+const TreatmentPlans = React.lazy(() =>
+  import("./pages/treatment/TreatmentPlans")
+);
+const TreatmentPlanForm = React.lazy(() =>
+  import("./pages/treatment/TreatmentPlanForm")
+);
+const TreatmentPlanDetail = React.lazy(() =>
+  import("./pages/treatment/TreatmentPlanDetail")
+);
 
 // Admin only pages
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
@@ -92,8 +100,10 @@ function App() {
               element={<EducationalMaterials />}
             />
             <Route path="education" element={<EducationPage />} />
+            <Route path="education/staff" element={<EducationStaff />} />
             <Route path="education/:postId" element={<EducationDetail />} />
             <Route path="blog/:id" element={<BlogDetail />} />
+            <Route path="blog/staff" element={<BlogStaff />} />
 
             {/* Protected routes (require login) */}
             <Route
