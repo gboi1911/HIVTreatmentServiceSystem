@@ -3,6 +3,7 @@ import { Card, Table, Tag, Button, Typography, Space, Divider, message, Spin, Mo
 import { CalendarOutlined, EyeOutlined, EditOutlined, DeleteOutlined, ClockCircleOutlined, UserOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { getAppointmentsByCustomer, updateAppointment, cancelAppointment } from '../api/appointment';
 import dayjs from 'dayjs';
+import { useAuthStatus } from '../hooks/useAuthStatus';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -15,16 +16,70 @@ export default function AppointmentHistory() {
   const [editVisible, setEditVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [form] = Form.useForm();
+  
+  // ✅ Use the auth hook to get current user info
+  const { userInfo, isLoggedIn } = useAuthStatus();
 
+  const mapStatusToVietnamese = (status) => {
+    const statusMap = {
+      'SCHEDULED': 'Đã lên lịch',
+      'PENDING': 'Chờ xác nhận',
+      'CONFIRMED': 'Đã xác nhận',
+      'IN_PROGRESS': 'Đang diễn ra',
+      'COMPLETED': 'Đã hoàn thành',
+      'CANCELLED': 'Đã hủy',
+      'NO_SHOW': 'Không đến',
+      'RESCHEDULED': 'Đã dời lịch'
+    };
+    return statusMap[status] || status;
+  };
+
+  const mapStatus = (status) => {
+    const statusMap = {
+    'SCHEDULED': 'Đã lên lịch',
+    'PENDING': 'Chờ xác nhận',
+    'CONFIRMED': 'Đã xác nhận',
+    'IN_PROGRESS': 'Đang diễn ra',
+    'COMPLETED': 'Đã hoàn thành',
+    'CANCELLED': 'Đã hủy',
+    'NO_SHOW': 'Không đến',
+    'RESCHEDULED': 'Đã dời lịch'
+  };
+  return statusMap[status] || status;
+  }
   useEffect(() => {
     loadAppointments();
-  }, []);
+  }, [userInfo]); // Add userInfo as dependency
 
   const loadAppointments = async () => {
     try {
       setLoading(true);
-      // This would normally get the customer ID from auth context
-      const customerId = localStorage.getItem('userId') || '1';
+ 
+      let customerId;
+      
+      if (userInfo?.id) {
+        customerId = userInfo.id;
+      } else {
+        // Fallback: try to get from localStorage
+        try {
+          const savedUserInfo = localStorage.getItem('userInfo');
+          if (savedUserInfo) {
+            const parsedUserInfo = JSON.parse(savedUserInfo);
+            customerId = parsedUserInfo.id || parsedUserInfo.customerId;
+          }
+        } catch (error) {
+          console.error('Failed to parse userInfo from localStorage:', error);
+        }
+      }
+      
+      // If still no customerId, show error
+      if (!customerId) {
+        console.error('No customer ID found');
+        message.error('Không thể xác định người dùng. Vui lòng đăng nhập lại.');
+        return;
+      }
+      
+      console.log('🔍 Loading appointments for customer ID:', customerId);
       const response = await getAppointmentsByCustomer(customerId);
       setAppointments(response.data || []);
     } catch (error) {
@@ -64,15 +119,22 @@ export default function AppointmentHistory() {
     }
   };
 
+  // Update the getStatusColor function
   const getStatusColor = (status) => {
+    const vietnameseStatus = mapStatusToVietnamese(status);
+    
     const statusColors = {
+      'Đã lên lịch': 'blue',
       'Chờ xác nhận': 'orange',
       'Đã xác nhận': 'blue',
+      'Đang diễn ra': 'processing',
       'Đã hoàn thành': 'green',
       'Đã hủy': 'red',
-      'Không đến': 'gray'
+      'Không đến': 'gray',
+      'Đã dời lịch': 'purple'
     };
-    return statusColors[status] || 'default';
+    
+    return statusColors[vietnameseStatus] || 'default';
   };
 
   const getConsultationIcon = (type) => {
@@ -87,13 +149,13 @@ export default function AppointmentHistory() {
   const canEdit = (appointment) => {
     const appointmentTime = dayjs(appointment.datetime);
     const now = dayjs();
-    return appointmentTime.isAfter(now) && ['Chờ xác nhận', 'Đã xác nhận'].includes(appointment.status);
+    return appointmentTime.isAfter(now) && ['PENDING', 'CONFIRMED', 'SCHEDULED'].includes(appointment.status);
   };
 
   const canCancel = (appointment) => {
     const appointmentTime = dayjs(appointment.datetime);
     const now = dayjs();
-    return appointmentTime.isAfter(now.add(24, 'hour')) && ['Chờ xác nhận', 'Đã xác nhận'].includes(appointment.status);
+    return appointmentTime.isAfter(now.add(24, 'hour')) && ['PENDING', 'CONFIRMED', 'SCHEDULED'].includes(appointment.status);
   };
 
   const handleViewDetail = (appointment) => {
@@ -169,22 +231,29 @@ export default function AppointmentHistory() {
     },
     {
       title: 'Hình thức',
-      dataIndex: 'consultationType',
-      key: 'consultationType',
-      render: (type) => (
-        <div className="flex items-center gap-2">
-          {getConsultationIcon(type)}
-          <span>{type}</span>
-        </div>
-      )
+      dataIndex: 'type',
+      key: 'type',
+      render: (type, record) => {
+
+        const consultationType = type || record.consultationType;
+        return (
+          <div className="flex items-center gap-2">
+            {getConsultationIcon(consultationType)}
+            <span>{consultationType}</span>
+          </div>
+        );
+      }
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => (
-        <Tag color={getStatusColor(status)}>{status}</Tag>
-      )
+      render: (status) => {
+        const vietnameseStatus = mapStatusToVietnamese(status);
+        return (
+          <Tag color={getStatusColor(status)}>{vietnameseStatus}</Tag>
+        );
+      }
     },
     {
       title: 'Thao tác',
@@ -224,6 +293,19 @@ export default function AppointmentHistory() {
       )
     }
   ];
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Vui lòng đăng nhập</h2>
+          <p className="text-gray-600 mb-4">Bạn cần đăng nhập để xem lịch sử cuộc hẹn</p>
+          <Button type="primary" onClick={() => window.location.href = '/login'}>
+            Đăng nhập
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -262,12 +344,9 @@ export default function AppointmentHistory() {
           title="Chi tiết cuộc hẹn"
           open={detailVisible}
           onCancel={() => setDetailVisible(false)}
-          footer={[
-            <Button key="close" onClick={() => setDetailVisible(false)}>
-              Đóng
-            </Button>
-          ]}
+          footer={null} // Remove the custom footer to avoid duplicate close buttons
           width={600}
+          centered // Center the modal for better UX
         >
           {selectedAppointment && (
             <div className="space-y-4">
@@ -279,8 +358,8 @@ export default function AppointmentHistory() {
                 <div>
                   <Text type="secondary">Hình thức tư vấn:</Text>
                   <div className="flex items-center gap-2 font-medium">
-                    {getConsultationIcon(selectedAppointment.consultationType)}
-                    {selectedAppointment.consultationType}
+                    {getConsultationIcon(selectedAppointment.consultationType || selectedAppointment.type)}
+                    {selectedAppointment.consultationType || selectedAppointment.type}
                   </div>
                 </div>
                 <div>
@@ -293,7 +372,7 @@ export default function AppointmentHistory() {
                   <Text type="secondary">Trạng thái:</Text>
                   <div>
                     <Tag color={getStatusColor(selectedAppointment.status)}>
-                      {selectedAppointment.status}
+                      {mapStatusToVietnamese(selectedAppointment.status)}
                     </Tag>
                   </div>
                 </div>
@@ -303,7 +382,7 @@ export default function AppointmentHistory() {
               
               <div>
                 <Text type="secondary">Ghi chú:</Text>
-                <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                <div className="mt-2 p-3 bg-gray-50 rounded-lg min-h-[60px]">
                   {selectedAppointment.note || 'Không có ghi chú'}
                 </div>
               </div>
