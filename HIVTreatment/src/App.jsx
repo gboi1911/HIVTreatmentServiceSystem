@@ -35,9 +35,7 @@ const ConsultationBooking = React.lazy(() =>
 const AppointmentHistory = React.lazy(() =>
   import("./pages/AppointmentHistory")
 );
-const BookingSuccess = React.lazy(() =>
-  import("./pages/BookingSuccess")
-);
+const BookingSuccess = React.lazy(() => import("./pages/BookingSuccess"));
 const UserProfile = React.lazy(() => import("./pages/user/UserProfile"));
 
 // Assessment pages
@@ -73,10 +71,23 @@ const TreatmentPlanDetail = React.lazy(() =>
   import("./pages/treatment/TreatmentPlanDetail")
 );
 
+//Appointment Management
+const AppointmentManagementPage = React.lazy(() =>
+  import("./pages/AppointmentManagement")
+);
+
 // Admin only pages
 const AdminDashboard = React.lazy(() => import("./pages/admin/AdminDashboard"));
-const UserManagement = React.lazy(() => import("./pages/admin/UserManagement").then(module => ({ default: module.UserManagement })));
-const StaffManagement = React.lazy(() => import("./pages/admin/StaffManagement").then(module => ({ default: module.StaffManagement })));
+const UserManagement = React.lazy(() =>
+  import("./pages/admin/UserManagement").then((module) => ({
+    default: module.UserManagement,
+  }))
+);
+const StaffManagement = React.lazy(() =>
+  import("./pages/admin/StaffManagement").then((module) => ({
+    default: module.StaffManagement,
+  }))
+);
 // const SystemSettings = React.lazy(() => import('./pages/admin/SystemSettings'));
 
 // // Staff only pages
@@ -104,6 +115,10 @@ function App() {
             <Route path="education/:postId" element={<EducationDetail />} />
             <Route path="blog/:id" element={<BlogDetail />} />
             <Route path="blog/staff" element={<BlogStaff />} />
+            <Route
+              path="appointment-management"
+              element={<AppointmentManagementPage />}
+            />
 
             {/* Protected routes (require login) */}
             <Route
@@ -180,7 +195,7 @@ function App() {
               path="medical-records"
               element={
                 // <ProtectedRoute>
-                  <MedicalRecords />
+                <MedicalRecords />
                 // </ProtectedRoute>
               }
             />
@@ -188,7 +203,7 @@ function App() {
               path="medical-records/new"
               element={
                 // <ProtectedRoute>
-                  <MedicalRecordForm />
+                <MedicalRecordForm />
                 // </ProtectedRoute>
               }
             />
@@ -196,7 +211,7 @@ function App() {
               path="medical-records/edit/:id"
               element={
                 // <ProtectedRoute>
-                  <MedicalRecordForm />
+                <MedicalRecordForm />
                 // </ProtectedRoute>
               }
             />
@@ -204,7 +219,7 @@ function App() {
               path="medical-records/:id"
               element={
                 // <ProtectedRoute>
-                  <MedicalRecordDetail />
+                <MedicalRecordDetail />
                 // </ProtectedRoute>
               }
             />
@@ -219,15 +234,15 @@ function App() {
             path="admin/dashboard"
             element={
               <AdminRoute>
-              <AdminDashboard />
-            </AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
             }
           />
           <Route
             path="admin/users"
             element={
               <AdminRoute>
-              <UserManagement />
+                <UserManagement />
               </AdminRoute>
             }
           />
@@ -235,7 +250,7 @@ function App() {
             path="admin/staff"
             element={
               <AdminRoute>
-              <StaffManagement />
+                <StaffManagement />
               </AdminRoute>
             }
           />
