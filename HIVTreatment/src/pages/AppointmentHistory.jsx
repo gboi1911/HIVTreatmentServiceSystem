@@ -210,16 +210,14 @@ export default function AppointmentHistory() {
     }
   };
 
+
+  // Only allow edit/cancel if status is PENDING
   const canEdit = (appointment) => {
-    const appointmentTime = dayjs(appointment.datetime);
-    const now = dayjs();
-    return appointmentTime.isAfter(now) && ['PENDING', 'CONFIRMED', 'SCHEDULED'].includes(appointment.status);
+    return appointment.status === 'PENDING';
   };
 
   const canCancel = (appointment) => {
-    const appointmentTime = dayjs(appointment.datetime);
-    const now = dayjs();
-    return appointmentTime.isAfter(now.add(24, 'hour')) && ['PENDING', 'CONFIRMED', 'SCHEDULED'].includes(appointment.status);
+    return appointment.status === 'PENDING';
   };
 
   const handleViewDetail = (appointment) => {

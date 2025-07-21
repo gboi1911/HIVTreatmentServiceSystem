@@ -21,8 +21,10 @@ const EducationalMaterials = React.lazy(() =>
 const BlogDetail = React.lazy(() => import("./pages/BlogDetail"));
 const EducationPage = React.lazy(() => import("./pages/EducationContent"));
 const EducationDetail = React.lazy(() => import("./pages/EducationDetail"));
+
 const EducationStaff = React.lazy(() => import("./pages/EducationStaff"));
 const BlogStaff = React.lazy(() => import("./pages/BlogStaff"));
+const Contact = React.lazy(() => import("./pages/Contact"));
 
 // Auth pages
 const LoginPage = React.lazy(() => import("./pages/LoginPage"));
@@ -115,9 +117,14 @@ function App() {
             <Route path="education/:postId" element={<EducationDetail />} />
             <Route path="blog/:id" element={<BlogDetail />} />
             <Route path="blog/staff" element={<BlogStaff />} />
+            <Route path="contact" element={<Contact />} />
             <Route
               path="appointment-management"
-              element={<AppointmentManagementPage />}
+              element={
+                <StaffRoute>
+                  <AppointmentManagementPage />
+                </StaffRoute>
+              }
             />
 
             {/* Protected routes (require login) */}
