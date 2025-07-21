@@ -50,6 +50,79 @@ export const login = async (username, password) => {
 export const getCurrentUser = async (token) => {
   try {
     console.log('🔄 Fetching current user info...');
+    
+    // First, decode JWT token to get user/account information
+    let accountId = null;
+    let userInfoFromToken = null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('🔍 JWT payload:', payload);
+      
+      // Extract account ID or user ID from token
+      accountId = payload.sub || payload.userId || payload.id || payload.accountId;
+      userInfoFromToken = {
+        id: accountId,
+        fullName: payload.fullName || payload.name || payload.username,
+        email: payload.email,
+        phone: payload.phone,
+        username: payload.username || payload.email,
+        role: payload.role || payload.authorities?.[0] || 'CUSTOMER'
+      };
+      console.log('🆔 Account ID from token:', accountId);
+      console.log('👤 User info from token:', userInfoFromToken);
+    } catch (jwtError) {
+      console.error('❌ Failed to decode JWT token:', jwtError);
+    }
+    
+    // Try to get customer by account ID first (most accurate)
+    if (accountId) {
+      try {
+        console.log('🔍 Trying to get customer by account ID:', accountId);
+        const customerByAccountResponse = await fetch(`${API_BASE}/customers/account/${accountId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (customerByAccountResponse.ok) {
+          const customerByAccount = await customerByAccountResponse.json();
+          console.log('✅ Customer by account response:', customerByAccount);
+          
+          let customer = null;
+          if (Array.isArray(customerByAccount) && customerByAccount.length > 0) {
+            customer = customerByAccount[0];
+          } else if (customerByAccount && customerByAccount.id) {
+            customer = customerByAccount;
+          }
+          
+          if (customer) {
+            const processedUser = {
+              id: customer.id, // This should be the correct customer ID
+              customerId: customer.id, // Add explicit customerId field
+              fullName: customer.fullName || customer.name || 'Người dùng',
+              email: customer.email,
+              phone: customer.phone,
+              gender: customer.gender,
+              username: customer.fullName || customer.name || customer.email || 'Người dùng',
+              role: customer.role || 'CUSTOMER',
+              accountId: accountId // Keep track of account ID
+            };
+            
+            console.log('✅ Final processed user with correct customer ID:', processedUser);
+            return processedUser;
+          }
+        } else {
+          console.warn('⚠️ Customer by account endpoint failed:', customerByAccountResponse.status);
+        }
+      } catch (accountError) {
+        console.error('❌ Error getting customer by account:', accountError);
+      }
+    }
+    
+    // Fallback: Get all customers and try to match
+    console.log('🔄 Fallback: Getting all customers...');
     const customersResponse = await fetch(`${API_BASE}/customers`, {
       method: 'GET',
       headers: {
@@ -62,21 +135,38 @@ export const getCurrentUser = async (token) => {
     
     if (customersResponse.ok) {
       const customers = await customersResponse.json();
-      console.log('✅ Customers response:', customers);
+      console.log('✅ All customers response:', customers);
       
       if (Array.isArray(customers) && customers.length > 0) {
-        // Return the first customer (should be current user)
-        const user = customers[0];
-        console.log('✅ User info from customers:', user);
+        // Try to find customer by matching account ID or other fields
+        let user = null;
+        
+        if (accountId && userInfoFromToken) {
+          // Try to match by email, phone, or name
+          user = customers.find(customer => 
+            customer.email === userInfoFromToken.email ||
+            customer.phone === userInfoFromToken.phone ||
+            customer.fullName === userInfoFromToken.fullName
+          );
+          console.log('🔍 Found customer by matching:', user);
+        }
+        
+        // If no match found, use first customer as fallback (not ideal)
+        if (!user) {
+          user = customers[0];
+          console.log('⚠️ Using first customer as fallback:', user);
+        }
         
         const processedUser = {
           id: user.id,
+          customerId: user.id, // Add explicit customerId field
           fullName: user.fullName || user.name || 'Người dùng',
           email: user.email,
           phone: user.phone,
           gender: user.gender,
           username: user.fullName || user.name || user.email || 'Người dùng',
-          role: user.role || 'STAFF'
+          role: user.role || 'CUSTOMER',
+          accountId: accountId
         };
         
         console.log('✅ Processed user info:', processedUser);

@@ -173,7 +173,7 @@ export default function ConsultationBooking() {
       console.log('👨‍⚕️ Selected consultant:', selectedConsultant);
       
       // Format appointment data with correct datetime format
-      const appointmentData = formatAppointmentData(values, selectedConsultant, currentUser);
+      const appointmentData = formatAppointmentData(values, currentUser, selectedConsultant);
       
       // Submit booking
       const response = await bookAppointment(appointmentData);

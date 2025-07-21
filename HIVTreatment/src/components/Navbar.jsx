@@ -33,7 +33,6 @@ const getQuickLinks = (userRole) => {
     { path: "/success", label: "Thành công & Kỹ thuật mới" },
     { path: "/healthcare", label: "Nhân viên y tế" },
     { path: "/education", label: "Khoa học" },
-    { path: "/consultation-booking", label: "Đặt lịch tư vấn" },
   ];
 
   // Add dashboard link only for admin and manager
