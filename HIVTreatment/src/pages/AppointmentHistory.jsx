@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Table, Tag, Button, Typography, Space, Divider, message, Spin, Modal, Form, Input, DatePicker, TimePicker, Select } from 'antd';
 import { CalendarOutlined, EyeOutlined, EditOutlined, DeleteOutlined, ClockCircleOutlined, UserOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { getAppointmentsByCustomer, updateAppointment, cancelAppointment } from '../api/appointment';
+import { getCurrentUser } from '../api/auth';
+import { isLoggedIn } from '../utils/auth';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
@@ -14,21 +16,138 @@ export default function AppointmentHistory() {
   const [detailVisible, setDetailVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [form] = Form.useForm();
 
+  const mapStatusToVietnamese = (status) => {
+    const statusMap = {
+      'SCHEDULED': 'Đã lên lịch',
+      'PENDING': 'Chờ xác nhận',
+      'CONFIRMED': 'Đã xác nhận',
+      'IN_PROGRESS': 'Đang diễn ra',
+      'COMPLETED': 'Đã hoàn thành',
+      'CANCELLED': 'Đã hủy',
+      'NO_SHOW': 'Không đến',
+      'RESCHEDULED': 'Đã dời lịch'
+    };
+    return statusMap[status] || status;
+  };
+
+  const mapStatus = (status) => {
+    const statusMap = {
+    'SCHEDULED': 'Đã lên lịch',
+    'PENDING': 'Chờ xác nhận',
+    'CONFIRMED': 'Đã xác nhận',
+    'IN_PROGRESS': 'Đang diễn ra',
+    'COMPLETED': 'Đã hoàn thành',
+    'CANCELLED': 'Đã hủy',
+    'NO_SHOW': 'Không đến',
+    'RESCHEDULED': 'Đã dời lịch'
+  };
+  return statusMap[status] || status;
+  }
+
+  // Load user info and appointments
   useEffect(() => {
-    loadAppointments();
+    loadUserAndAppointments();
   }, []);
 
-  const loadAppointments = async () => {
+  const loadUserAndAppointments = async () => {
+    try {
+      setUserLoading(true);
+      
+      // Check if user is logged in
+      if (!isLoggedIn()) {
+        message.error('Vui lòng đăng nhập để xem lịch hẹn');
+        return;
+      }
+
+      // Get current user with correct customer ID
+      const token = localStorage.getItem('token');
+      const user = await getCurrentUser(token);
+      setCurrentUser(user);
+      
+      console.log('👤 Current user loaded:', user);
+      console.log('🆔 User IDs:', {
+        id: user.id,
+        customerId: user.customerId,
+        accountId: user.accountId
+      });
+
+      // Load appointments using the correct customer ID
+      await loadAppointments(user);
+      
+    } catch (error) {
+      console.error('Failed to load user and appointments:', error);
+      message.error('Không thể tải thông tin người dùng. Vui lòng đăng nhập lại.');
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
+  const loadAppointments = async (user = currentUser) => {
     try {
       setLoading(true);
-      // This would normally get the customer ID from auth context
-      const customerId = localStorage.getItem('userId') || '1';
+      
+      if (!user) {
+        console.error('No user provided');
+        message.error('Thông tin người dùng không có sẵn');
+        return;
+      }
+
+      // Use the correct customer ID (prioritize customerId, fallback to id)
+      const customerId = user.customerId || user.id;
+      
+      if (!customerId) {
+        console.error('No customer ID found in user object:', user);
+        message.error('Không thể xác định ID khách hàng. Vui lòng đăng nhập lại.');
+        return;
+      }
+      
+      console.log('🔍 Loading appointments for customer ID:', customerId);
       const response = await getAppointmentsByCustomer(customerId);
-      setAppointments(response.data || []);
+      
+      console.log('📋 Appointments API response:', response);
+      
+      // Handle different response structures
+      let appointmentsData = [];
+      if (response.data && Array.isArray(response.data)) {
+        appointmentsData = response.data;
+      } else if (Array.isArray(response)) {
+        appointmentsData = response;
+      } else if (response.appointments && Array.isArray(response.appointments)) {
+        appointmentsData = response.appointments;
+      }
+
+      // Transform appointments to match UI expectations
+      const transformedAppointments = appointmentsData.map(appointment => ({
+        id: appointment.id,
+        doctorName: appointment.doctorName || appointment.doctor?.name || 'Chưa xác định',
+        consultationType: appointment.type || appointment.consultationType || 'Chưa xác định',
+        datetime: appointment.datetime,
+        status: appointment.status,
+        note: appointment.note || '',
+        createdAt: appointment.createdAt || appointment.created_at,
+        customerId: appointment.customerId,
+        doctorId: appointment.doctorId,
+        customerName: appointment.customerName,
+        customerPhone: appointment.customerPhone,
+        customerEmail: appointment.customerEmail
+      }));
+
+      setAppointments(transformedAppointments);
+      
+      if (transformedAppointments.length === 0) {
+        message.info('Bạn chưa có lịch hẹn nào');
+      } else {
+        console.log(`✅ Loaded ${transformedAppointments.length} appointments`);
+      }
+      
     } catch (error) {
       console.error('Failed to load appointments:', error);
+      message.error('Không thể tải danh sách lịch hẹn. Hiển thị dữ liệu mẫu.');
+      
       // Fallback to demo data
       setAppointments([
         {
@@ -36,7 +155,7 @@ export default function AppointmentHistory() {
           doctorName: "TS. Nguyễn Văn A",
           consultationType: "Video call",
           datetime: "2024-07-02 09:00",
-          status: "Đã xác nhận",
+          status: "CONFIRMED",
           note: "Tư vấn về kết quả xét nghiệm",
           createdAt: "2024-06-28 14:30"
         },
@@ -45,7 +164,7 @@ export default function AppointmentHistory() {
           doctorName: "ThS. Trần Thị B",
           consultationType: "Điện thoại",
           datetime: "2024-07-05 14:30",
-          status: "Chờ xác nhận",
+          status: "PENDING",
           note: "Tư vấn tâm lý sau chẩn đoán",
           createdAt: "2024-06-29 10:15"
         },
@@ -54,7 +173,7 @@ export default function AppointmentHistory() {
           doctorName: "TS. Nguyễn Văn A",
           consultationType: "Trực tiếp",
           datetime: "2024-06-25 10:00",
-          status: "Đã hoàn thành",
+          status: "COMPLETED",
           note: "Tư vấn về chế độ dinh dưỡng",
           createdAt: "2024-06-20 16:45"
         }
@@ -64,15 +183,22 @@ export default function AppointmentHistory() {
     }
   };
 
+  // Update the getStatusColor function
   const getStatusColor = (status) => {
+    const vietnameseStatus = mapStatusToVietnamese(status);
+    
     const statusColors = {
+      'Đã lên lịch': 'blue',
       'Chờ xác nhận': 'orange',
       'Đã xác nhận': 'blue',
+      'Đang diễn ra': 'processing',
       'Đã hoàn thành': 'green',
       'Đã hủy': 'red',
-      'Không đến': 'gray'
+      'Không đến': 'gray',
+      'Đã dời lịch': 'purple'
     };
-    return statusColors[status] || 'default';
+    
+    return statusColors[vietnameseStatus] || 'default';
   };
 
   const getConsultationIcon = (type) => {
@@ -84,16 +210,14 @@ export default function AppointmentHistory() {
     }
   };
 
+
+  // Only allow edit/cancel if status is PENDING
   const canEdit = (appointment) => {
-    const appointmentTime = dayjs(appointment.datetime);
-    const now = dayjs();
-    return appointmentTime.isAfter(now) && ['Chờ xác nhận', 'Đã xác nhận'].includes(appointment.status);
+    return appointment.status === 'PENDING';
   };
 
   const canCancel = (appointment) => {
-    const appointmentTime = dayjs(appointment.datetime);
-    const now = dayjs();
-    return appointmentTime.isAfter(now.add(24, 'hour')) && ['Chờ xác nhận', 'Đã xác nhận'].includes(appointment.status);
+    return appointment.status === 'PENDING';
   };
 
   const handleViewDetail = (appointment) => {
@@ -122,10 +246,28 @@ export default function AppointmentHistory() {
       await updateAppointment(selectedAppointment.id, updateData);
       message.success('Cập nhật lịch hẹn thành công!');
       setEditVisible(false);
-      loadAppointments();
+      // Refresh appointments after update
+      await loadAppointments();
     } catch (error) {
-      message.error('Cập nhật lịch hẹn thất bại!');
+      console.error('Failed to update appointment:', error);
+      message.error('Cập nhật lịch hẹn thất bại');
     }
+  };
+
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      await cancelAppointment(appointmentId);
+      message.success('Hủy lịch hẹn thành công!');
+      // Refresh appointments after cancellation
+      await loadAppointments();
+    } catch (error) {
+      console.error('Failed to cancel appointment:', error);
+      message.error('Hủy lịch hẹn thất bại');
+    }
+  };
+
+  const handleRefresh = async () => {
+    await loadAppointments();
   };
 
   const handleCancel = async (appointmentId) => {
@@ -169,22 +311,29 @@ export default function AppointmentHistory() {
     },
     {
       title: 'Hình thức',
-      dataIndex: 'consultationType',
-      key: 'consultationType',
-      render: (type) => (
-        <div className="flex items-center gap-2">
-          {getConsultationIcon(type)}
-          <span>{type}</span>
-        </div>
-      )
+      dataIndex: 'type',
+      key: 'type',
+      render: (type, record) => {
+
+        const consultationType = type || record.consultationType;
+        return (
+          <div className="flex items-center gap-2">
+            {getConsultationIcon(consultationType)}
+            <span>{consultationType}</span>
+          </div>
+        );
+      }
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => (
-        <Tag color={getStatusColor(status)}>{status}</Tag>
-      )
+      render: (status) => {
+        const vietnameseStatus = mapStatusToVietnamese(status);
+        return (
+          <Tag color={getStatusColor(status)}>{vietnameseStatus}</Tag>
+        );
+      }
     },
     {
       title: 'Thao tác',
@@ -224,24 +373,60 @@ export default function AppointmentHistory() {
       )
     }
   ];
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Vui lòng đăng nhập</h2>
+          <p className="text-gray-600 mb-4">Bạn cần đăng nhập để xem lịch sử cuộc hẹn</p>
+          <Button type="primary" onClick={() => window.location.href = '/login'}>
+            Đăng nhập
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <Title level={1} className="flex items-center gap-3 !mb-2">
-            <CalendarOutlined className="text-blue-600" />
-            Lịch sử cuộc hẹn
-          </Title>
-          <Text type="secondary" className="text-lg">
-            Quản lý và theo dõi các cuộc hẹn tư vấn của bạn
-          </Text>
+      {/* Show loading screen while loading user or appointments */}
+      {userLoading ? (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <Spin size="large" />
+            <p className="mt-4 text-gray-600">Đang tải thông tin người dùng...</p>
+          </div>
         </div>
+      ) : (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-8">
+            <Title level={1} className="flex items-center gap-3 !mb-2">
+              <CalendarOutlined className="text-blue-600" />
+              Lịch sử cuộc hẹn
+            </Title>
+            <Text type="secondary" className="text-lg">
+              Quản lý và theo dõi các cuộc hẹn tư vấn của bạn
+            </Text>
+            {currentUser && (
+              <div className="mt-4 inline-flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full">
+                <UserOutlined className="text-blue-600" />
+                <Text className="text-blue-800">
+                  Xin chào, {currentUser.fullName || currentUser.username}
+                </Text>
+              </div>
+            )}
+          </div>
 
-        <Card className="shadow-sm">
-          <Table
-            columns={columns}
-            dataSource={appointments}
+          <Card className="shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <Title level={4} className="!mb-0">
+                Danh sách cuộc hẹn
+              </Title>
+            </div>
+            
+            <Table
+              columns={columns}
+              dataSource={appointments}
             rowKey="id"
             loading={loading}
             pagination={{
@@ -262,12 +447,9 @@ export default function AppointmentHistory() {
           title="Chi tiết cuộc hẹn"
           open={detailVisible}
           onCancel={() => setDetailVisible(false)}
-          footer={[
-            <Button key="close" onClick={() => setDetailVisible(false)}>
-              Đóng
-            </Button>
-          ]}
+          footer={null} // Remove the custom footer to avoid duplicate close buttons
           width={600}
+          centered // Center the modal for better UX
         >
           {selectedAppointment && (
             <div className="space-y-4">
@@ -279,8 +461,8 @@ export default function AppointmentHistory() {
                 <div>
                   <Text type="secondary">Hình thức tư vấn:</Text>
                   <div className="flex items-center gap-2 font-medium">
-                    {getConsultationIcon(selectedAppointment.consultationType)}
-                    {selectedAppointment.consultationType}
+                    {getConsultationIcon(selectedAppointment.consultationType || selectedAppointment.type)}
+                    {selectedAppointment.consultationType || selectedAppointment.type}
                   </div>
                 </div>
                 <div>
@@ -293,7 +475,7 @@ export default function AppointmentHistory() {
                   <Text type="secondary">Trạng thái:</Text>
                   <div>
                     <Tag color={getStatusColor(selectedAppointment.status)}>
-                      {selectedAppointment.status}
+                      {mapStatusToVietnamese(selectedAppointment.status)}
                     </Tag>
                   </div>
                 </div>
@@ -303,7 +485,7 @@ export default function AppointmentHistory() {
               
               <div>
                 <Text type="secondary">Ghi chú:</Text>
-                <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                <div className="mt-2 p-3 bg-gray-50 rounded-lg min-h-[60px]">
                   {selectedAppointment.note || 'Không có ghi chú'}
                 </div>
               </div>
@@ -393,7 +575,8 @@ export default function AppointmentHistory() {
             </div>
           </Form>
         </Modal>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

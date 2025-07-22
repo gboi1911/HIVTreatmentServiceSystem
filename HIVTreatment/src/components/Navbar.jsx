@@ -33,7 +33,6 @@ const getQuickLinks = (userRole) => {
     { path: "/success", label: "Thành công & Kỹ thuật mới" },
     { path: "/healthcare", label: "Nhân viên y tế" },
     { path: "/education", label: "Khoa học" },
-    { path: "/consultation-booking", label: "Đặt lịch tư vấn" },
   ];
 
   // Add dashboard link only for admin and manager
@@ -61,6 +60,7 @@ const getOrganizedMenuItems = (canAccessMedicalRecords) => {
     { path: "/medical-records", label: "Hồ sơ bệnh án", icon: <FileTextOutlined />, description: "Quản lý hồ sơ bệnh án" },
     { path: "/treatment-plans", label: "Kế hoạch điều trị", icon: <MedicineBoxOutlined />, description: "Quản lý kế hoạch điều trị ARV" },
     { path: "/lab-results", label: "Kết quả xét nghiệm", icon: <ExperimentOutlined />, description: "Theo dõi kết quả xét nghiệm" },
+    { path: "/appointment-management", label: "Quản lý cuộc hẹn", icon: <CalendarOutlined />, description: "Quản lý lịch hẹn bệnh nhân" },
   ] : [];
 
   const supportMenuItems = [
@@ -486,7 +486,8 @@ export default function Navbar() {
                   hoveredDropdown === 'medical', 
                   current.includes('/medical-records') || 
                   current.includes('/treatment-plans') || 
-                  current.includes('/lab-results')
+                  current.includes('/lab-results') || 
+                  current.includes('/appointment-management')
                 )}
                 onMouseEnter={() => setHoveredDropdown('medical')}
                 onMouseLeave={() => setHoveredDropdown(null)}

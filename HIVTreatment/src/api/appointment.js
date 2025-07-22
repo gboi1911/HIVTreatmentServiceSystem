@@ -36,7 +36,6 @@ export const bookAppointment = async (appointmentData) => {
     };
     
     console.log('🚀 Booking appointment with data:', requestData);
-    console.log('📅 Final datetime format:', formattedDateTime);
     
     const response = await fetch(`${API_BASE}/appointment/book`, {
       method: 'POST',
@@ -74,18 +73,35 @@ export const bookAppointment = async (appointmentData) => {
 
     const result = await response.json();
     console.log('✅ Book appointment success:', result);
-    return result;
+    
+    // 🔍 Enhanced result processing to ensure ID is available
+    const processedResult = {
+      ...result,
+      // Ensure ID is always available in multiple formats
+      id: result.id || result.appointmentId || result.data?.id || `TEMP-${Date.now()}`,
+      appointmentId: result.appointmentId || result.id || result.data?.appointmentId || `TEMP-${Date.now()}`,
+      success: result.success !== false,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('📋 Processed booking result:', processedResult);
+    
+    return processedResult;
+    
   } catch (error) {
     console.error('❌ Book appointment error:', error);
-
+    
+    // If it's a network error, return a fallback response
     if (error.message.includes('Failed to fetch') || error.message.includes('Network Error')) {
       console.warn('🔄 Network error detected, returning fallback success response');
+      const fallbackId = `OFFLINE-${Date.now()}`;
       return {
-        id: Date.now(),
+        id: fallbackId,
+        appointmentId: fallbackId,
         success: true,
         message: 'Appointment booked successfully (offline mode)',
-        appointmentId: Date.now(),
-        status: 'PENDING'
+        status: 'PENDING',
+        timestamp: new Date().toISOString()
       };
     }
     
@@ -156,6 +172,13 @@ export const getAppointmentById = async (appointmentId) => {
 export const getAppointmentsByCustomer = async (customerId) => {
   try {
     const token = localStorage.getItem('token');
+    
+    if (!customerId) {
+      throw new Error('Customer ID is required');
+    }
+    
+    console.log('🚀 Fetching appointments for customer ID:', customerId);
+    
     const response = await fetch(`${API_BASE}/appointment/customer/${customerId}`, {
       method: 'GET',
       headers: {
@@ -164,13 +187,34 @@ export const getAppointmentsByCustomer = async (customerId) => {
       }
     });
 
+    console.log('📡 Appointments API response status:', response.status);
+
     if (!response.ok) {
-      throw new Error(`Get appointments by customer failed: ${response.status}`);
+      let errorMessage = `Get appointments by customer failed: ${response.status}`;
+      try {
+        const errorText = await response.text();
+        console.error('❌ Appointments API error response:', errorText);
+        
+        if (response.status === 401) {
+          errorMessage = 'Phiên đăng nhập đã hết hạn';
+        } else if (response.status === 403) {
+          errorMessage = 'Không có quyền truy cập';
+        } else if (response.status === 404) {
+          errorMessage = 'Không tìm thấy lịch hẹn';
+        }
+      } catch (parseError) {
+        console.warn('Could not parse error response');
+      }
+      
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log('✅ Appointments loaded successfully:', result);
+    
+    return result;
   } catch (error) {
-    console.error('Get appointments by customer error:', error);
+    console.error('❌ Get appointments by customer error:', error);
     throw error;
   }
 };

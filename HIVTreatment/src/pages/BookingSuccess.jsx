@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Result, Button, Card, Typography, Timeline, Space } from 'antd';
 import { CheckCircleOutlined, CalendarOutlined, PhoneOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -20,6 +21,9 @@ export default function BookingSuccess() {
   if (!bookingData) {
     return null;
   }
+
+  // 🔍 Add debugging to see what data we have
+  console.log('📋 BookingSuccess - Received booking data:', bookingData);
 
   const nextSteps = [
     {
@@ -55,28 +59,48 @@ export default function BookingSuccess() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <Text type="secondary">Bác sĩ tư vấn:</Text>
-                <Text strong>{bookingData.doctorName}</Text>
+                <Text strong>
+                  {bookingData.consultant?.name || 'Chưa xác định'}
+                </Text>
               </div>
               
               <div className="flex justify-between items-center">
                 <Text type="secondary">Ngày giờ:</Text>
-                <Text strong>{bookingData.datetime}</Text>
+                <Text strong>
+                  {bookingData.datetime ? 
+                    dayjs(bookingData.datetime).format('DD/MM/YYYY HH:mm') : 
+                    'Chưa xác định'
+                  }
+                </Text>
               </div>
               
               <div className="flex justify-between items-center">
                 <Text type="secondary">Hình thức:</Text>
-                <Text strong>{bookingData.consultationType}</Text>
+                <Text strong>
+                  {bookingData.type || bookingData.consultationType || 'Chưa xác định'}
+                </Text>
               </div>
               
               <div className="flex justify-between items-center">
                 <Text type="secondary">Họ tên:</Text>
-                <Text strong>{bookingData.customerName}</Text>
+                <Text strong>
+                  {bookingData.customerName || 'Chưa xác định'}
+                </Text>
               </div>
               
               <div className="flex justify-between items-center">
                 <Text type="secondary">Số điện thoại:</Text>
-                <Text strong>{bookingData.phone}</Text>
+                <Text strong>
+                  {bookingData.customerPhone || 'Chưa xác định'}
+                </Text>
               </div>
+              
+              {bookingData.customerEmail && (
+                <div className="flex justify-between items-center">
+                  <Text type="secondary">Email:</Text>
+                  <Text strong>{bookingData.customerEmail}</Text>
+                </div>
+              )}
               
               {bookingData.note && (
                 <div>
@@ -86,6 +110,20 @@ export default function BookingSuccess() {
                   </div>
                 </div>
               )}
+              
+              <div className="flex justify-between items-center">
+                <Text type="secondary">Mã cuộc hẹn:</Text>
+                <Text strong className="text-blue-600">
+                  #{bookingData.appointmentId || bookingData.id || 'Đang xử lý'}
+                </Text>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <Text type="secondary">Trạng thái:</Text>
+                <Text strong className="text-orange-600">
+                  {bookingData.status === 'PENDING' ? 'Chờ xác nhận' : bookingData.status}
+                </Text>
+              </div>
             </div>
           </Card>
 

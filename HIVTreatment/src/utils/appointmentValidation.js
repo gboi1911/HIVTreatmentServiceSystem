@@ -84,6 +84,17 @@ export const validateAppointment = (appointmentData) => {
  */
 export const formatAppointmentData = (formData, user, doctor) => {
   console.log('🔄 Formatting appointment data...');
+  console.log('👤 User object received:', user);
+  console.log('👨‍⚕️ Doctor object received:', doctor);
+  
+  // Determine the correct customer ID
+  const customerId = user.customerId || user.id;
+  console.log('🆔 Using customer ID:', customerId);
+  console.log('🆔 Available IDs in user object:', {
+    id: user.id,
+    customerId: user.customerId,
+    accountId: user.accountId
+  });
   
   // Get all possible date formats for debugging
   const allFormats = getDateTimeFormats(formData.date, formData.time);
@@ -94,7 +105,7 @@ export const formatAppointmentData = (formData, user, doctor) => {
   console.log('📅 Selected format (backend):', formattedDateTime);
   
   const appointmentData = {
-    customerId: user.id,
+    customerId: customerId,
     doctorId: doctor.id,
     type: formData.consultationType,
     note: formData.reason || '',
@@ -105,6 +116,7 @@ export const formatAppointmentData = (formData, user, doctor) => {
   };
   
   console.log('📝 Final appointment data:', appointmentData);
+  console.log('🔍 Customer ID in final data:', appointmentData.customerId);
   
   return appointmentData;
 };
