@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Tag, Button, Typography, Space, Divider, message, Spin, Modal, Form, Input, DatePicker, TimePicker, Select } from 'antd';
 import { CalendarOutlined, EyeOutlined, EditOutlined, DeleteOutlined, ClockCircleOutlined, UserOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { getAppointmentsByCustomer, updateAppointment, cancelAppointment } from '../api/appointment';
+import { getAppointmentsByCustomer, updateAppointment, updateAppointmentStatus } from '../api/appointment';
 import { getCurrentUser } from '../api/auth';
 import { isLoggedIn } from '../utils/auth';
 import dayjs from 'dayjs';
@@ -33,20 +33,6 @@ export default function AppointmentHistory() {
     };
     return statusMap[status] || status;
   };
-
-  const mapStatus = (status) => {
-    const statusMap = {
-    'SCHEDULED': 'Đã lên lịch',
-    'PENDING': 'Chờ xác nhận',
-    'CONFIRMED': 'Đã xác nhận',
-    'IN_PROGRESS': 'Đang diễn ra',
-    'COMPLETED': 'Đã hoàn thành',
-    'CANCELLED': 'Đã hủy',
-    'NO_SHOW': 'Không đến',
-    'RESCHEDULED': 'Đã dời lịch'
-  };
-  return statusMap[status] || status;
-  }
 
   // Load user info and appointments
   useEffect(() => {
@@ -122,7 +108,9 @@ export default function AppointmentHistory() {
 
       // Transform appointments to match UI expectations
       const transformedAppointments = appointmentsData.map(appointment => ({
-        id: appointment.id,
+        // Fix: Use appointmentId as primary, fallback to id
+        id: appointment.appointmentId || appointment.id,
+        appointmentId: appointment.appointmentId || appointment.id, // Keep both for compatibility
         doctorName: appointment.doctorName || appointment.doctor?.name || 'Chưa xác định',
         consultationType: appointment.type || appointment.consultationType || 'Chưa xác định',
         datetime: appointment.datetime,
@@ -135,6 +123,13 @@ export default function AppointmentHistory() {
         customerPhone: appointment.customerPhone,
         customerEmail: appointment.customerEmail
       }));
+
+      // Add debugging to see the actual appointment IDs
+      console.log('🔍 Transformed appointments with IDs:', transformedAppointments.map(apt => ({
+        id: apt.id,
+        appointmentId: apt.appointmentId,
+        originalData: appointmentsData.find(orig => orig.appointmentId === apt.id || orig.id === apt.id)
+      })));
 
       setAppointments(transformedAppointments);
       
@@ -152,6 +147,7 @@ export default function AppointmentHistory() {
       setAppointments([
         {
           id: 1,
+          appointmentId: 1,
           doctorName: "TS. Nguyễn Văn A",
           consultationType: "Video call",
           datetime: "2024-07-02 09:00",
@@ -161,6 +157,7 @@ export default function AppointmentHistory() {
         },
         {
           id: 2,
+          appointmentId: 2,
           doctorName: "ThS. Trần Thị B",
           consultationType: "Điện thoại",
           datetime: "2024-07-05 14:30",
@@ -170,6 +167,7 @@ export default function AppointmentHistory() {
         },
         {
           id: 3,
+          appointmentId: 3,
           doctorName: "TS. Nguyễn Văn A",
           consultationType: "Trực tiếp",
           datetime: "2024-06-25 10:00",
@@ -209,7 +207,6 @@ export default function AppointmentHistory() {
       default: return null;
     }
   };
-
 
   // Only allow edit/cancel if status is PENDING
   const canEdit = (appointment) => {
@@ -254,35 +251,31 @@ export default function AppointmentHistory() {
     }
   };
 
-  const handleCancelAppointment = async (appointmentId) => {
-    try {
-      await cancelAppointment(appointmentId);
-      message.success('Hủy lịch hẹn thành công!');
-      // Refresh appointments after cancellation
-      await loadAppointments();
-    } catch (error) {
-      console.error('Failed to cancel appointment:', error);
-      message.error('Hủy lịch hẹn thất bại');
-    }
-  };
-
-  const handleRefresh = async () => {
-    await loadAppointments();
-  };
-
   const handleCancel = async (appointmentId) => {
+    // Add validation to ensure we have a valid ID
+    if (!appointmentId) {
+      console.error('❌ No appointment ID provided for cancellation');
+      message.error('Không thể xác định ID cuộc hẹn để hủy');
+      return;
+    }
+
+    console.log('🔍 Attempting to cancel appointment with ID:', appointmentId);
+
     Modal.confirm({
       title: 'Xác nhận hủy lịch hẹn',
-      content: 'Bạn có chắc chắn muốn hủy lịch hẹn này? Hành động này không thể hoàn tác.',
+      content: 'Bạn có chắc chắn muốn hủy lịch hẹn này? Trạng thái sẽ được thay đổi thành "Đã hủy".',
       okText: 'Hủy lịch hẹn',
       okType: 'danger',
       cancelText: 'Không',
       onOk: async () => {
         try {
-          await cancelAppointment(appointmentId);
+          console.log('🚀 Calling updateAppointmentStatus with ID:', appointmentId);
+          // Update appointment status to CANCELLED instead of deleting
+          await updateAppointmentStatus(appointmentId, 'CANCELLED');
           message.success('Hủy lịch hẹn thành công!');
-          loadAppointments();
+          await loadAppointments();
         } catch (error) {
+          console.error('Failed to cancel appointment:', error);
           message.error('Hủy lịch hẹn thất bại!');
         }
       }
@@ -314,7 +307,6 @@ export default function AppointmentHistory() {
       dataIndex: 'type',
       key: 'type',
       render: (type, record) => {
-
         const consultationType = type || record.consultationType;
         return (
           <div className="flex items-center gap-2">
@@ -373,6 +365,7 @@ export default function AppointmentHistory() {
       )
     }
   ];
+
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -427,154 +420,146 @@ export default function AppointmentHistory() {
             <Table
               columns={columns}
               dataSource={appointments}
-            rowKey="id"
-            loading={loading}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} của ${total} cuộc hẹn`
-            }}
-            locale={{
-              emptyText: 'Chưa có cuộc hẹn nào'
-            }}
-          />
-        </Card>
+              rowKey="id"
+              loading={loading}
+              pagination={true}
+              locale={{}}
+            />
+          </Card>
 
-        {/* Detail Modal */}
-        <Modal
-          title="Chi tiết cuộc hẹn"
-          open={detailVisible}
-          onCancel={() => setDetailVisible(false)}
-          footer={null} // Remove the custom footer to avoid duplicate close buttons
-          width={600}
-          centered // Center the modal for better UX
-        >
-          {selectedAppointment && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Text type="secondary">Bác sĩ tư vấn:</Text>
-                  <div className="font-medium">{selectedAppointment.doctorName}</div>
-                </div>
-                <div>
-                  <Text type="secondary">Hình thức tư vấn:</Text>
-                  <div className="flex items-center gap-2 font-medium">
-                    {getConsultationIcon(selectedAppointment.consultationType || selectedAppointment.type)}
-                    {selectedAppointment.consultationType || selectedAppointment.type}
-                  </div>
-                </div>
-                <div>
-                  <Text type="secondary">Ngày giờ:</Text>
-                  <div className="font-medium">
-                    {dayjs(selectedAppointment.datetime).format('DD/MM/YYYY HH:mm')}
-                  </div>
-                </div>
-                <div>
-                  <Text type="secondary">Trạng thái:</Text>
-                  <div>
-                    <Tag color={getStatusColor(selectedAppointment.status)}>
-                      {mapStatusToVietnamese(selectedAppointment.status)}
-                    </Tag>
-                  </div>
-                </div>
-              </div>
-              
-              <Divider />
-              
-              <div>
-                <Text type="secondary">Ghi chú:</Text>
-                <div className="mt-2 p-3 bg-gray-50 rounded-lg min-h-[60px]">
-                  {selectedAppointment.note || 'Không có ghi chú'}
-                </div>
-              </div>
-              
-              <div>
-                <Text type="secondary">Ngày đặt lịch:</Text>
-                <div className="font-medium">
-                  {dayjs(selectedAppointment.createdAt).format('DD/MM/YYYY HH:mm')}
-                </div>
-              </div>
-            </div>
-          )}
-        </Modal>
-
-        {/* Edit Modal */}
-        <Modal
-          title="Chỉnh sửa cuộc hẹn"
-          open={editVisible}
-          onCancel={() => setEditVisible(false)}
-          footer={null}
-          width={600}
-        >
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleUpdateAppointment}
+          {/* Detail Modal */}
+          <Modal
+            title="Chi tiết cuộc hẹn"
+            open={detailVisible}
+            onCancel={() => setDetailVisible(false)}
+            footer={null}
+            width={600}
+            centered
           >
-            <Form.Item
-              name="datetime"
-              label="Ngày giờ hẹn"
-              rules={[{ required: true, message: 'Vui lòng chọn ngày giờ!' }]}
-            >
-              <DatePicker
-                showTime={{ format: 'HH:mm' }}
-                format="DD/MM/YYYY HH:mm"
-                className="w-full"
-                disabledDate={(current) => current && current < dayjs().startOf('day')}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="consultationType"
-              label="Hình thức tư vấn"
-              rules={[{ required: true, message: 'Vui lòng chọn hình thức!' }]}
-            >
-              <Select>
-                <Option value="Video call">
-                  <div className="flex items-center gap-2">
-                    <VideoCameraOutlined className="text-blue-500" />
-                    Video call
+            {selectedAppointment && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Text type="secondary">Bác sĩ tư vấn:</Text>
+                    <div className="font-medium">{selectedAppointment.doctorName}</div>
                   </div>
-                </Option>
-                <Option value="Điện thoại">
-                  <div className="flex items-center gap-2">
-                    <PhoneOutlined className="text-green-500" />
-                    Điện thoại
+                  <div>
+                    <Text type="secondary">Hình thức tư vấn:</Text>
+                    <div className="flex items-center gap-2 font-medium">
+                      {getConsultationIcon(selectedAppointment.consultationType || selectedAppointment.type)}
+                      {selectedAppointment.consultationType || selectedAppointment.type}
+                    </div>
                   </div>
-                </Option>
-                <Option value="Trực tiếp">
-                  <div className="flex items-center gap-2">
-                    <UserOutlined className="text-purple-500" />
-                    Trực tiếp
+                  <div>
+                    <Text type="secondary">Ngày giờ:</Text>
+                    <div className="font-medium">
+                      {dayjs(selectedAppointment.datetime).format('DD/MM/YYYY HH:mm')}
+                    </div>
                   </div>
-                </Option>
-              </Select>
-            </Form.Item>
+                  <div>
+                    <Text type="secondary">Trạng thái:</Text>
+                    <div>
+                      <Tag color={getStatusColor(selectedAppointment.status)}>
+                        {mapStatusToVietnamese(selectedAppointment.status)}
+                      </Tag>
+                    </div>
+                  </div>
+                </div>
+                
+                <Divider />
+                
+                <div>
+                  <Text type="secondary">Ghi chú:</Text>
+                  <div className="mt-2 p-3 bg-gray-50 rounded-lg min-h-[60px]">
+                    {selectedAppointment.note || 'Không có ghi chú'}
+                  </div>
+                </div>
+                
+                <div>
+                  <Text type="secondary">Ngày đặt lịch:</Text>
+                  <div className="font-medium">
+                    {dayjs(selectedAppointment.createdAt).format('DD/MM/YYYY HH:mm')}
+                  </div>
+                </div>
+              </div>
+            )}
+          </Modal>
 
-            <Form.Item
-              name="note"
-              label="Ghi chú"
+          {/* Edit Modal */}
+          <Modal
+            title="Chỉnh sửa cuộc hẹn"
+            open={editVisible}
+            onCancel={() => setEditVisible(false)}
+            footer={null}
+            width={600}
+          >
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleUpdateAppointment}
             >
-              <TextArea
-                rows={4}
-                placeholder="Ghi chú về cuộc hẹn"
-                showCount
-                maxLength={500}
-              />
-            </Form.Item>
+              <Form.Item
+                name="datetime"
+                label="Ngày giờ hẹn"
+                rules={[{ required: true, message: 'Vui lòng chọn ngày giờ!' }]}
+              >
+                <DatePicker
+                  showTime={{ format: 'HH:mm' }}
+                  format="DD/MM/YYYY HH:mm"
+                  className="w-full"
+                  disabledDate={(current) => current && current < dayjs().startOf('day')}
+                />
+              </Form.Item>
 
-            <div className="flex justify-end gap-3">
-              <Button onClick={() => setEditVisible(false)}>
-                Hủy
-              </Button>
-              <Button type="primary" htmlType="submit">
-                Cập nhật
-              </Button>
-            </div>
-          </Form>
-        </Modal>
+              <Form.Item
+                name="consultationType"
+                label="Hình thức tư vấn"
+                rules={[{ required: true, message: 'Vui lòng chọn hình thức!' }]}
+              >
+                <Select>
+                  <Option value="Video call">
+                    <div className="flex items-center gap-2">
+                      <VideoCameraOutlined className="text-blue-500" />
+                      Video call
+                    </div>
+                  </Option>
+                  <Option value="Điện thoại">
+                    <div className="flex items-center gap-2">
+                      <PhoneOutlined className="text-green-500" />
+                      Điện thoại
+                    </div>
+                  </Option>
+                  <Option value="Trực tiếp">
+                    <div className="flex items-center gap-2">
+                      <UserOutlined className="text-purple-500" />
+                      Trực tiếp
+                    </div>
+                  </Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="note"
+                label="Ghi chú"
+              >
+                <TextArea
+                  rows={4}
+                  placeholder="Ghi chú về cuộc hẹn"
+                  showCount
+                  maxLength={500}
+                />
+              </Form.Item>
+
+              <div className="flex justify-end gap-3">
+                <Button onClick={() => setEditVisible(false)}>
+                  Hủy
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  Cập nhật
+                </Button>
+              </div>
+            </Form>
+          </Modal>
         </div>
       )}
     </div>

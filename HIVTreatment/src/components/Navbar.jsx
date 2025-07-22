@@ -6,8 +6,6 @@ import {
   FileTextOutlined,
   InfoCircleOutlined,
   BookOutlined,
-  ReadOutlined,
-  TeamOutlined,
   UserOutlined,
   GlobalOutlined,
   SearchOutlined,
@@ -20,24 +18,35 @@ import {
   SafetyOutlined,
   ExperimentOutlined,
   PhoneOutlined,
-  BellOutlined
+  BellOutlined,
+  DashboardOutlined,
+  ClockCircleOutlined,
+  EnvironmentOutlined,
+  MailOutlined,
+  StarOutlined
 } from "@ant-design/icons";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStatus } from "../hooks/useAuthStatus";
+
 const { Header } = Layout;
 
-// Function to get quick links based on user role
-const getQuickLinks = (userRole) => {
+// Function to get quick links - now always shows useful links
+const getQuickLinks = (userRole, isLoggedIn) => {
   const baseLinks = [
-    { path: "/news", label: "Tin tức & Sự kiện" },
-    { path: "/success", label: "Thành công & Kỹ thuật mới" },
-    { path: "/healthcare", label: "Nhân viên y tế" },
-    { path: "/education", label: "Khoa học" },
+    { path: "/assessment/risk-assessment", label: "Đánh giá rủi ro", icon: <SafetyOutlined />, hot: true },
+    { path: "/consultation-booking", label: "Đặt lịch tư vấn", icon: <CalendarOutlined /> },
+    { path: "/guides", label: "Hướng dẫn", icon: <BookOutlined /> },
+    { path: "/contact", label: "Liên hệ", icon: <PhoneOutlined /> }
   ];
 
-  // Add dashboard link only for admin and manager
-  if (userRole && ['ADMIN', 'MANAGER'].includes(userRole.toUpperCase())) {
-    baseLinks.push({ path: "/admin/dashboard", label: "Dashboard" });
+  // Add dashboard link for admin and staff
+  if (userRole && ['ADMIN', 'MANAGER', 'STAFF', 'DOCTOR'].includes(userRole.toUpperCase())) {
+    baseLinks.unshift({ path: "/admin/dashboard", label: "Dashboard", icon: <DashboardOutlined /> });
+  }
+
+  // Add user-specific links for logged-in users
+  if (isLoggedIn) {
+    baseLinks.push({ path: "/user/appointment-history", label: "Lịch sử cuộc hẹn", icon: <CalendarOutlined /> });
   }
 
   return baseLinks;
@@ -45,31 +54,25 @@ const getQuickLinks = (userRole) => {
 
 // Organize menu items into categories
 const getOrganizedMenuItems = (canAccessMedicalRecords) => {
-  const publicMenuItems = [
-    { path: "/about", label: "Giới thiệu", icon: <InfoCircleOutlined /> },
-  ];
-
   const servicesMenuItems = [
-    { path: "/guides", label: "Hướng dẫn & Bảng giá", icon: <BookOutlined />, description: "Quy trình khám và bảng giá dịch vụ" },
-    { path: "/health-and-life", label: "Sức khoẻ & đời sống", icon: <HeartOutlined />, description: "Thông tin chăm sóc sức khỏe hàng ngày" },
     { path: "/assessment/risk-assessment", label: "Đánh giá rủi ro", icon: <SafetyOutlined />, description: "Kiểm tra nguy cơ phơi nhiễm HIV", hot: true },
     { path: "/consultation-booking", label: "Đặt lịch tư vấn", icon: <CalendarOutlined />, description: "Đặt lịch gặp bác sĩ tư vấn" },
+    { path: "/guides", label: "Hướng dẫn & Bảng giá", icon: <BookOutlined />, description: "Quy trình khám và bảng giá dịch vụ" },
+    { path: "/health-and-life", label: "Sức khoẻ & đời sống", icon: <HeartOutlined />, description: "Thông tin chăm sóc sức khỏe hàng ngày" },
   ];
 
   const medicalMenuItems = canAccessMedicalRecords ? [
     { path: "/medical-records", label: "Hồ sơ bệnh án", icon: <FileTextOutlined />, description: "Quản lý hồ sơ bệnh án" },
     { path: "/treatment-plans", label: "Kế hoạch điều trị", icon: <MedicineBoxOutlined />, description: "Quản lý kế hoạch điều trị ARV" },
-    { path: "/lab-results", label: "Kết quả xét nghiệm", icon: <ExperimentOutlined />, description: "Theo dõi kết quả xét nghiệm" },
     { path: "/appointment-management", label: "Quản lý cuộc hẹn", icon: <CalendarOutlined />, description: "Quản lý lịch hẹn bệnh nhân" },
   ] : [];
 
   const supportMenuItems = [
-    { path: "/faq", label: "Hỏi & Đáp", icon: <QuestionCircleOutlined />, description: "Các câu hỏi thường gặp" },
+    { path: "/ask-and-answer", label: "Hỏi & Đáp", icon: <QuestionCircleOutlined />, description: "Các câu hỏi thường gặp" },
     { path: "/contact", label: "Liên hệ", icon: <PhoneOutlined />, description: "Thông tin liên hệ hỗ trợ" },
   ];
 
   return {
-    public: publicMenuItems,
     services: servicesMenuItems,
     medical: medicalMenuItems,
     support: supportMenuItems
@@ -82,10 +85,19 @@ export default function Navbar() {
   const [current, setCurrent] = useState(location.pathname);
   const [userInfo, setUserInfo] = useState(null);
   const [hoveredDropdown, setHoveredDropdown] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
 
-  // Get dynamic quick links based on user role
-  const quickLinks = getQuickLinks(userRole);
+  // Get dynamic quick links based on user role and login status
+  const quickLinks = getQuickLinks(userRole, isLoggedIn);
+
+  // Update time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Set current path when location changes
   useEffect(() => {
@@ -163,16 +175,6 @@ export default function Navbar() {
           </div>
         ),
         onClick: () => navigate('/profile')
-      },
-      {
-        key: 'assessment-history',
-        label: (
-          <div className="flex items-center gap-2 py-1">
-            <FileTextOutlined className="text-green-500" />
-            <span>Lịch sử đánh giá</span>
-          </div>
-        ),
-        onClick: () => navigate('/user/assessment-history')
       },
       {
         key: 'appointment-history',
@@ -298,34 +300,68 @@ export default function Navbar() {
 
   return (
     <div style={{ width: "100%", boxShadow: "0 2px 15px rgba(0,0,0,0.05)" }}>
-      {/* Top blue bar with glassmorphism effect */}
-      <div className="bg-gradient-to-r from-sky-500 via-blue-600 to-blue-700 text-white text-sm flex items-center justify-between px-10 h-12 backdrop-blur-sm shadow-sm relative overflow-hidden">
+      {/* Enhanced Top blue bar - Always visible with useful information */}
+      <div className="bg-gradient-to-r from-sky-500 via-blue-600 to-blue-700 text-white text-sm flex items-center justify-between px-10 h-14 backdrop-blur-sm shadow-sm relative overflow-hidden">
         {/* Background decoration elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-1/4 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-32 right-1/3 w-64 h-64 bg-blue-400 opacity-10 rounded-full blur-3xl"></div>
         </div>
         
-        {/* Quick links */}
-        <div className="flex gap-4 relative z-10 overflow-x-auto no-scrollbar">
-          {quickLinks.map((link) => (
+        {/* Left side - Quick access links */}
+        <div className="flex items-center gap-6 relative z-10">
+          {/* Operating hours */}
+          <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
+            <ClockCircleOutlined className="text-green-300" />
+            <span className="font-medium text-sm">24/7 Hỗ trợ</span>
+          </div>
+          
+          {/* Current time */}
+          <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
+            <ClockCircleOutlined className="text-yellow-300" />
+            <span className="font-medium text-sm">
+              {currentTime.toLocaleTimeString('vi-VN', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+              })}
+            </span>
+          </div>
+        </div>
+        
+        {/* Center - Quick navigation links */}
+        <div className="flex gap-3 relative z-10 overflow-x-auto no-scrollbar">
+          {quickLinks.slice(0, 4).map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className="whitespace-nowrap no-underline py-1.5 px-3 rounded-full transition-all duration-200 text-sm font-medium hover:bg-white/15"
-              style={{
-                color: "#fff",
-              }}
+              className="whitespace-nowrap no-underline py-2 px-4 rounded-full transition-all duration-200 text-sm font-medium hover:bg-white/15 flex items-center gap-2 border border-white/20"
+              style={{ color: "#fff" }}
             >
+              {link.icon}
               {link.label}
+              {link.hot && (
+                <span className="ml-1 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full animate-pulse">
+                  Hot
+                </span>
+              )}
             </Link>
           ))}
         </div>
         
         {/* Right side controls */}
         <div className="flex items-center gap-4 relative z-10">
+          {/* Search */}
           <div className="p-2 hover:bg-white/15 rounded-full cursor-pointer transition-all duration-200">
             <SearchOutlined style={{ fontSize: 16 }} />
+          </div>
+          
+          {/* Notifications */}
+          <div className="p-2 hover:bg-white/15 rounded-full cursor-pointer transition-all duration-200 relative">
+            <BellOutlined style={{ fontSize: 16 }} />
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+              <span className="text-xs text-white font-bold">3</span>
+            </div>
           </div>
           
           {/* User dropdown or login button */}
@@ -341,7 +377,7 @@ export default function Navbar() {
                 </div>
               )}
             >
-              <div className="flex items-center gap-2 py-1.5 px-3 hover:bg-white/15 rounded-full cursor-pointer transition-all duration-200">
+              <div className="flex items-center gap-2 py-1.5 px-3 hover:bg-white/15 rounded-full cursor-pointer transition-all duration-200 border border-white/20">
                 <Avatar 
                   size="small" 
                   className="bg-blue-100 flex items-center justify-center"
@@ -367,8 +403,8 @@ export default function Navbar() {
           <Dropdown
             menu={{
               items: [
-                { key: "vi", label: "Tiếng Việt" },
-                { key: "en", label: "English" },
+                { key: "vi", label: "🇻🇳 Tiếng Việt" },
+                { key: "en", label: "🇺🇸 English" },
               ],
             }}
             placement="bottomRight"
@@ -486,7 +522,6 @@ export default function Navbar() {
                   hoveredDropdown === 'medical', 
                   current.includes('/medical-records') || 
                   current.includes('/treatment-plans') || 
-                  current.includes('/lab-results') || 
                   current.includes('/appointment-management')
                 )}
                 onMouseEnter={() => setHoveredDropdown('medical')}
@@ -494,7 +529,7 @@ export default function Navbar() {
               >
                 <MedicineBoxOutlined className={current.includes('/medical-records') || 
                   current.includes('/treatment-plans') || 
-                  current.includes('/lab-results') ? 'text-blue-500' : ''} />
+                  current.includes('/appointment-management') ? 'text-blue-500' : ''} />
                 Y tế
                 <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
                   className={hoveredDropdown === 'medical' ? 'rotate-180' : ''} />
@@ -521,12 +556,12 @@ export default function Navbar() {
             <div 
               style={dropdownStyle(
                 hoveredDropdown === 'support', 
-                current.includes('/faq')
+                current.includes('/ask-and-answer') || current.includes('/contact')
               )}
               onMouseEnter={() => setHoveredDropdown('support')}
               onMouseLeave={() => setHoveredDropdown(null)}
             >
-              <QuestionCircleOutlined className={current.includes('/faq') ? 'text-blue-500' : ''} />
+              <QuestionCircleOutlined className={current.includes('/ask-and-answer') || current.includes('/contact') ? 'text-blue-500' : ''} />
               Hỗ trợ
               <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
                 className={hoveredDropdown === 'support' ? 'rotate-180' : ''} />
@@ -536,7 +571,6 @@ export default function Navbar() {
 
         {/* Call to action */}
         <div className="flex items-center gap-4">
-          
           {/* Appointment phone number */}
           <div className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 py-2 px-4 rounded-full">
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
@@ -581,6 +615,19 @@ export default function Navbar() {
         
         .no-scrollbar::-webkit-scrollbar {
           display: none;
+        }
+        
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: .5;
+          }
+        }
+        
+        .animate-pulse {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
       `}</style>
     </div>
