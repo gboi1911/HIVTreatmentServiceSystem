@@ -97,6 +97,14 @@ const DoctorManagement = React.lazy(() => import("./pages/admin/DoctorManagement
 // const StaffDashboard = React.lazy(() => import('./pages/staff/StaffDashboard'));
 // const PatientManagement = React.lazy(() => import('./pages/staff/PatientManagement'));
 
+// Doctor pages
+const DoctorDashboard = React.lazy(() => import("./pages/doctor/Dashboard"));
+const DoctorAppointments = React.lazy(() => import("./pages/doctor/Appointments"));
+const DoctorPatients = React.lazy(() => import("./pages/doctor/Patients"));
+const DoctorLabResults = React.lazy(() => import("./pages/doctor/LabResults"));
+const DoctorTreatmentPlans = React.lazy(() => import("./pages/doctor/TreatmentPlans"));
+const DoctorProfile = React.lazy(() => import("./pages/doctor/DoctorProfile"));
+
 function App() {
   return (
     <Router>
@@ -268,6 +276,56 @@ function App() {
               <AdminRoute>
                 <DoctorManagement />
               </AdminRoute>
+            }
+          />
+
+          {/* Doctor routes */}
+          <Route
+            path="doctor/dashboard"
+            element={
+              <ProtectedRoute>
+                <DoctorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="doctor/appointments"
+            element={
+              <ProtectedRoute>
+                <DoctorAppointments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="doctor/patients"
+            element={
+              <ProtectedRoute>
+                <DoctorPatients />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="doctor/lab-results"
+            element={
+              <ProtectedRoute>
+                <DoctorLabResults />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="doctor/treatment-plans"
+            element={
+              <ProtectedRoute>
+                <DoctorTreatmentPlans />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="doctor/profile"
+            element={
+              <ProtectedRoute>
+                <DoctorProfile />
+              </ProtectedRoute>
             }
           />
 
