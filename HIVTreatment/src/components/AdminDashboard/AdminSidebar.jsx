@@ -18,7 +18,8 @@ const navItems = [
   { key: "dashboard", label: "Tổng quan", icon: BarChart3, path: "/admin/dashboard" },
   { key: "users", label: "Quản lý người dùng", icon: Users, path: "/admin/users" },
   { key: "staff", label: "Quản lý nhân viên", icon: UserCog, path: "/admin/staff" },
-  {key: "home", label: "Trang chủ", icon: Users, path: "/" }
+  { key: "doctor", label: "Quản lý bác sĩ", icon: UserCheck, path: "/admin/doctors" },
+  { key: "home", label: "Trang chủ", icon: Users, path: "/" }
 ];
 
 export default function AdminSidebar({ onLogout }) {
@@ -32,7 +33,9 @@ export default function AdminSidebar({ onLogout }) {
       <nav className="flex-1 py-6">
         <ul className="space-y-1">
           {navItems.map((item) => {
-            const isActive = location.pathname.startsWith(item.path);
+            // Only one active bar at a time: match exact path or startsWith for dashboard/users/staff/doctors
+            const isActive = location.pathname === item.path ||
+              (item.path !== '/' && location.pathname.startsWith(item.path));
             return (
               <li key={item.key}>
                 <Link
@@ -48,11 +51,7 @@ export default function AdminSidebar({ onLogout }) {
                     background: isActive ? "rgba(255,255,255,0.1)" : "transparent",
                     transition: "all 0.2s",
                     textDecoration: "none",
-                    ...(isActive
-                      ? {}
-                      : {
-                          cursor: "pointer",
-                        }),
+                    cursor: "pointer",
                   }}
                   onMouseEnter={e => {
                     if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.05)";

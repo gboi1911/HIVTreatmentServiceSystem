@@ -90,6 +90,7 @@ const StaffManagement = React.lazy(() =>
     default: module.StaffManagement,
   }))
 );
+const DoctorManagement = React.lazy(() => import("./pages/admin/DoctorManagement"));
 // const SystemSettings = React.lazy(() => import('./pages/admin/SystemSettings'));
 
 // // Staff only pages
@@ -258,6 +259,14 @@ function App() {
             element={
               <AdminRoute>
                 <StaffManagement />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin/doctors"
+            element={
+              <AdminRoute>
+                <DoctorManagement />
               </AdminRoute>
             }
           />
