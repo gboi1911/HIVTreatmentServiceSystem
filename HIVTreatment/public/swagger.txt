@@ -1,0 +1,3863 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "WebHIV API",
+    "description": "Information",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://hiv.purepixel.io.vn",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/api/treatment-plan/{id}": {
+      "put": {
+        "tags": [
+          "treatment-plan-api"
+        ],
+        "operationId": "updateTreatmentPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TreatmentPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentPlanResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "treatment-plan-api"
+        ],
+        "operationId": "deleteTreatmentPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentPlanResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/staff/{id}": {
+      "get": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "getStaffById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "updateStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "deleteStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/report/{id}": {
+      "get": {
+        "tags": [
+          "report-api"
+        ],
+        "operationId": "getReportById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "report-api"
+        ],
+        "operationId": "updateReport",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "report-api"
+        ],
+        "operationId": "deleteReport",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/reminders/{id}": {
+      "get": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "getReminderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "updateReminder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReminderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "deleteReminder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/medical-record/{id}": {
+      "put": {
+        "tags": [
+          "medical-record-api"
+        ],
+        "operationId": "updateMedicalRecord",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicalRecordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicalRecordResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "medical-record-api"
+        ],
+        "operationId": "deleteMedicalRecord",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicalRecordResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/lab-result/{id}": {
+      "put": {
+        "tags": [
+          "lab-result-api"
+        ],
+        "operationId": "updateLabResult",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabResultRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabResultResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "lab-result-api"
+        ],
+        "operationId": "deleteLabResult",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabResultResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/education-content/{id}": {
+      "get": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "getEducationContentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EducationContentResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "updateEducationContent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EducationContentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EducationContentResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "deleteEducationContent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EducationContentResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/doctor/{id}": {
+      "get": {
+        "tags": [
+          "doctor-api"
+        ],
+        "operationId": "getDoctorById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Doctor"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "doctor-api"
+        ],
+        "operationId": "updateDoctor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Doctor"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Doctor"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "doctor-api"
+        ],
+        "operationId": "deleteDoctor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Doctor"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/blog/{id}": {
+      "get": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "getBlogById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlogResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "updateBlog",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlogRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlogResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "deleteBlog",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlogResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/{appointmentId}/status": {
+      "put": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "updateAppointmentStatus",
+        "parameters": [
+          {
+            "name": "appointmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/treatment-plan": {
+      "post": {
+        "tags": [
+          "treatment-plan-api"
+        ],
+        "operationId": "createTreatmentPlan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TreatmentPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TreatmentPlanResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/staff": {
+      "get": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "getAllStaff",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "createStaff",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/report": {
+      "post": {
+        "tags": [
+          "report-api"
+        ],
+        "operationId": "createReport",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/reminders": {
+      "post": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "createReminder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReminderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReminderResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/reminders/{reminderId}/send-email": {
+      "post": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "sendReminderEmail",
+        "parameters": [
+          {
+            "name": "reminderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/reminders/send-all-pending": {
+      "post": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "sendAllPendingReminders",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/register": {
+      "post": {
+        "tags": [
+          "authentication-api"
+        ],
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/medical-record": {
+      "post": {
+        "tags": [
+          "medical-record-api"
+        ],
+        "operationId": "createMedicalRecord",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicalRecordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicalRecordResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": [
+          "authentication-api"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/lab-result": {
+      "post": {
+        "tags": [
+          "lab-result-api"
+        ],
+        "operationId": "createLabResult",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabResultRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabResultResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/education-content": {
+      "post": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "createEducationContent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EducationContentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EducationContentResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/doctor": {
+      "get": {
+        "tags": [
+          "doctor-api"
+        ],
+        "operationId": "getAllDoctors",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Doctor"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "doctor-api"
+        ],
+        "operationId": "createDoctor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DoctorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Doctor"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/blog": {
+      "post": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "createBlog",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlogRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlogResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/book": {
+      "post": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "bookAppointment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/treatment-plan/medical-record/{medicalRecordId}": {
+      "get": {
+        "tags": [
+          "treatment-plan-api"
+        ],
+        "operationId": "getTreatmentPlansByMedicalRecord",
+        "parameters": [
+          {
+            "name": "medicalRecordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TreatmentPlanResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/treatment-plan/getTreatmentPlan": {
+      "get": {
+        "tags": [
+          "treatment-plan-api"
+        ],
+        "operationId": "getTreatmentPlan",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TreatmentPlanResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/treatment-plan/doctor/{doctorId}": {
+      "get": {
+        "tags": [
+          "treatment-plan-api"
+        ],
+        "operationId": "getTreatmentPlansByDoctor",
+        "parameters": [
+          {
+            "name": "doctorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TreatmentPlanResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/staff/search": {
+      "get": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "searchStaffByName",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/staff/gender/{gender}": {
+      "get": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "getStaffByGender",
+        "parameters": [
+          {
+            "name": "gender",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/staff/email/{email}": {
+      "get": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "getStaffByEmail",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/staff/active": {
+      "get": {
+        "tags": [
+          "staff-api"
+        ],
+        "operationId": "getAllActiveStaff",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/report/type/{reportType}": {
+      "get": {
+        "tags": [
+          "report-api"
+        ],
+        "operationId": "getReportsByType",
+        "parameters": [
+          {
+            "name": "reportType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/report/getReports": {
+      "get": {
+        "tags": [
+          "report-api"
+        ],
+        "operationId": "getReports",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/report/generated-by/{generatedBy}": {
+      "get": {
+        "tags": [
+          "report-api"
+        ],
+        "operationId": "getReportsByGeneratedBy",
+        "parameters": [
+          {
+            "name": "generatedBy",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/report/date-range": {
+      "get": {
+        "tags": [
+          "report-api"
+        ],
+        "operationId": "getReportsByDateRange",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReportResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/reminders/type/{reminderType}": {
+      "get": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "getRemindersByType",
+        "parameters": [
+          {
+            "name": "reminderType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReminderResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/reminders/pending": {
+      "get": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "getPendingReminders",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Reminder"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/reminders/getReminders": {
+      "get": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "getAllReminders",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReminderResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/reminders/customer/{customerId}": {
+      "get": {
+        "tags": [
+          "reminder-api"
+        ],
+        "operationId": "getRemindersByCustomer",
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReminderResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/medical-record/viral-load-range": {
+      "get": {
+        "tags": [
+          "medical-record-api"
+        ],
+        "operationId": "getMedicalRecordsByViralLoadRange",
+        "parameters": [
+          {
+            "name": "minViralLoad",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "maxViralLoad",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MedicalRecordResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/medical-record/getMedicalRecord": {
+      "get": {
+        "tags": [
+          "medical-record-api"
+        ],
+        "operationId": "getMedicalRecord",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MedicalRecordResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/medical-record/doctor/{doctorId}": {
+      "get": {
+        "tags": [
+          "medical-record-api"
+        ],
+        "operationId": "getMedicalRecordsByDoctor",
+        "parameters": [
+          {
+            "name": "doctorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MedicalRecordResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/medical-record/customer/{customerId}": {
+      "get": {
+        "tags": [
+          "medical-record-api"
+        ],
+        "operationId": "getMedicalRecordsByCustomer",
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MedicalRecordResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/medical-record/cd4-range": {
+      "get": {
+        "tags": [
+          "medical-record-api"
+        ],
+        "operationId": "getMedicalRecordsByCd4Range",
+        "parameters": [
+          {
+            "name": "minCd4",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "maxCd4",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MedicalRecordResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/lab-result/medical-record/{medicalRecordId}": {
+      "get": {
+        "tags": [
+          "lab-result-api"
+        ],
+        "operationId": "getLabResultsByMedicalRecord",
+        "parameters": [
+          {
+            "name": "medicalRecordId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LabResultResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/lab-result/getLabResults": {
+      "get": {
+        "tags": [
+          "lab-result-api"
+        ],
+        "operationId": "getLabResults",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LabResultResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/lab-result/doctor/{doctorId}": {
+      "get": {
+        "tags": [
+          "lab-result-api"
+        ],
+        "operationId": "getLabResultsByDoctor",
+        "parameters": [
+          {
+            "name": "doctorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LabResultResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/lab-result/date-range": {
+      "get": {
+        "tags": [
+          "lab-result-api"
+        ],
+        "operationId": "getLabResultsByDateRange",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LabResultResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/education-content/staff/{staffId}": {
+      "get": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "getEducationContentsByStaff",
+        "parameters": [
+          {
+            "name": "staffId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EducationContentResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/education-content/search/title": {
+      "get": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "getEducationContentsByTitle",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EducationContentResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/education-content/search/content": {
+      "get": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "getEducationContentsByContent",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EducationContentResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/education-content/getEducationContents": {
+      "get": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "getEducationContents",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EducationContentResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/education-content/date-range": {
+      "get": {
+        "tags": [
+          "education-content-api"
+        ],
+        "operationId": "getEducationContentsByDateRange",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EducationContentResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/customers": {
+      "get": {
+        "tags": [
+          "customer-api"
+        ],
+        "operationId": "getAllCustomers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/customers/{id}": {
+      "get": {
+        "tags": [
+          "customer-api"
+        ],
+        "operationId": "getCustomerById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "customer-api"
+        ],
+        "operationId": "deleteCustomer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/customers/account/{accountId}": {
+      "get": {
+        "tags": [
+          "customer-api"
+        ],
+        "operationId": "getCustomersByAccountId",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/blog/staff/{staffId}": {
+      "get": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "getBlogsByStaff",
+        "parameters": [
+          {
+            "name": "staffId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlogResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/blog/search/title": {
+      "get": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "getBlogsByTitle",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlogResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/blog/search/content": {
+      "get": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "getBlogsByContent",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlogResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/blog/getBlogs": {
+      "get": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "getBlogs",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlogResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/blog/date-range": {
+      "get": {
+        "tags": [
+          "blog-api"
+        ],
+        "operationId": "getBlogsByDateRange",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlogResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/{appointmentId}": {
+      "get": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "getAppointmentDetail",
+        "parameters": [
+          {
+            "name": "appointmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/status/{status}": {
+      "get": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "getAppointmentsByStatus",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/getAllAppointment": {
+      "get": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "getAllAppointments",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/doctor/{doctorId}": {
+      "get": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "getAppointmentsByDoctorId",
+        "parameters": [
+          {
+            "name": "doctorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/doctor/{doctorId}/status/{status}": {
+      "get": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "getAppointmentsByDoctorIdAndStatus",
+        "parameters": [
+          {
+            "name": "doctorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/doctor/{doctorId}/count": {
+      "get": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "countAppointmentsByDoctorId",
+        "parameters": [
+          {
+            "name": "doctorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    },
+    "/api/appointment/customer/{customerId}": {
+      "get": {
+        "tags": [
+          "appointment-api"
+        ],
+        "operationId": "getAppointmentsByCustomer",
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TreatmentPlanRequest": {
+        "required": [
+          "applicableGroup",
+          "arvRegimen",
+          "doctorId",
+          "medicalRecordId",
+          "startDate"
+        ],
+        "type": "object",
+        "properties": {
+          "medicalRecordId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "doctorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "arvRegimen": {
+            "type": "string"
+          },
+          "applicableGroup": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "TreatmentPlanResponse": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "medicalRecordId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "doctorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "doctorName": {
+            "type": "string"
+          },
+          "arvRegimen": {
+            "type": "string"
+          },
+          "applicableGroup": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "StaffRequest": {
+        "required": [
+          "email",
+          "gender",
+          "name",
+          "password",
+          "phone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "pattern": "(84|0[3|5|7|8|9])+(\\d{8})",
+            "type": "string"
+          },
+          "gender": {
+            "pattern": "^(Male|Female|Other)$",
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "StaffResponse": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReportRequest": {
+        "required": [
+          "content",
+          "generatedBy",
+          "reportType"
+        ],
+        "type": "object",
+        "properties": {
+          "generatedBy": {
+            "type": "string"
+          },
+          "reportType": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      },
+      "ReportResponse": {
+        "type": "object",
+        "properties": {
+          "reportId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "generatedBy": {
+            "type": "string"
+          },
+          "reportType": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ReminderRequest": {
+        "required": [
+          "customerId",
+          "message",
+          "reminderDate",
+          "reminderType"
+        ],
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "reminderType": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "reminderDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "ReminderResponse": {
+        "type": "object",
+        "properties": {
+          "reminderId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "customerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "reminderType": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "isSent": {
+            "type": "boolean"
+          },
+          "reminderDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "MedicalRecordRequest": {
+        "required": [
+          "customerId",
+          "doctorId"
+        ],
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "doctorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cd4Count": {
+            "maximum": 2000,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "viralLoad": {
+            "maximum": 10000000,
+            "exclusiveMaximum": false,
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "type": "number",
+            "format": "double"
+          },
+          "treatmentHistory": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          }
+        }
+      },
+      "MedicalRecordResponse": {
+        "type": "object",
+        "properties": {
+          "medicalRecordId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "customerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "doctorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "doctorName": {
+            "type": "string"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cd4Count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "viralLoad": {
+            "type": "number",
+            "format": "double"
+          },
+          "treatmentHistory": {
+            "type": "string"
+          },
+          "cd4Status": {
+            "type": "string"
+          },
+          "viralLoadStatus": {
+            "type": "string"
+          },
+          "treatmentPlanCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "labResultCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "LabResultRequest": {
+        "required": [
+          "doctorId",
+          "medicalRecordId",
+          "result",
+          "testDate"
+        ],
+        "type": "object",
+        "properties": {
+          "medicalRecordId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "doctorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "result": {
+            "type": "string"
+          },
+          "cd4Count": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "testDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "LabResultResponse": {
+        "type": "object",
+        "properties": {
+          "labResultId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "medicalRecordId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "doctorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "doctorName": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          },
+          "cd4Count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "testDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "EducationContentRequest": {
+        "required": [
+          "content",
+          "staffId",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string"
+          },
+          "content": {
+            "maxLength": 2147483647,
+            "minLength": 10,
+            "type": "string"
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      },
+      "EducationContentResponse": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "staffName": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Doctor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "customerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "qualifications": {
+            "type": "string"
+          },
+          "specialization": {
+            "type": "string"
+          },
+          "workSchedule": {
+            "type": "string"
+          }
+        }
+      },
+      "BlogRequest": {
+        "required": [
+          "content",
+          "staffId",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string"
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "content": {
+            "maxLength": 2147483647,
+            "minLength": 10,
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      },
+      "BlogResponse": {
+        "type": "object",
+        "properties": {
+          "blogId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "staffId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "staffName": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "UpdateStatusRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "required": [
+          "fullName"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "pattern": "(84|0[3|5|7|8|9])+(\\d{8})",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 2147483647,
+            "minLength": 6,
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "CUSTOMER",
+              "STAFF",
+              "MANAGER",
+              "DOCTOR"
+            ]
+          },
+          "gender": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "DoctorRequest": {
+        "required": [
+          "customerId",
+          "qualifications",
+          "specialization"
+        ],
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "qualifications": {
+            "type": "string"
+          },
+          "specialization": {
+            "type": "string"
+          },
+          "workSchedule": {
+            "type": "string"
+          }
+        }
+      },
+      "AppointmentRequest": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "doctorId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "type": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "datetime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "Reminder": {
+        "type": "object",
+        "properties": {
+          "reminderId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer"
+          },
+          "reminderType": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "isSent": {
+            "type": "boolean"
+          },
+          "reminderDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "api": {
+        "type": "http",
+        "in": "header",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

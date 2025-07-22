@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Settings,
   BarChart3,
+  HomeIcon,
   LogOut,
   UserCog
 } from "lucide-react";
@@ -19,7 +20,7 @@ const navItems = [
   { key: "users", label: "Quản lý người dùng", icon: Users, path: "/admin/users" },
   { key: "staff", label: "Quản lý nhân viên", icon: UserCog, path: "/admin/staff" },
   { key: "doctor", label: "Quản lý bác sĩ", icon: UserCheck, path: "/admin/doctors" },
-  { key: "home", label: "Trang chủ", icon: Users, path: "/" }
+  { key: "home", label: "Trang chủ", icon: HomeIcon, path: "/" }
 ];
 
 export default function AdminSidebar({ onLogout }) {
