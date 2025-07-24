@@ -17,12 +17,9 @@ const columns = [
 
 export default function LabResults() {
   return (
-    <Layout>
-      <Navbar />
       <div style={{ padding: 24 }}>
         <h2>Kết quả xét nghiệm</h2>
         <Table columns={columns} dataSource={mockLabResults} rowKey="id" />
       </div>
-    </Layout>
   );
 } 

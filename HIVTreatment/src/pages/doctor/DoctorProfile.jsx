@@ -20,10 +20,8 @@ export default function DoctorProfile() {
   };
 
   return (
-    <Layout>
-      <Navbar />
       <div style={{ padding: 24, maxWidth: 600, margin: '0 auto' }}>
-        <Card title="Hồ sơ cá nhân bác sĩ">
+        <Card title="Hồ sơ cá nhân bác sĩ">   
           <Form
             form={form}
             layout="vertical"
@@ -48,7 +46,6 @@ export default function DoctorProfile() {
           </Form>
         </Card>
       </div>
-    </Layout>
   );
 }
 

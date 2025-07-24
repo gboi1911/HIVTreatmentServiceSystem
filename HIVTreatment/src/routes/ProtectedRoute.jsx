@@ -152,6 +152,13 @@ export const StaffRoute = ({ children }) => (
   </ProtectedRoute>
 );
 
+// Doctor Route
+export const DoctorRoute = ({ children }) => (
+  <ProtectedRoute requiredRoles={['doctor', 'DOCTOR']}>
+    {children}
+  </ProtectedRoute>
+);
+
 // Enhanced Unauthorized Access Page
 const UnauthorizedPage = ({ userRole, requiredRoles }) => (
   <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">

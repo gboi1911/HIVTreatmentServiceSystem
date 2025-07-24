@@ -28,8 +28,6 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <Layout>
-      <Navbar />
       <div style={{ padding: 24 }}>
         <h2>Dashboard Bác sĩ</h2>
         <Row gutter={16} style={{ marginBottom: 24 }}>
@@ -52,6 +50,5 @@ export default function Dashboard() {
           />
         </Card>
       </div>
-    </Layout>
   );
 } 

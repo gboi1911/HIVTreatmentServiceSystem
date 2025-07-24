@@ -53,15 +53,15 @@ const getQuickLinks = (userRole, isLoggedIn) => {
 };
 
 // Organize menu items into categories
-const getOrganizedMenuItems = (canAccessMedicalRecords) => {
-  const servicesMenuItems = [
+const getOrganizedMenuItems = (canAccessMedicalRecords, userRole) => {
+  const servicesMenuItems = userRole !== 'DOCTOR' ? [
     { path: "/assessment/risk-assessment", label: "Đánh giá rủi ro", icon: <SafetyOutlined />, description: "Kiểm tra nguy cơ phơi nhiễm HIV", hot: true },
     { path: "/consultation-booking", label: "Đặt lịch tư vấn", icon: <CalendarOutlined />, description: "Đặt lịch gặp bác sĩ tư vấn" },
     { path: "/guides", label: "Hướng dẫn & Bảng giá", icon: <BookOutlined />, description: "Quy trình khám và bảng giá dịch vụ" },
     { path: "/health-and-life", label: "Sức khoẻ & đời sống", icon: <HeartOutlined />, description: "Thông tin chăm sóc sức khỏe hàng ngày" },
-  ];
+  ] : [];
 
-  const medicalMenuItems = canAccessMedicalRecords ? [
+  const medicalMenuItems = canAccessMedicalRecords && userRole !== 'DOCTOR' ? [
     { path: "/medical-records", label: "Hồ sơ bệnh án", icon: <FileTextOutlined />, description: "Quản lý hồ sơ bệnh án" },
     { path: "/treatment-plans", label: "Kế hoạch điều trị", icon: <MedicineBoxOutlined />, description: "Quản lý kế hoạch điều trị ARV" },
     { path: "/appointment-management", label: "Quản lý cuộc hẹn", icon: <CalendarOutlined />, description: "Quản lý lịch hẹn bệnh nhân" },
@@ -72,10 +72,19 @@ const getOrganizedMenuItems = (canAccessMedicalRecords) => {
     { path: "/contact", label: "Liên hệ", icon: <PhoneOutlined />, description: "Thông tin liên hệ hỗ trợ" },
   ];
 
+  const doctorMenuItems = [
+    { path: "/doctor/dashboard", label: "Dashboard", icon: <DashboardOutlined /> },
+    { path: "/doctor/appointments", label: "Quản lý cuộc hẹn", icon: <CalendarOutlined /> },
+    { path: "/doctor/patients", label: "Quản lý bệnh nhân", icon: <UserOutlined /> },
+    { path: "/doctor/lab-results", label: "Quản lý kết quả xét nghiệm", icon: <ExperimentOutlined /> },
+    { path: "/doctor/treatment-plans", label: "Quản lý kế hoạch điều trị", icon: <MedicineBoxOutlined /> },
+    { path: "/doctor/profile", label: "Thông tin cá nhân", icon: <UserOutlined /> },
+  ]
   return {
     services: servicesMenuItems,
     medical: medicalMenuItems,
-    support: supportMenuItems
+    support: supportMenuItems,
+    doctor: userRole === 'DOCTOR' ? doctorMenuItems : []
   };
 };
 
@@ -108,7 +117,7 @@ export default function Navbar() {
   const canAccessMedicalRecords = userRole && 
     ['STAFF', 'CONSULTANT', 'MANAGER', 'ADMIN', 'DOCTOR'].includes(userRole.toUpperCase());
 
-  const organizedMenuItems = getOrganizedMenuItems(canAccessMedicalRecords);
+  const organizedMenuItems = getOrganizedMenuItems(canAccessMedicalRecords, userRole);
 
   // Get user info from localStorage or token
   useEffect(() => {
@@ -453,7 +462,7 @@ export default function Navbar() {
             Trang chủ
           </Link>
           
-          {/* Giới thiệu - Direct link */}
+          {/* Giới thiệu */}
           <Link
             to="/about"
             style={navItemStyle(current === "/about")}
@@ -463,52 +472,15 @@ export default function Navbar() {
             Giới thiệu
           </Link>
 
-          {/* Dịch vụ - Dropdown */}
-          <Dropdown
-            menu={servicesDropdownItems}
-            placement="bottomCenter"
-            trigger={['hover']}
-            onOpenChange={(open) => {
-              if (open) setHoveredDropdown('services');
-              else if (hoveredDropdown === 'services') setHoveredDropdown(null);
-            }}
-            overlayClassName="custom-dropdown"
-            dropdownRender={(menu) => (
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-2 mt-2 min-w-[280px]">
-                {menu}
-              </div>
-            )}
-          >
-            <div 
-              style={dropdownStyle(
-                hoveredDropdown === 'services', 
-                current.includes('/guides') || 
-                current.includes('/health-and-life') || 
-                current.includes('/assessment') || 
-                current.includes('/consultation-booking')
-              )}
-              onMouseEnter={() => setHoveredDropdown('services')}
-              onMouseLeave={() => setHoveredDropdown(null)}
-            >
-              <HeartOutlined className={current.includes('/guides') || 
-                current.includes('/health-and-life') || 
-                current.includes('/assessment') || 
-                current.includes('/consultation-booking') ? 'text-blue-500' : ''} />
-              Dịch vụ
-              <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
-                className={hoveredDropdown === 'services' ? 'rotate-180' : ''} />
-            </div>
-          </Dropdown>
-
-          {/* Y tế - Dropdown (only show if user has access) */}
-          {canAccessMedicalRecords && medicalDropdownItems && (
+          {/* Doctor-specific navigation */}
+          {userRole === 'DOCTOR' && organizedMenuItems.doctor.length > 0 && (
             <Dropdown
-              menu={medicalDropdownItems}
+              menu={createDropdownContent(organizedMenuItems.doctor)}
               placement="bottomCenter"
               trigger={['hover']}
               onOpenChange={(open) => {
-                if (open) setHoveredDropdown('medical');
-                else if (hoveredDropdown === 'medical') setHoveredDropdown(null);
+                if (open) setHoveredDropdown('doctor');
+                else if (hoveredDropdown === 'doctor') setHoveredDropdown(null);
               }}
               overlayClassName="custom-dropdown"
               dropdownRender={(menu) => (
@@ -519,54 +491,133 @@ export default function Navbar() {
             >
               <div 
                 style={dropdownStyle(
-                  hoveredDropdown === 'medical', 
-                  current.includes('/medical-records') || 
-                  current.includes('/treatment-plans') || 
-                  current.includes('/appointment-management')
+                  hoveredDropdown === 'doctor',
+                  current.includes('/doctor/')
                 )}
-                onMouseEnter={() => setHoveredDropdown('medical')}
+                onMouseEnter={() => setHoveredDropdown('doctor')}
                 onMouseLeave={() => setHoveredDropdown(null)}
               >
-                <MedicineBoxOutlined className={current.includes('/medical-records') || 
-                  current.includes('/treatment-plans') || 
-                  current.includes('/appointment-management') ? 'text-blue-500' : ''} />
-                Y tế
+                <UserOutlined className={current.includes('/doctor/') ? 'text-blue-500' : ''} />
+                Bác sĩ
                 <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
-                  className={hoveredDropdown === 'medical' ? 'rotate-180' : ''} />
+                  className={hoveredDropdown === 'doctor' ? 'rotate-180' : ''} />
               </div>
             </Dropdown>
           )}
 
-          {/* Hỗ trợ - Dropdown */}
-          <Dropdown
-            menu={supportDropdownItems}
-            placement="bottomCenter"
-            trigger={['hover']}
-            onOpenChange={(open) => {
-              if (open) setHoveredDropdown('support');
-              else if (hoveredDropdown === 'support') setHoveredDropdown(null);
-            }}
-            overlayClassName="custom-dropdown"
-            dropdownRender={(menu) => (
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-2 mt-2 min-w-[280px]">
-                {menu}
-              </div>
-            )}
-          >
-            <div 
-              style={dropdownStyle(
-                hoveredDropdown === 'support', 
-                current.includes('/ask-and-answer') || current.includes('/contact')
+          {/* Regular user navigation (non-doctor) */}
+          {userRole !== 'DOCTOR' && (
+            <>
+              {/* Dịch vụ */}
+              {organizedMenuItems.services.length > 0 && (
+                <Dropdown
+                  menu={servicesDropdownItems}
+                  placement="bottomCenter"
+                  trigger={['hover']}
+                  onOpenChange={(open) => {
+                    if (open) setHoveredDropdown('services');
+                    else if (hoveredDropdown === 'services') setHoveredDropdown(null);
+                  }}
+                  overlayClassName="custom-dropdown"
+                  dropdownRender={(menu) => (
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-2 mt-2 min-w-[280px]">
+                      {menu}
+                    </div>
+                  )}
+                >
+                  <div 
+                    style={dropdownStyle(
+                      hoveredDropdown === 'services', 
+                      current.includes('/guides') || 
+                      current.includes('/health-and-life') || 
+                      current.includes('/assessment') || 
+                      current.includes('/consultation-booking')
+                    )}
+                    onMouseEnter={() => setHoveredDropdown('services')}
+                    onMouseLeave={() => setHoveredDropdown(null)}
+                  >
+                    <HeartOutlined className={current.includes('/guides') || 
+                      current.includes('/health-and-life') || 
+                      current.includes('/assessment') || 
+                      current.includes('/consultation-booking') ? 'text-blue-500' : ''} />
+                    Dịch vụ
+                    <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
+                      className={hoveredDropdown === 'services' ? 'rotate-180' : ''} />
+                  </div>
+                </Dropdown>
               )}
-              onMouseEnter={() => setHoveredDropdown('support')}
-              onMouseLeave={() => setHoveredDropdown(null)}
+
+              {/* Y tế */}
+              {canAccessMedicalRecords && organizedMenuItems.medical.length > 0 && (
+                <Dropdown
+                  menu={medicalDropdownItems}
+                  placement="bottomCenter"
+                  trigger={['hover']}
+                  onOpenChange={(open) => {
+                    if (open) setHoveredDropdown('medical');
+                    else if (hoveredDropdown === 'medical') setHoveredDropdown(null);
+                  }}
+                  overlayClassName="custom-dropdown"
+                  dropdownRender={(menu) => (
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-2 mt-2 min-w-[280px]">
+                      {menu}
+                    </div>
+                  )}
+                >
+                  <div 
+                    style={dropdownStyle(
+                      hoveredDropdown === 'medical', 
+                      current.includes('/medical-records') || 
+                      current.includes('/treatment-plans') || 
+                      current.includes('/appointment-management')
+                    )}
+                    onMouseEnter={() => setHoveredDropdown('medical')}
+                    onMouseLeave={() => setHoveredDropdown(null)}
+                  >
+                    <MedicineBoxOutlined className={current.includes('/medical-records') || 
+                      current.includes('/treatment-plans') || 
+                      current.includes('/appointment-management') ? 'text-blue-500' : ''} />
+                    Y tế
+                    <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
+                      className={hoveredDropdown === 'medical' ? 'rotate-180' : ''} />
+                  </div>
+                </Dropdown>
+              )}
+            </>
+          )}
+
+          {/* Hỗ trợ */}
+          {organizedMenuItems.support.length > 0 && (
+            <Dropdown
+              menu={supportDropdownItems}
+              placement="bottomCenter"
+              trigger={['hover']}
+              onOpenChange={(open) => {
+                if (open) setHoveredDropdown('support');
+                else if (hoveredDropdown === 'support') setHoveredDropdown(null);
+              }}
+              overlayClassName="custom-dropdown"
+              dropdownRender={(menu) => (
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-2 mt-2 min-w-[280px]">
+                  {menu}
+                </div>
+              )}
             >
-              <QuestionCircleOutlined className={current.includes('/ask-and-answer') || current.includes('/contact') ? 'text-blue-500' : ''} />
-              Hỗ trợ
-              <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
-                className={hoveredDropdown === 'support' ? 'rotate-180' : ''} />
-            </div>
-          </Dropdown>
+              <div 
+                style={dropdownStyle(
+                  hoveredDropdown === 'support', 
+                  current.includes('/ask-and-answer') || current.includes('/contact')
+                )}
+                onMouseEnter={() => setHoveredDropdown('support')}
+                onMouseLeave={() => setHoveredDropdown(null)}
+              >
+                <QuestionCircleOutlined className={current.includes('/ask-and-answer') || current.includes('/contact') ? 'text-blue-500' : ''} />
+                Hỗ trợ
+                <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
+                  className={hoveredDropdown === 'support' ? 'rotate-180' : ''} />
+              </div>
+            </Dropdown>
+          )}
         </div>
 
         {/* Call to action */}

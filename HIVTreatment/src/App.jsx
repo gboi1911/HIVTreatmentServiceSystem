@@ -7,6 +7,7 @@ import {
   AdminRoute,
   UserRoute,
   StaffRoute,
+  DoctorRoute
 } from "./routes/ProtectedRoute";
 
 // Public pages (no authentication required)
@@ -113,6 +114,7 @@ function App() {
           {/* Public routes with layout */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
+           
             <Route path="about" element={<About />} />
             <Route path="guides" element={<Guides />} />
             <Route path="health-and-life" element={<HealthAndLife />} />
@@ -205,40 +207,6 @@ function App() {
                 </UserRoute>
               }
             />
-
-            {/* Medical Records routes */}
-            <Route
-              path="medical-records"
-              element={
-                // <ProtectedRoute>
-                <MedicalRecords />
-                // </ProtectedRoute>
-              }
-            />
-            <Route
-              path="medical-records/new"
-              element={
-                // <ProtectedRoute>
-                <MedicalRecordForm />
-                // </ProtectedRoute>
-              }
-            />
-            <Route
-              path="medical-records/edit/:id"
-              element={
-                // <ProtectedRoute>
-                <MedicalRecordForm />
-                // </ProtectedRoute>
-              }
-            />
-            <Route
-              path="medical-records/:id"
-              element={
-                // <ProtectedRoute>
-                <MedicalRecordDetail />
-                // </ProtectedRoute>
-              }
-            />
           </Route>
 
           {/* Auth routes without layout */}
@@ -279,55 +247,57 @@ function App() {
             }
           />
 
-          {/* Doctor routes */}
-          <Route
-            path="doctor/dashboard"
-            element={
-              <ProtectedRoute>
-                <DoctorDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="doctor/appointments"
-            element={
-              <ProtectedRoute>
-                <DoctorAppointments />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="doctor/patients"
-            element={
-              <ProtectedRoute>
-                <DoctorPatients />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="doctor/lab-results"
-            element={
-              <ProtectedRoute>
-                <DoctorLabResults />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="doctor/treatment-plans"
-            element={
-              <ProtectedRoute>
-                <DoctorTreatmentPlans />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="doctor/profile"
-            element={
-              <ProtectedRoute>
-                <DoctorProfile />
-              </ProtectedRoute>
-            }
-          />
+           {/* Doctor routes with Layout */}
+          <Route path="/" element={<Layout />}>
+            <Route
+              path="doctor/dashboard"
+              element={
+                <DoctorRoute>
+                  <DoctorDashboard />
+                </DoctorRoute>
+              }
+            />
+            <Route
+              path="doctor/appointments"
+              element={
+                <DoctorRoute>
+                  <DoctorAppointments />
+                </DoctorRoute>
+              }
+            />
+            <Route
+              path="doctor/patients"
+              element={
+                <DoctorRoute>
+                  <DoctorPatients />
+                </DoctorRoute>
+              }
+            />
+            <Route
+              path="doctor/lab-results"
+              element={
+                <DoctorRoute>
+                  <DoctorLabResults />
+                </DoctorRoute>
+              }
+            />
+            <Route
+              path="doctor/treatment-plans"
+              element={
+                <DoctorRoute>
+                  <DoctorTreatmentPlans />
+                </DoctorRoute>
+              }
+            />
+            <Route
+              path="doctor/profile"
+              element={
+                <DoctorRoute>
+                  <DoctorProfile />
+                </DoctorRoute>
+              }
+            />
+          </Route>
 
           {/* Staff routes
           <Route 

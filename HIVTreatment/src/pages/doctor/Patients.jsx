@@ -16,12 +16,9 @@ const columns = [
 
 export default function Patients() {
   return (
-    <Layout>
-      <Navbar />
       <div style={{ padding: 24 }}>
         <h2>Danh sách bệnh nhân</h2>
         <Table columns={columns} dataSource={mockPatients} rowKey="id" />
       </div>
-    </Layout>
   );
 } 
