@@ -4,7 +4,8 @@ import {
   getAppointmentsByDoctor, 
   updateAppointmentStatus,
   getAppointmentsByStatus,
-  getAppointmentsByDoctorAndStatus 
+  getAppointmentsByDoctorAndStatus,
+  getAllAppointments 
 } from '../../api/appointment';
 import { useAuthStatus } from '../../hooks/useAuthStatus';
 import moment from 'moment';

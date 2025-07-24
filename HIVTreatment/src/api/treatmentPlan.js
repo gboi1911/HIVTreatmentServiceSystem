@@ -136,7 +136,7 @@ export const createTreatmentPlan = async (planData) => {
       },
       body: JSON.stringify({
         medicalRecordId: planData.medicalRecordId,
-        doctorId: planData.doctorId,
+        doctorId: 1,
         arvRegimen: planData.arvRegimen,
         applicableGroup: planData.applicableGroup,
         note: planData.note,

@@ -3,295 +3,295 @@ import {
   Table, 
   Button, 
   Space, 
-  Modal, 
-  Form, 
+  Tag, 
+  Card, 
+  Tooltip, 
   Input, 
   Select, 
   DatePicker, 
-  message, 
-  Card, 
-  Popconfirm, 
-  Tag, 
-  InputNumber,
-  Row,
-  Col
+  Row, 
+  Col, 
+  message,
+  Modal,
+  Popconfirm,
+  Badge,
+  Form
 } from 'antd';
 import { 
   PlusOutlined, 
   EditOutlined, 
   DeleteOutlined, 
+  EyeOutlined, 
   SearchOutlined,
-  EyeOutlined,
   FilterOutlined,
+  DownloadOutlined,
   ReloadOutlined,
-  MedicineBoxOutlined
+  MedicineBoxOutlined,
+  CalendarOutlined
 } from '@ant-design/icons';
-import moment from 'moment';
-import 'moment/locale/vi';
-import { useAuthStatus } from '../../hooks/useAuthStatus';
+import { useNavigate } from 'react-router-dom';
 import { 
+  getTreatmentPlans, 
   getTreatmentPlansByDoctor,
-  createTreatmentPlan,
+  getTreatmentPlansByMedicalRecord,
+  deleteTreatmentPlan,
+  getTreatmentPlanStatuses,
   updateTreatmentPlan,
-  deleteTreatmentPlan
+  createTreatmentPlan
 } from '../../api/treatmentPlan';
+import { getMedicalRecordsByDoctor, getMedicalRecords } from '../../api/medicalRecord';
+import { useAuthStatus } from '../../hooks/useAuthStatus';
+import { formatDate } from '../../utils/formatDate';
+import moment from 'moment';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const { TextArea } = Input;
 
-// Mock data for development
-const mockTreatmentPlans = [
-  {
-    id: 1, 
-    medicalRecordId: 'MR001',
-    patientId: 'BN001',
-    patientName: 'Nguyễn Thị B', 
-    arvRegimen: 'TDF/3TC/EFV', 
-    applicableGroup: 'Người lớn mới bắt đầu điều trị',
-    startDate: '2024-06-01', 
-    endDate: '2024-12-01',
-    status: 'ACTIVE',
-    note: 'Theo dõi men gan',
-    doctorId: 'DR001',
-    doctorName: 'BS. Trần Văn A',
-    createdAt: '2024-05-20T10:00:00',
-    updatedAt: '2024-05-20T10:00:00'
-  },
-  {
-    id: 2, 
-    medicalRecordId: 'MR002',
-    patientId: 'BN002',
-    patientName: 'Lê Văn C', 
-    arvRegimen: 'TAF/FTC/BIC', 
-    applicableGroup: 'Trẻ em < 25kg',
-    startDate: '2024-05-15', 
-    endDate: '2024-11-15',
-    status: 'ACTIVE',
-    note: 'Theo dõi tác dụng phụ',
-    doctorId: 'DR001',
-    doctorName: 'BS. Trần Văn A',
-    createdAt: '2024-05-10T14:30:00',
-    updatedAt: '2024-05-10T14:30:00'
-  },
-];
-
-// ARV Regimen options
-const arvRegimenOptions = [
-  'TDF/3TC/DTG',
-  'TAF/FTC/BIC',
+const ARV_REGIMEN_OPTIONS = [
+  'TDF/FTC/EFV',
   'ABC/3TC/DTG',
-  'TDF/3TC/EFV',
-  'TDF/3TC/NVP',
-  'AZT/3TC/EFV',
-  'AZT/3TC/NVP'
+  'TAF/FTC/BIC',
+  'AZT/3TC/LPV/r',
+  'ABC/3TC + RAL',
 ];
-
-// Applicable group options
-const applicableGroupOptions = [
+const APPLICABLE_GROUP_OPTIONS = [
   'Người lớn mới bắt đầu điều trị',
-  'Trẻ em < 25kg',
-  'Trẻ em ≥ 25kg',
-  'Phụ nữ có thai',
-  'Người nghiện chích ma túy',
-  'Người đồng nhiễm viêm gan B',
-  'Người đồng nhiễm viêm gan C'
-];
-
-// Status options
-const statusOptions = [
-  { value: 'ACTIVE', label: 'Đang điều trị', color: 'green' },
-  { value: 'COMPLETED', label: 'Hoàn thành', color: 'blue' },
-  { value: 'CANCELLED', label: 'Đã hủy', color: 'red' },
-  { value: 'PENDING', label: 'Chờ xác nhận', color: 'orange' },
+  'Người lớn, thay thế TDF',
+  'Người lớn, có vấn đề về thận',
+  'Phụ nữ mang thai',
+  'Trẻ em và thanh thiếu niên',
 ];
 
 const TreatmentPlans = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState(null);
-  const [form] = Form.useForm();
-  const [filters, setFilters] = useState({
-    search: '',
-    status: undefined,
-    dateRange: [moment().startOf('month'), moment().endOf('month')]
-  });
-  
+  const [searchText, setSearchText] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterDoctor, setFilterDoctor] = useState('all');
+  const [dateRange, setDateRange] = useState([null, null]);
+  const navigate = useNavigate();
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingPlan, setEditingPlan] = useState(null);
+  const [editForm] = Form.useForm();
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [addForm] = Form.useForm();
+  const [medicalRecords, setMedicalRecords] = useState([]);
   const { userInfo } = useAuthStatus();
 
-  useEffect(() => {
-    fetchTreatmentPlans();
-  }, [filters]);
+  const statuses = getTreatmentPlanStatuses();
 
-  const fetchTreatmentPlans = async () => {
+  // Load treatment plans
+  const loadTreatmentPlans = async () => {
     setLoading(true);
     try {
-      // In a real app, you would fetch data from the API
-      // const data = await getTreatmentPlansByDoctor(userInfo.id, filters);
-      
-      // For now, use mock data with filtering
-      let filteredData = [...mockTreatmentPlans];
-      
-      // Apply search filter
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        filteredData = filteredData.filter(plan => 
-          plan.patientName.toLowerCase().includes(searchLower) ||
-          plan.patientId.toLowerCase().includes(searchLower) ||
-          plan.arvRegimen.toLowerCase().includes(searchLower)
-        );
-      }
-      
-      // Apply status filter
-      if (filters.status) {
-        filteredData = filteredData.filter(plan => plan.status === filters.status);
-      }
-      
-      // Apply date range filter
-      if (filters.dateRange && filters.dateRange[0] && filters.dateRange[1]) {
-        const [start, end] = filters.dateRange;
-        filteredData = filteredData.filter(plan => {
-          const planDate = moment(plan.startDate);
-          return planDate.isBetween(start, end, 'day', '[]');
-        });
-      }
-      
-      setPlans(filteredData);
+      const data = await getTreatmentPlans();
+      console.log(data);
+      setPlans(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error fetching treatment plans:', error);
+      console.error('Error loading treatment plans:', error);
       message.error('Không thể tải danh sách kế hoạch điều trị');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = (e) => {
-    setFilters(prev => ({ ...prev, search: e.target.value }));
-  };
+  useEffect(() => {
+    loadTreatmentPlans();
+  }, []);
 
-  const handleStatusFilter = (status) => {
-    setFilters(prev => ({ ...prev, status: status || undefined }));
-  };
-
-  const handleDateRangeChange = (dates) => {
-    setFilters(prev => ({ ...prev, dateRange: dates }));
-  };
-
-  const resetFilters = () => {
-    setFilters({
-      search: '',
-      status: undefined,
-      dateRange: [moment().startOf('month'), moment().endOf('month')]
-    });
-  };
-
-  const showCreateModal = () => {
-    setCurrentPlan(null);
-    form.resetFields();
-    form.setFieldsValue({
-      startDate: moment(),
-      status: 'ACTIVE',
-      doctorId: userInfo?.id,
-      doctorName: userInfo?.name
-    });
-    setIsModalVisible(true);
-  };
-
-  const showEditModal = (plan) => {
-    setCurrentPlan(plan);
-    form.setFieldsValue({
-      medicalRecordId: plan.medicalRecordId,
-      patientId: plan.patientId,
-      patientName: plan.patientName,
-      arvRegimen: plan.arvRegimen,
-      applicableGroup: plan.applicableGroup,
-      status: plan.status,
-      startDate: moment(plan.startDate),
-      endDate: plan.endDate ? moment(plan.endDate) : null,
-      note: plan.note,
-      doctorId: plan.doctorId,
-      doctorName: plan.doctorName
-    });
-    setIsModalVisible(true);
-  };
-
-  const showDetailModal = (plan) => {
-    setCurrentPlan(plan);
-    // In a real app, you might want to show a detailed view in a modal
-    message.info(`Xem chi tiết kế hoạch điều trị cho ${plan.patientName}`);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setCurrentPlan(null);
-  };
-
-  const handleSubmit = async (values) => {
+  // Fetch medical records for current doctor
+  const fetchMedicalRecords = async () => {
+    if (!userInfo?.id) return;
     try {
-      const planData = {
-        ...values,
-        startDate: values.startDate.format('YYYY-MM-DD'),
-        endDate: values.endDate ? values.endDate.format('YYYY-MM-DD') : null,
-        doctorId: userInfo?.id,
-        doctorName: userInfo?.name
-      };
-
-      // In a real app, call the API
-      // if (currentPlan) {
-      //   await updateTreatmentPlan(currentPlan.id, planData);
-      //   message.success('Cập nhật kế hoạch điều trị thành công');
-      // } else {
-      //   await createTreatmentPlan(planData);
-      //   message.success('Tạo kế hoạch điều trị thành công');
-      // }
-      
-      message.success(`Xử lý kế hoạch điều trị ${currentPlan ? 'cập nhật' : 'tạo mới'} thành công`);
-      setIsModalVisible(false);
-      fetchTreatmentPlans();
+      const data = await getMedicalRecords();
+      setMedicalRecords(Array.isArray(data) ? data : (data.data || []));
     } catch (error) {
-      console.error('Error saving treatment plan:', error);
-      message.error(`Không thể ${currentPlan ? 'cập nhật' : 'tạo'} kế hoạch điều trị`);
+      setMedicalRecords([]);
     }
   };
 
+  useEffect(() => {
+    if (addModalVisible) fetchMedicalRecords();
+  }, [addModalVisible, userInfo?.id]);
+
+  // Delete treatment plan
   const handleDelete = async (planId) => {
     try {
-      // In a real app, call the API
-      // await deleteTreatmentPlan(planId);
+      await deleteTreatmentPlan(planId);
       message.success('Xóa kế hoạch điều trị thành công');
-      fetchTreatmentPlans();
+      loadTreatmentPlans();
     } catch (error) {
-      console.error('Error deleting treatment plan:', error);
       message.error('Không thể xóa kế hoạch điều trị');
     }
   };
 
-  const getStatusColor = (status) => {
-    const statusObj = statusOptions.find(s => s.value === status);
-    return statusObj ? statusObj.color : 'default';
+  // Show detail modal
+  const showDetailModal = (plan) => {
+    setSelectedPlan(plan);
+    setDetailModalVisible(true);
   };
 
-  const getStatusLabel = (status) => {
-    const statusObj = statusOptions.find(s => s.value === status);
-    return statusObj ? statusObj.label : status;
+  // Show edit modal
+  const showEditModal = async (plan) => {
+    setEditingPlan(plan);
+    setEditModalVisible(true);
+    // Fetch latest medical records for dropdown
+    await fetchMedicalRecords();
+    // Always set fields from the selected plan
+    editForm.setFieldsValue({
+      ...plan,
+      startDate: plan.startDate ? moment(plan.startDate) : null,
+      endDate: plan.endDate ? moment(plan.endDate) : null,
+    });
   };
+
+  // Handle edit submit
+  const handleEditSubmit = async (values) => {
+    try {
+      setLoading(true);
+      const payload = {
+        ...values,
+        startDate: values.startDate && moment.isMoment(values.startDate)
+          ? values.startDate.format('YYYY-MM-DD')
+          : values.startDate || null,
+        endDate: values.endDate && moment.isMoment(values.endDate)
+          ? values.endDate.format('YYYY-MM-DD')
+          : values.endDate || null,
+      };
+      console.log("payload", payload)
+      console.log("editingPlan", editingPlan)
+      await updateTreatmentPlan(editingPlan.planId, payload);
+      message.success('Cập nhật kế hoạch điều trị thành công');
+      setEditModalVisible(false);
+      setEditingPlan(null);
+      await loadTreatmentPlans(); // Ensure data is reloaded after update
+    } catch (error) {
+      message.error('Cập nhật kế hoạch điều trị thất bại');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Ensure data reloads when modal closes (cancel)
+  const handleEditModalClose = () => {
+    setEditModalVisible(false);
+    setEditingPlan(null);
+    editForm.resetFields();
+    loadTreatmentPlans();
+  };
+  const handleAddModalClose = () => {
+    setAddModalVisible(false);
+    addForm.resetFields();
+  };
+
+  // Show add modal
+  const showAddModal = () => {
+    setAddModalVisible(true);
+    addForm.resetFields();
+  };
+
+  // Handle add submit
+  const handleAddSubmit = async (values) => {
+    try {
+      setLoading(true);
+      const payload = {
+        ...values,
+        // doctorId: userInfo.id,
+        doctorId: 1,
+        startDate: values.startDate && moment.isMoment(values.startDate)
+          ? values.startDate.format('YYYY-MM-DD')
+          : values.startDate || null,
+        endDate: values.endDate && moment.isMoment(values.endDate)
+          ? values.endDate.format('YYYY-MM-DD')
+          : values.endDate || null,
+      };
+      await createTreatmentPlan(payload);
+      message.success('Tạo kế hoạch điều trị thành công');
+      setAddModalVisible(false);
+      await loadTreatmentPlans();
+    } catch (error) {
+      message.error('Tạo kế hoạch điều trị thất bại');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get status configuration
+  const getStatusConfig = (status) => {
+    const config = statuses.find(s => s.value === status);
+    return config || { label: status, color: 'default' };
+  };
+
+  // Calculate treatment duration
+  const getTreatmentDuration = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : new Date();
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 30) {
+      return `${diffDays} ngày`;
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return `${months} tháng`;
+    } else {
+      const years = Math.floor(diffDays / 365);
+      const months = Math.floor((diffDays % 365) / 30);
+      return `${years} năm ${months > 0 ? months + ' tháng' : ''}`;
+    }
+  };
+
+  // Filter plans based on search text and filters
+  const filteredPlans = plans.filter(plan => {
+    const searchLower = searchText.toLowerCase();
+    const matchesSearch = 
+      plan.patientName?.toLowerCase().includes(searchLower) ||
+      plan.doctorName?.toLowerCase().includes(searchLower) ||
+      plan.arvRegimen?.toLowerCase().includes(searchLower) ||
+      plan.applicableGroup?.toLowerCase().includes(searchLower);
+
+    const matchesStatus = filterStatus === 'all' || plan.status === filterStatus;
+    const matchesDoctor = filterDoctor === 'all' || plan.doctorId.toString() === filterDoctor;
+
+    return matchesSearch && matchesStatus && matchesDoctor;
+  });
 
   const columns = [
     {
-      title: 'Mã BN',
-      dataIndex: 'patientId',
-      key: 'patientId',
-      width: 100,
+      title: 'Mã kế hoạch',
+      dataIndex: 'planId',
+      key: 'planId',
+      width: 120,
+      render: (id) => `#${id}`,
     },
     {
-      title: 'Tên bệnh nhân',
+      title: 'Bệnh nhân',
       dataIndex: 'patientName',
       key: 'patientName',
-      render: (text, record) => (
-        <Button type="link" onClick={() => showDetailModal(record)}>
-          {text}
-        </Button>
+      ellipsis: true,
+      render: (name, record) => (
+        <div>
+          <div style={{ fontWeight: 500 }}>{name}</div>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            Hồ sơ: #{record.medicalRecordId}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Bác sĩ phụ trách',
+      dataIndex: 'doctorName',
+      key: 'doctorName',
+      ellipsis: true,
+      render: (name, record) => (
+        <div>
+          <div>{name}</div>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            ID: {record.doctorId}
+          </div>
+        </div>
       ),
     },
     {
@@ -299,75 +299,82 @@ const TreatmentPlans = () => {
       dataIndex: 'arvRegimen',
       key: 'arvRegimen',
       width: 150,
+      render: (regimen) => (
+        <div>
+          <div style={{ fontWeight: 500, color: '#1890ff' }}>{regimen}</div>
+        </div>
+      ),
     },
     {
       title: 'Nhóm áp dụng',
       dataIndex: 'applicableGroup',
       key: 'applicableGroup',
-      width: 200,
-    },
-    {
-      title: 'Ngày bắt đầu',
-      dataIndex: 'startDate',
-      key: 'startDate',
-      width: 120,
-      render: (date) => moment(date).format('DD/MM/YYYY'),
-      sorter: (a, b) => new Date(a.startDate) - new Date(b.startDate),
-    },
-    {
-      title: 'Ngày kết thúc',
-      dataIndex: 'endDate',
-      key: 'endDate',
-      width: 120,
-      render: (date) => date ? moment(date).format('DD/MM/YYYY') : '-',
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      width: 150,
-      render: (status) => (
-        <Tag color={getStatusColor(status)}>
-          {getStatusLabel(status)}
-        </Tag>
+      ellipsis: true,
+      render: (group) => (
+        <Tooltip title={group}>
+          <span style={{ fontSize: '12px' }}>{group}</span>
+        </Tooltip>
       ),
-      filters: statusOptions.map(s => ({
-        text: s.label,
-        value: s.value,
-      })),
-      onFilter: (value, record) => record.status === value,
     },
     {
-      title: 'Hành động',
-      key: 'action',
+      title: 'Thời gian điều trị',
+      key: 'duration',
+      width: 140,
+      render: (_, record) => (
+        <div>
+          <div style={{ fontSize: '12px' }}>
+            Bắt đầu: {formatDate(record.startDate)}
+          </div>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            Thời gian: {getTreatmentDuration(record.startDate, record.endDate)}
+          </div>
+        </div>
+      ),
+    },
+    // {
+    //   title: 'Trạng thái',
+    //   dataIndex: 'status',
+    //   key: 'status',
+    //   width: 120,
+    //   render: (status) => {
+    //     const config = getStatusConfig(status);
+    //     return <Tag color={config.color}>{config.label}</Tag>;
+    //   },
+    // },
+    {
+      title: 'Thao tác',
+      key: 'actions',
       width: 150,
       render: (_, record) => (
-        <Space size="middle">
-          <Button 
-            type="link" 
-            icon={<EyeOutlined />} 
-            onClick={() => showDetailModal(record)}
-            title="Xem chi tiết"
-          />
-          <Button 
-            type="link" 
-            icon={<EditOutlined />} 
-            onClick={() => showEditModal(record)}
-            title="Chỉnh sửa"
-          />
-          <Popconfirm
-            title="Bạn có chắc chắn muốn xóa?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="Có"
-            cancelText="Không"
-            okButtonProps={{ danger: true }}
-          >
-            <Button 
-              type="text" 
-              danger 
-              icon={<DeleteOutlined />} 
-              title="Xóa"
+        <Space size="small">
+          <Tooltip title="Xem chi tiết">
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => showDetailModal(record)}
             />
+          </Tooltip>
+          <Tooltip title="Chỉnh sửa">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => showEditModal(record)}
+            />
+          </Tooltip>
+          <Popconfirm
+            title="Xóa kế hoạch điều trị"
+            description="Bạn có chắc chắn muốn xóa kế hoạch điều trị này không?"
+            onConfirm={() => handleDelete(record.planId)}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Tooltip title="Xóa">
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+              />
+            </Tooltip>
           </Popconfirm>
         </Space>
       ),
@@ -375,214 +382,254 @@ const TreatmentPlans = () => {
   ];
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-800">
-            <MedicineBoxOutlined className="mr-2" />
-            Quản lý Kế hoạch Điều trị
-          </h2>
-          <p className="text-gray-600">
-            Quản lý và theo dõi các kế hoạch điều trị ARV cho bệnh nhân
-          </p>
-        </div>
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />} 
-          onClick={showCreateModal}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          Tạo kế hoạch mới
-        </Button>
-      </div>
-
-      <Card className="mb-6" bodyStyle={{ padding: '16px 24px' }}>
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex-1 min-w-[250px]">
-            <Input 
-              placeholder="Tìm kiếm theo tên bệnh nhân, mã BN, phác đồ..."
-              prefix={<SearchOutlined />}
-              value={filters.search}
-              onChange={handleSearch}
-              allowClear
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-600">Trạng thái:</span>
-            <Select
-              style={{ width: 150 }}
-              value={filters.status}
-              onChange={handleStatusFilter}
-              allowClear
-              placeholder="Tất cả"
-            >
-              {statusOptions.map(status => (
-                <Option key={status.value} value={status.value}>
-                  {status.label}
-                </Option>
-              ))}
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-600">Thời gian:</span>
-            <RangePicker 
-              value={filters.dateRange}
-              onChange={handleDateRangeChange}
-              format="DD/MM/YYYY"
-            />
-          </div>
-          <Button 
-            icon={<ReloadOutlined />} 
-            onClick={resetFilters}
-          >
-            Đặt lại
-          </Button>
-        </div>
-      </Card>
-
+    <div style={{ padding: '24px' }}>
       <Card>
-        <Table 
-          columns={columns} 
-          dataSource={plans} 
-          rowKey="id"
+        <div style={{ marginBottom: '24px' }}>
+          <Row gutter={[16, 16]} align="middle">
+            <Col flex="auto">
+              <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 600 }}>
+                <MedicineBoxOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+                Quản lý Kế hoạch Điều trị
+              </h2>
+              <p style={{ margin: '8px 0 0 0', color: '#666' }}>
+                Quản lý phác đồ ARV và kế hoạch điều trị HIV cho bệnh nhân
+              </p>
+            </Col>
+            <Col>
+              <Space>
+                <Button
+                  icon={<ReloadOutlined />}
+                  onClick={loadTreatmentPlans}
+                  loading={loading}
+                >
+                  Tải lại
+                </Button>
+                <Button
+                  icon={<DownloadOutlined />}
+                  onClick={() => message.info('Chức năng xuất dữ liệu đang phát triển')}
+                >
+                  Xuất Excel
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={showAddModal}
+                >
+                  Tạo kế hoạch mới
+                </Button>
+              </Space>
+            </Col>
+          </Row>
+        </div>
+
+        {/* Filters */}
+        <Card size="small" style={{ marginBottom: '16px' }}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8}>
+              <Input
+                placeholder="Tìm kiếm bệnh nhân, bác sĩ, phác đồ..."
+                prefix={<SearchOutlined />}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                allowClear
+              />
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <RangePicker
+                placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
+                value={dateRange}
+                onChange={setDateRange}
+                style={{ width: '100%' }}
+              />
+            </Col>
+          </Row>
+        </Card>
+
+        {/* Table */}
+        <Table
+          columns={columns}
+          dataSource={filteredPlans}
+          rowKey="planId"
           loading={loading}
-          pagination={{ 
-            pageSize: 10, 
+          pagination={{
+            total: filteredPlans.length,
+            pageSize: 10,
             showSizeChanger: true,
-            showTotal: (total) => `Tổng ${total} kế hoạch`
+            showQuickJumper: true,
+            showTotal: (total, range) => 
+              `${range[0]}-${range[1]} của ${total} kế hoạch điều trị`,
           }}
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1400 }}
         />
       </Card>
-
-      {/* Create/Edit Treatment Plan Modal */}
+      {/* Detail Modal */}
       <Modal
-        title={currentPlan ? 'Cập nhật kế hoạch điều trị' : 'Tạo kế hoạch điều trị mới'}
-        open={isModalVisible}
-        onCancel={handleCancel}
+        title="Chi tiết kế hoạch điều trị"
+        open={detailModalVisible}
+        onCancel={() => setDetailModalVisible(false)}
         footer={null}
-        width={800}
+        width={600}
+      >
+        {selectedPlan && (
+          <div style={{ lineHeight: 2 }}>
+            <div><b>Mã kế hoạch:</b> #{selectedPlan.planId}</div>
+            <div><b>Bệnh nhân:</b> {selectedPlan.patientName}</div>
+            <div><b>Bác sĩ phụ trách:</b> {selectedPlan.doctorName}</div>
+            <div><b>Phác đồ ARV:</b> {selectedPlan.arvRegimen}</div>
+            <div><b>Nhóm áp dụng:</b> {selectedPlan.applicableGroup}</div>
+            <div><b>Ngày bắt đầu:</b> {formatDate(selectedPlan.startDate)}</div>
+            <div><b>Ngày kết thúc:</b> {selectedPlan.endDate ? formatDate(selectedPlan.endDate) : '-'}</div>
+            <div><b>Ghi chú:</b> {selectedPlan.note || '-'}</div>
+          </div>
+        )}
+      </Modal>
+      {/* Edit Modal (same as Add Modal, but prefilled) */}
+      <Modal
+        title="Chỉnh sửa kế hoạch điều trị"
+        open={editModalVisible}
+        onCancel={handleEditModalClose}
+        footer={null}
+        width={700}
+        destroyOnClose
+      >
+        {editingPlan && (
+          <Form
+            form={editForm}
+            layout="vertical"
+            onFinish={handleEditSubmit}
+            initialValues={{
+              ...editingPlan,
+              startDate: editingPlan.startDate ? moment(editingPlan.startDate) : null,
+              endDate: editingPlan.endDate ? moment(editingPlan.endDate) : null,
+            }}
+          >
+            <Form.Item
+              name="medicalRecordId"
+              label="Hồ sơ bệnh án"
+              rules={[{ required: true, message: 'Vui lòng chọn hồ sơ bệnh án' }]}
+            >
+              <Select placeholder="Chọn hồ sơ bệnh án">
+                {medicalRecords.map(r => (
+                  <Option key={r.id || r.medicalRecordId} value={r.id || r.medicalRecordId}>
+                    {r.id || r.medicalRecordId} - {r.customerName || r.patientName} (Bác sĩ: {r.doctorName})
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="arvRegimen"
+              label="Phác đồ ARV"
+              rules={[{ required: true, message: 'Vui lòng chọn phác đồ ARV' }]}
+            >
+              <Select placeholder="Chọn phác đồ ARV">
+                {ARV_REGIMEN_OPTIONS.map(opt => (
+                  <Option key={opt} value={opt}>{opt}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="applicableGroup"
+              label="Nhóm áp dụng"
+              rules={[{ required: true, message: 'Vui lòng chọn nhóm áp dụng' }]}
+            >
+              <Select placeholder="Chọn nhóm áp dụng">
+                {APPLICABLE_GROUP_OPTIONS.map(opt => (
+                  <Option key={opt} value={opt}>{opt}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="note"
+              label="Ghi chú"
+            >
+              <Input.TextArea rows={2} placeholder="Nhập ghi chú (nếu có)" />
+            </Form.Item>
+            <Form.Item
+              name="startDate"
+              label="Ngày bắt đầu"
+              rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu' }]}
+            >
+              <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" />
+            </Form.Item>
+            <Form.Item
+              name="endDate"
+              label="Ngày kết thúc"
+            >
+              <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" />
+            </Form.Item>
+            <Form.Item style={{ textAlign: 'right' }}>
+              <Button onClick={handleEditModalClose} style={{ marginRight: 8 }}>Hủy</Button>
+              <Button type="primary" htmlType="submit" loading={loading}>Lưu thay đổi</Button>
+            </Form.Item>
+          </Form>
+        )}
+      </Modal>
+      {/* Add Modal */}
+      <Modal
+        title="Tạo kế hoạch điều trị mới"
+        open={addModalVisible}
+        onCancel={handleAddModalClose}
+        footer={null}
+        width={700}
         destroyOnClose
       >
         <Form
-          form={form}
+          form={addForm}
           layout="vertical"
-          onFinish={handleSubmit}
-          className="mt-6"
+          onFinish={handleAddSubmit}
         >
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="medicalRecordId"
-                label="Mã hồ sơ bệnh án"
-                rules={[{ required: true, message: 'Vui lòng nhập mã hồ sơ' }]}
-              >
-                <Input placeholder="Nhập mã hồ sơ bệnh án" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="patientName"
-                label="Tên bệnh nhân"
-                rules={[{ required: true, message: 'Vui lòng nhập tên bệnh nhân' }]}
-              >
-                <Input placeholder="Nhập tên bệnh nhân" />
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="arvRegimen"
-                label="Phác đồ ARV"
-                rules={[{ required: true, message: 'Vui lòng chọn phác đồ ARV' }]}
-              >
-                <Select placeholder="Chọn phác đồ ARV" showSearch>
-                  {arvRegimenOptions.map(regimen => (
-                    <Option key={regimen} value={regimen}>
-                      {regimen}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="applicableGroup"
-                label="Nhóm áp dụng"
-                rules={[{ required: true, message: 'Vui lòng chọn nhóm áp dụng' }]}
-              >
-                <Select placeholder="Chọn nhóm áp dụng" showSearch>
-                  {applicableGroupOptions.map(group => (
-                    <Option key={group} value={group}>
-                      {group}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="startDate"
-                label="Ngày bắt đầu"
-                rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu' }]}
-              >
-                <DatePicker 
-                  style={{ width: '100%' }} 
-                  format="DD/MM/YYYY"
-                  disabledDate={current => current && current < moment().startOf('day')}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="endDate"
-                label="Ngày kết thúc (tùy chọn)"
-              >
-                <DatePicker 
-                  style={{ width: '100%' }} 
-                  format="DD/MM/YYYY"
-                  disabledDate={current => 
-                    current && current < form.getFieldValue('startDate')
-                  }
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          
           <Form.Item
-            name="status"
-            label="Trạng thái"
-            initialValue="ACTIVE"
+            name="medicalRecordId"
+            label="Hồ sơ bệnh án"
+            rules={[{ required: true, message: 'Vui lòng chọn hồ sơ bệnh án' }]}
           >
-            <Select>
-              {statusOptions.map(status => (
-                <Option key={status.value} value={status.value}>
-                  {status.label}
+            <Select placeholder="Chọn hồ sơ bệnh án">
+              {medicalRecords.map(r => (
+                <Option key={r.id || r.medicalRecordId} value={r.id || r.medicalRecordId}>
+                  {r.id || r.medicalRecordId} - {r.customerName || r.patientName} (Bác sĩ: {r.doctorName})
                 </Option>
               ))}
             </Select>
           </Form.Item>
-          
+          <Form.Item
+            name="arvRegimen"
+            label="Phác đồ ARV"
+            rules={[{ required: true, message: 'Vui lòng chọn phác đồ ARV' }]}
+          >
+            <Select placeholder="Chọn phác đồ ARV">
+              {ARV_REGIMEN_OPTIONS.map(opt => (
+                <Option key={opt} value={opt}>{opt}</Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="applicableGroup"
+            label="Nhóm áp dụng"
+            rules={[{ required: true, message: 'Vui lòng chọn nhóm áp dụng' }]}
+          >
+            <Select placeholder="Chọn nhóm áp dụng">
+              {APPLICABLE_GROUP_OPTIONS.map(opt => (
+                <Option key={opt} value={opt}>{opt}</Option>
+              ))}
+            </Select>
+          </Form.Item>
           <Form.Item
             name="note"
             label="Ghi chú"
           >
-            <TextArea rows={3} placeholder="Nhập ghi chú (nếu có)" />
+            <Input.TextArea rows={2} placeholder="Nhập ghi chú (nếu có)" />
           </Form.Item>
-          
-          <div className="flex justify-end space-x-4 mt-6">
-            <Button onClick={handleCancel}>
-              Hủy
-            </Button>
-            <Button type="primary" htmlType="submit">
-              {currentPlan ? 'Cập nhật' : 'Tạo mới'}
-            </Button>
-          </div>
+          <Form.Item
+            name="startDate"
+            label="Ngày bắt đầu"
+            rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu' }]}
+          >
+            <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" />
+          </Form.Item>
+          <Form.Item style={{ textAlign: 'right' }}>
+            <Button onClick={handleAddModalClose} style={{ marginRight: 8 }}>Hủy</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>Tạo mới</Button>
+          </Form.Item>
         </Form>
       </Modal>
     </div>

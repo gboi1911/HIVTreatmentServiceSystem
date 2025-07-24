@@ -75,10 +75,10 @@ const getOrganizedMenuItems = (canAccessMedicalRecords, userRole) => {
   const doctorMenuItems = [
     { path: "/doctor/dashboard", label: "Dashboard", icon: <DashboardOutlined /> },
     { path: "/doctor/appointments", label: "Quản lý cuộc hẹn", icon: <CalendarOutlined /> },
-    { path: "/doctor/patients", label: "Quản lý bệnh nhân", icon: <UserOutlined /> },
+    { path: "/doctor/medical-records", label: "Quản lý hồ sơ bệnh án", icon: <FileTextOutlined /> },
     { path: "/doctor/lab-results", label: "Quản lý kết quả xét nghiệm", icon: <ExperimentOutlined /> },
     { path: "/doctor/treatment-plans", label: "Quản lý kế hoạch điều trị", icon: <MedicineBoxOutlined /> },
-    { path: "/doctor/profile", label: "Thông tin cá nhân", icon: <UserOutlined /> },
+
   ]
   return {
     services: servicesMenuItems,

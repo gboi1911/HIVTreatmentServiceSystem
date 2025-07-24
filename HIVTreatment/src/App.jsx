@@ -54,24 +54,7 @@ const AssessmentHistory = React.lazy(() =>
 
 // Medical Record pages
 const MedicalRecords = React.lazy(() =>
-  import("./pages/medical/MedicalRecords")
-);
-const MedicalRecordForm = React.lazy(() =>
-  import("./pages/medical/MedicalRecordForm")
-);
-const MedicalRecordDetail = React.lazy(() =>
-  import("./pages/medical/MedicalRecordDetail")
-);
-
-// Treatment Plan pages
-const TreatmentPlans = React.lazy(() =>
-  import("./pages/treatment/TreatmentPlans")
-);
-const TreatmentPlanForm = React.lazy(() =>
-  import("./pages/treatment/TreatmentPlanForm")
-);
-const TreatmentPlanDetail = React.lazy(() =>
-  import("./pages/treatment/TreatmentPlanDetail")
+  import("./pages/doctor/MedicalRecords")
 );
 
 //Appointment Management
@@ -286,6 +269,14 @@ function App() {
               element={
                 <DoctorRoute>
                   <DoctorTreatmentPlans />
+                </DoctorRoute>
+              }
+            />
+            <Route
+              path="doctor/medical-records"
+              element={
+                <DoctorRoute>
+                  <MedicalRecords />
                 </DoctorRoute>
               }
             />
