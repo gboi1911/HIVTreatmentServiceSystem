@@ -91,6 +91,7 @@ const MedicalRecords = () => {
       treatmentPlanCount: 0,
       labResultCount: 0,
     };
+    setLoading(true);
     try {
       if (editingRecord) {
         await updateMedicalRecord(editingRecord.medicalRecordId, payload);
@@ -100,9 +101,11 @@ const MedicalRecords = () => {
         message.success('Tạo hồ sơ bệnh án thành công');
       }
       handleModalClose();
-      // TODO: reload data
+      await loadMedicalRecords();
     } catch (error) {
       message.error('Lưu hồ sơ bệnh án thất bại');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,12 +149,15 @@ const MedicalRecords = () => {
 
   // Delete medical record
   const handleDelete = async (recordId) => {
+    setLoading(true);
     try {
       await deleteMedicalRecord(recordId);
       message.success('Xóa hồ sơ bệnh án thành công');
-      loadMedicalRecords();
+      await loadMedicalRecords();
     } catch (error) {
       message.error('Không thể xóa hồ sơ bệnh án');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -407,9 +413,9 @@ const MedicalRecords = () => {
 
         {/* Table */}
         <Table
+          rowKey="id"
           columns={columns}
           dataSource={filteredRecords}
-          rowKey="id"
           loading={loading}
           pagination={{
             total: filteredRecords.length,
