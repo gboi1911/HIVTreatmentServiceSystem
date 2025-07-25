@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Table, Select, message, Tag } from "antd";
+import { Table, Select, message, Tag, Card, Button, Space, Typography, Row, Col } from "antd";
+import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import {
   getAllAppointments,
   getAppointmentsByStatus,
   updateAppointmentStatus,
 } from "../api/appointment";
+import { CalendarOutlined, BellOutlined, CheckCircleOutlined } from "@ant-design/icons";
+
+const { Title, Text } = Typography;
 
 export default function AppointmentManagementPage() {
   const [appointments, setAppointments] = useState([]);
@@ -145,41 +149,78 @@ export default function AppointmentManagementPage() {
 
   return (
     <div className="px-8 py-12">
-      <h2
-        style={{ color: "black" }}
-        className="text-2xl font-semibold mb-6 text-center"
-      >
+      <Title level={2} style={{ marginBottom: 24 }}>
         Quản lý lịch hẹn
-      </h2>
-      <div className="mb-4">
-        <Select
-          allowClear
-          placeholder="Lọc theo trạng thái"
-          style={{ width: 200 }}
-          onChange={(value) => {
-            setStatusFilter(value);
-            if (value) {
-              fetchAppointmentsByStatus(value);
-            } else {
-              fetchAppointments();
-            }
-          }}
-        >
-          {["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED", "NO_SHOW"].map(
-            (s) => (
-              <Select.Option key={s} value={s}>
-                {s}
-              </Select.Option>
-            )
-          )}
-        </Select>
-      </div>
-      <Table
-        columns={columns}
-        dataSource={appointments}
-        rowKey="appointmentId"
-        loading={loading}
-      />
+      </Title>
+      
+      {/* Quick Access Cards */}
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col span={8}>
+          <Card hoverable>
+            <Link to="/staff/follow-up-management">
+              <Space direction="vertical" align="center" style={{ width: '100%', textAlign: 'center' }}>
+                <BellOutlined style={{ fontSize: 32, color: '#1890ff' }} />
+                <Title level={4}>Quản lý tái khám</Title>
+                <Text type="secondary">Lên lịch tái khám cho bệnh nhân sau khi hoàn thành điều trị</Text>
+              </Space>
+            </Link>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card hoverable>
+            <Link to="/staff/completed-treatments">
+              <Space direction="vertical" align="center" style={{ width: '100%', textAlign: 'center' }}>
+                <CheckCircleOutlined style={{ fontSize: 32, color: '#52c41a' }} />
+                <Title level={4}>Hồ sơ đã hoàn thành</Title>
+                <Text type="secondary">Xem các hồ sơ bệnh án và phác đồ điều trị đã hoàn thành</Text>
+              </Space>
+            </Link>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card hoverable>
+            <Link to="/consultation-booking">
+              <Space direction="vertical" align="center" style={{ width: '100%', textAlign: 'center' }}>
+                <CalendarOutlined style={{ fontSize: 32, color: '#722ed1' }} />
+                <Title level={4}>Đặt lịch mới</Title>
+                <Text type="secondary">Tạo cuộc hẹn mới cho bệnh nhân với bác sĩ</Text>
+              </Space>
+            </Link>
+          </Card>
+        </Col>
+      </Row>
+      
+      <Card title="Danh sách lịch hẹn" style={{ marginBottom: 16 }}>
+        <div className="mb-4">
+          <Select
+            allowClear
+            placeholder="Lọc theo trạng thái"
+            style={{ width: 200 }}
+            onChange={(value) => {
+              setStatusFilter(value);
+              if (value) {
+                fetchAppointmentsByStatus(value);
+              } else {
+                fetchAppointments();
+              }
+            }}
+          >
+            {["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED", "NO_SHOW"].map(
+              (s) => (
+                <Select.Option key={s} value={s}>
+                  {s}
+                </Select.Option>
+              )
+            )}
+          </Select>
+        </div>
+        <Table
+          columns={columns}
+          dataSource={appointments}
+          rowKey="appointmentId"
+          loading={loading}
+        />
+      </Card>
     </div>
   );
 }

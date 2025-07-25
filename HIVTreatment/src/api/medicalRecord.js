@@ -15,6 +15,18 @@ export const getMedicalRecords = async () => {
   return res.data;
 };
 
+export const getAllMedicalRecords = async () => {
+  const token = localStorage.getItem('token');
+  console.log('Getting all medical records with token:', token ? 'Token exists' : 'No token');
+  
+  const res = await axios.get(`${API_URL}/all`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
 export const createMedicalRecord = async (data) => {
   const token = localStorage.getItem('token');
   console.log('Creating medical record with token:', token ? 'Token exists' : 'No token');

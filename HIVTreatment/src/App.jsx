@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import StaffLayout from "./components/StaffLayout";
 import { EnhancedPageLoader } from "./components/LoadingComponents";
 import {
   ProtectedRoute,
@@ -13,6 +14,8 @@ import UserMedicalRecord from './pages/user/UserMedicalRecord';
 import UserLabResults from './pages/user/UserLabResults';
 import UserTreatmentPlans from './pages/user/UserTreatmentPlans';
 import CombinedMedicalForm from './pages/doctor/CombinedMedicalForm';
+import StaffFollowUpManagement from './pages/staff/StaffFollowUpManagement';
+import CompletedTreatments from './pages/staff/CompletedTreatments';
 
 // Public pages (no authentication required)
 const Home = React.lazy(() => import("./pages/Home"));
@@ -330,23 +333,25 @@ function App() {
             />
           </Route>
 
-          {/* Staff routes
-          <Route 
-            path="staff/dashboard" 
-            element={
-              <StaffRoute>
-                <StaffDashboard />
-              </StaffRoute>
-            } 
-          />
-          <Route 
-            path="staff/patients" 
-            element={
-              <StaffRoute>
-                <PatientManagement />
-              </StaffRoute>
-            } 
-          /> */}
+          {/* Staff routes */}
+          <Route path="/staff" element={<StaffLayout />}>
+            <Route
+              path="follow-up-management"
+              element={
+                <StaffRoute>
+                  <StaffFollowUpManagement />
+                </StaffRoute>
+              }
+            />
+            <Route
+              path="completed-treatments"
+              element={
+                <StaffRoute>
+                  <CompletedTreatments />
+                </StaffRoute>
+              }
+            />
+          </Route>
 
           {/* Fallback route */}
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}

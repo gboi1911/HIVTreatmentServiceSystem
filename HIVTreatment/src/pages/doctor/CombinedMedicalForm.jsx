@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, DatePicker, message, Select, Divider, Typography, Card, Row, Col } from 'antd';
+import { Form, Input, Button, DatePicker, message, Select, Divider, Typography, Card, Row, Col, Modal, Result } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { createMedicalRecord } from '../../api/medicalRecord';
 import { createTreatmentPlan } from '../../api/treatmentPlan';
-import { UserOutlined, PhoneOutlined } from '@ant-design/icons';
+import { updateAppointmentStatus } from '../../api/appointment';
+import { UserOutlined, PhoneOutlined, CheckCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const MedicalRecordForm = ({ onSuccess, customerId, doctorId, customerName, customerPhone }) => {
   const [form] = Form.useForm();
@@ -94,7 +95,7 @@ const MedicalRecordForm = ({ onSuccess, customerId, doctorId, customerName, cust
   );
 };
 
-const TreatmentPlanForm = ({ medicalRecordId, doctorId, onBack }) => {
+const TreatmentPlanForm = ({ medicalRecordId, doctorId, onBack, onComplete, appointmentId }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -111,9 +112,21 @@ const TreatmentPlanForm = ({ medicalRecordId, doctorId, onBack }) => {
         note: values.treatmentNote,
       });
       console.log('Created treatmentPlan:', res);
+      
+      // Cập nhật trạng thái cuộc hẹn thành COMPLETED
+      if (appointmentId) {
+        try {
+          await updateAppointmentStatus(appointmentId, 'COMPLETED', 'Đã hoàn thành khám và tạo phác đồ điều trị');
+          console.log('Appointment status updated to COMPLETED');
+        } catch (err) {
+          console.error('Error updating appointment status:', err);
+          // Không hiển thị lỗi này cho người dùng vì đã tạo thành công phác đồ điều trị
+        }
+      }
+      
       message.success('Tạo phác đồ điều trị thành công!');
       form.resetFields();
-      onBack();
+      onComplete && onComplete(res);
     } catch (error) {
       message.error('Có lỗi khi lưu phác đồ điều trị!');
       console.error('TreatmentPlan API error:', error);
@@ -201,12 +214,15 @@ const CombinedMedicalForm = () => {
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const customerId = params.get('customerId');
+  const appointmentId = params.get('appointmentId');
   const customerName = decodeURIComponent(params.get('customerName') || '');
   const customerPhone = decodeURIComponent(params.get('customerPhone') || '');
   const doctorId = localStorage.getItem('doctorId') || '1'; // Mặc định là 1 nếu không có
 
   const [step, setStep] = useState(1);
   const [medicalRecordId, setMedicalRecordId] = useState(null);
+  const [completedTreatmentPlan, setCompletedTreatmentPlan] = useState(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   useEffect(() => {
     // Nếu không có customerId, quay lại appointments
@@ -214,8 +230,17 @@ const CombinedMedicalForm = () => {
       message.error('Không tìm thấy thông tin bệnh nhân');
       navigate('/doctor/appointments');
     }
-    console.log('Form data:', { customerId, customerName, customerPhone, doctorId });
-  }, [customerId, customerName, customerPhone, doctorId, navigate]);
+    console.log('Form data:', { customerId, customerName, customerPhone, doctorId, appointmentId });
+  }, [customerId, customerName, customerPhone, doctorId, appointmentId, navigate]);
+
+  const handleTreatmentPlanComplete = (treatmentPlan) => {
+    setCompletedTreatmentPlan(treatmentPlan);
+    setShowCompletionModal(true);
+  };
+
+  const handleReturnToAppointments = () => {
+    navigate('/doctor/appointments');
+  };
 
   return (
     <div style={{padding: 24}}>
@@ -255,9 +280,44 @@ const CombinedMedicalForm = () => {
         <TreatmentPlanForm
           medicalRecordId={medicalRecordId}
           doctorId={doctorId}
+          appointmentId={appointmentId}
           onBack={() => setStep(1)}
+          onComplete={handleTreatmentPlanComplete}
         />
       )}
+
+      {/* Modal hiển thị khi hoàn thành phác đồ điều trị */}
+      <Modal
+        visible={showCompletionModal}
+        footer={null}
+        closable={false}
+        width={600}
+        centered
+      >
+        <Result
+          status="success"
+          icon={<CheckCircleOutlined style={{ color: '#52c41a' }} />}
+          title="Đã hoàn thành khám và tạo phác đồ điều trị!"
+          subTitle={
+            <div>
+              <p>Bệnh nhân: <strong>{customerName}</strong></p>
+              <p>Phác đồ ARV: <strong>{completedTreatmentPlan?.arvRegimen}</strong></p>
+              <p>Đã gửi thông báo cho bệnh nhân về kết quả khám và phác đồ điều trị.</p>
+            </div>
+          }
+          extra={[
+            <Button
+              type="primary"
+              key="appointments"
+              icon={<ArrowLeftOutlined />}
+              onClick={handleReturnToAppointments}
+              size="large"
+            >
+              Quay lại danh sách lịch hẹn
+            </Button>
+          ]}
+        />
+      </Modal>
     </div>
   );
 };
