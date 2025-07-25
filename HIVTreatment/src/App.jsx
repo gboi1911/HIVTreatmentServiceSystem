@@ -9,6 +9,9 @@ import {
   StaffRoute,
   DoctorRoute
 } from "./routes/ProtectedRoute";
+import UserMedicalRecord from './pages/user/UserMedicalRecord';
+import UserLabResults from './pages/user/UserLabResults';
+import UserTreatmentPlans from './pages/user/UserTreatmentPlans';
 
 // Public pages (no authentication required)
 const Home = React.lazy(() => import("./pages/Home"));
@@ -187,6 +190,30 @@ function App() {
               element={
                 <UserRoute>
                   <UserProfile />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="user/medical-record"
+              element={
+                <UserRoute>
+                  <UserMedicalRecord />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="user/lab-results"
+              element={
+                <UserRoute>
+                  <UserLabResults />
+                </UserRoute>
+              }
+            />
+            <Route
+              path="user/treatment-plans"
+              element={
+                <UserRoute>
+                  <UserTreatmentPlans />
                 </UserRoute>
               }
             />

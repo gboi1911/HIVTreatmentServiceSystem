@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getCustomerById } from '../api/customer';
 
 export const useAuthStatus = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -7,27 +8,42 @@ export const useAuthStatus = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuthStatus = () => {
+    const checkAuthStatus = async () => {
       try {
         const token = localStorage.getItem('token');
         const savedUserInfo = localStorage.getItem('userInfo');
         console.log(token, savedUserInfo);
+        let parsedUserInfo = null;
+        let role = null;
         if (token && savedUserInfo) {
-          const parsedUserInfo = JSON.parse(savedUserInfo);
-          setIsLoggedIn(true);
-          setUserInfo(parsedUserInfo);
-          setUserRole(parsedUserInfo.role || parsedUserInfo.userRole);
+          parsedUserInfo = JSON.parse(savedUserInfo);
+          role = parsedUserInfo.role || parsedUserInfo.userRole;
         } else if (token) {
           // Try to decode role from token
           const payload = JSON.parse(atob(token.split('.')[1]));
-          const role = payload.role || payload.userRole || payload.authorities?.[0];
-          
-          setIsLoggedIn(true);
-          setUserRole(role);
-          setUserInfo({ 
+          role = payload.role || payload.userRole || payload.authorities?.[0];
+          parsedUserInfo = {
             username: payload.username || payload.email || 'User',
-            role: role 
-          });
+            role: role,
+            id: payload.sub || payload.userId || payload.id
+          };
+        }
+        if (parsedUserInfo) {
+          // If user is a patient/user and customerId is missing, fetch it
+          if ((role === 'user' || role === 'patient' || role === 'CUSTOMER') && !parsedUserInfo.customerId && parsedUserInfo.id) {
+            try {
+              const customerProfile = await getCustomerById(parsedUserInfo.id);
+              if (customerProfile && customerProfile.id) {
+                parsedUserInfo = { ...parsedUserInfo, ...customerProfile, customerId: customerProfile.id };
+              }
+            } catch (e) {
+              console.warn('Could not fetch customer profile:', e);
+            }
+          }
+          setIsLoggedIn(true);
+          setUserInfo(parsedUserInfo);
+          setUserRole(role);
+          console.log('AuthStatus merged userInfo:', parsedUserInfo);
         } else {
           setIsLoggedIn(false);
           setUserRole(null);

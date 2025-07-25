@@ -71,11 +71,14 @@ export default function LabResults() {
     try {
       setLoading(true);
       const payload = {
-        ...values,
-        doctorId: userInfo.id,
+        medicalRecordId: values.medicalRecordId,
+        doctorId: 1,
+        result: values.result,
+        cd4Count: values.cd4Count,
         testDate: values.testDate && moment.isMoment(values.testDate)
           ? values.testDate.format('YYYY-MM-DD')
           : values.testDate || null,
+        note: values.note || '',
       };
       if (editingResult) {
         await updateLabResult(editingResult.labResultId || editingResult.id, payload);
@@ -105,6 +108,12 @@ export default function LabResults() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Modal close handler
+  const handleModalClose = () => {
+    setModalVisible(false);
+    form.resetFields();
   };
 
   const columns = [
@@ -140,7 +149,7 @@ export default function LabResults() {
       <Modal
         title={editingResult ? 'Chỉnh sửa kết quả xét nghiệm' : 'Thêm kết quả xét nghiệm'}
         open={modalVisible}
-        onCancel={() => setModalVisible(false)}
+        onCancel={handleModalClose}
         footer={null}
         destroyOnClose
       >
@@ -186,16 +195,15 @@ export default function LabResults() {
           <Form.Item
             name="note"
             label="Ghi chú"
+            rules={[{ max: 500, message: 'Ghi chú không được vượt quá 500 ký tự' }]}
           >
-            <Input.TextArea rows={2} placeholder="Nhập ghi chú (nếu có)" />
+            <Input.TextArea rows={2} placeholder="Nhập ghi chú (nếu có)" maxLength={500} />
           </Form.Item>
-          <Form.Item>
-            <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-              <Button onClick={() => setModalVisible(false)}>Hủy</Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                {editingResult ? 'Cập nhật' : 'Thêm mới'}
-              </Button>
-            </Space>
+          <Form.Item style={{ textAlign: 'right' }}>
+            <Button onClick={handleModalClose} style={{ marginRight: 8 }}>Hủy</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              {editingResult ? 'Cập nhật' : 'Thêm mới'}
+            </Button>
           </Form.Item>
         </Form>
       </Modal>

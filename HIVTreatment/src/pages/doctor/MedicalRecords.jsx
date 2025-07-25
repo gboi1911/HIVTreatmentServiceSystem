@@ -13,7 +13,9 @@ import {
   Col, 
   message,
   Modal,
-  Popconfirm
+  Popconfirm,
+  Form,
+  Descriptions
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -32,9 +34,12 @@ import {
   getMedicalRecordsByDoctor,
   getMedicalRecordsByCd4Range,
   getMedicalRecordsByViralLoadRange,
-  deleteMedicalRecord 
+  deleteMedicalRecord,
+  createMedicalRecord,
+  updateMedicalRecord
 } from '../../api/medicalRecord';
 import { formatDate } from '../../utils/formatDate';
+import moment from 'moment';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -48,6 +53,58 @@ const MedicalRecords = () => {
   const [viralLoadRange, setViralLoadRange] = useState([null, null]);
   const [dateRange, setDateRange] = useState([null, null]);
   const navigate = useNavigate();
+
+  // Add modal state and form
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [form] = Form.useForm();
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setEditingRecord(null);
+    form.resetFields();
+  };
+
+  const openModal = (record = null) => {
+    setEditingRecord(record);
+    setModalVisible(true);
+    if (record) {
+      form.setFieldsValue({
+        ...record,
+        lastUpdated: record.lastUpdated ? moment(record.lastUpdated) : null,
+      });
+    } else {
+      form.resetFields();
+    }
+  };
+
+  const handleSubmit = async (values) => {
+    // Construct payload for backend
+    const payload = {
+      customerId: values.customerId,
+      doctorId: 1,
+      cd4Count: values.cd4Count,
+      viralLoad: values.viralLoad,
+      treatmentHistory: values.treatmentHistory,
+      cd4Status: values.cd4Status,
+      viralLoadStatus: values.viralLoadStatus,
+      treatmentPlanCount: 0,
+      labResultCount: 0,
+    };
+    try {
+      if (editingRecord) {
+        await updateMedicalRecord(editingRecord.medicalRecordId, payload);
+        message.success('Cập nhật hồ sơ bệnh án thành công');
+      } else {
+        await createMedicalRecord(payload);
+        message.success('Tạo hồ sơ bệnh án thành công');
+      }
+      handleModalClose();
+      // TODO: reload data
+    } catch (error) {
+      message.error('Lưu hồ sơ bệnh án thất bại');
+    }
+  };
 
   // Load medical records
   const loadMedicalRecords = async () => {
@@ -125,76 +182,59 @@ const MedicalRecords = () => {
   const columns = [
     {
       title: 'Mã hồ sơ',
-      dataIndex: 'id',
-      key: 'id',
-      width: 100,
-      render: (id) => `#${id}`,
+      dataIndex: 'medicalRecordId',
+      key: 'medicalRecordId',
     },
     {
-      title: 'Bệnh nhân',
+      title: 'Mã khách hàng',
+      dataIndex: 'customerId',
+      key: 'customerId',
+    },
+    {
+      title: 'Tên khách hàng',
       dataIndex: 'customerName',
       key: 'customerName',
-      ellipsis: true,
-      render: (name, record) => (
-        <div>
-          <div style={{ fontWeight: 500 }}>{name}</div>
-          <div style={{ fontSize: '12px', color: '#666' }}>
-            ID: {record.customerId}
-          </div>
-        </div>
-      ),
     },
     {
-      title: 'Bác sĩ phụ trách',
+      title: 'Mã bác sĩ',
+      dataIndex: 'doctorId',
+      key: 'doctorId',
+    },
+    {
+      title: 'Tên bác sĩ',
       dataIndex: 'doctorName',
       key: 'doctorName',
-      ellipsis: true,
-      render: (name, record) => (
-        <div>
-          <div>{name}</div>
-          <div style={{ fontSize: '12px', color: '#666' }}>
-            ID: {record.doctorId}
-          </div>
-        </div>
-      ),
     },
     {
-      title: 'CD4 Count',
+      title: 'Số lượng CD4',
       dataIndex: 'cd4Count',
       key: 'cd4Count',
-      width: 120,
-      sorter: (a, b) => a.cd4Count - b.cd4Count,
-      render: (count) => (
-        <div style={{ textAlign: 'center', fontWeight: 500 }}>
-          {count}
-        </div>
-      ),
     },
     {
-      title: 'Viral Load',
+      title: 'Tải lượng virus',
       dataIndex: 'viralLoad',
       key: 'viralLoad',
-      width: 120,
-      sorter: (a, b) => a.viralLoad - b.viralLoad,
-      render: (load) => (
-        <div style={{ textAlign: 'center', fontWeight: 500 }}>
-          {load?.toLocaleString()}
-        </div>
-      ),
     },
     {
-      title: 'Trạng thái',
-      key: 'status',
-      width: 120,
-      render: (_, record) => getStatusTag(record.cd4Count, record.viralLoad),
+      title: 'Lịch sử điều trị',
+      dataIndex: 'treatmentHistory',
+      key: 'treatmentHistory',
     },
     {
-      title: 'Ngày tạo',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      width: 120,
-      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-      render: (date) => formatDate(date),
+      title: 'Trạng thái CD4',
+      dataIndex: 'cd4Status',
+      key: 'cd4Status',
+    },
+    {
+      title: 'Trạng thái tải lượng virus',
+      dataIndex: 'viralLoadStatus',
+      key: 'viralLoadStatus',
+    },
+    {
+      title: 'Cập nhật lần cuối',
+      dataIndex: 'lastUpdated',
+      key: 'lastUpdated',
+      render: (text) => text ? moment(text).format('DD/MM/YYYY HH:mm') : '',
     },
     {
       title: 'Thao tác',
@@ -206,20 +246,20 @@ const MedicalRecords = () => {
             <Button
               type="text"
               icon={<EyeOutlined />}
-              onClick={() => navigate(`/medical-records/${record.id}`)}
+              onClick={() => openDetailModal(record)}
             />
           </Tooltip>
           <Tooltip title="Chỉnh sửa">
             <Button
               type="text"
               icon={<EditOutlined />}
-              onClick={() => navigate(`/medical-records/edit/${record.id}`)}
+              onClick={() => openModal(record)}
             />
           </Tooltip>
           <Popconfirm
             title="Xóa hồ sơ bệnh án"
             description="Bạn có chắc chắn muốn xóa hồ sơ này không?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record.planId)}
             okText="Xóa"
             cancelText="Hủy"
           >
@@ -235,6 +275,18 @@ const MedicalRecords = () => {
       ),
     },
   ];
+
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const openDetailModal = (record) => {
+    setSelectedRecord(record);
+    setDetailModalVisible(true);
+  };
+  const closeDetailModal = () => {
+    setDetailModalVisible(false);
+    setSelectedRecord(null);
+  };
 
   return (
     <div style={{ padding: '24px' }}>
@@ -267,7 +319,7 @@ const MedicalRecords = () => {
                 <Button
                   type="primary"
                   icon={<PlusOutlined />}
-                  onClick={() => navigate('/medical-records/new')}
+                  onClick={() => openModal()}
                 >
                   Tạo hồ sơ mới
                 </Button>
@@ -370,6 +422,136 @@ const MedicalRecords = () => {
           scroll={{ x: 1200 }}
         />
       </Card>
+
+      {/* Add/Edit Modal */}
+      <Modal
+        title={editingRecord ? 'Chỉnh sửa hồ sơ bệnh án' : 'Tạo hồ sơ bệnh án mới'}
+        open={modalVisible}
+        onCancel={handleModalClose}
+        footer={null}
+        width={700}
+        destroyOnClose
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+        >
+          <Form.Item
+            name="customerId"
+            label="Mã khách hàng"
+            rules={[{ required: true, message: 'Vui lòng nhập mã khách hàng' }]}
+          >
+            <Input placeholder="Nhập mã khách hàng" type="number" />
+          </Form.Item>
+          <Form.Item
+            name="customerName"
+            label="Tên khách hàng"
+            rules={[{ required: true, message: 'Vui lòng nhập tên khách hàng' }]}
+          >
+            <Input placeholder="Nhập tên khách hàng" />
+          </Form.Item>
+          <Form.Item
+            name="doctorId"
+            label="Mã bác sĩ"
+            rules={[{ required: true, message: 'Vui lòng nhập mã bác sĩ' }]}
+          >
+            <Input placeholder="Nhập mã bác sĩ" type="number" />
+          </Form.Item>
+          <Form.Item
+            name="doctorName"
+            label="Tên bác sĩ"
+            rules={[{ required: true, message: 'Vui lòng nhập tên bác sĩ' }]}
+          >
+            <Input placeholder="Nhập tên bác sĩ" />
+          </Form.Item>
+          <Form.Item
+            name="cd4Count"
+            label="Số lượng CD4"
+            rules={[{ required: true, message: 'Vui lòng nhập số lượng CD4' }]}
+          >
+            <Input placeholder="Nhập số lượng CD4" type="number" />
+          </Form.Item>
+          <Form.Item
+            name="viralLoad"
+            label="Tải lượng virus"
+            rules={[{ required: true, message: 'Vui lòng nhập tải lượng virus' }]}
+          >
+            <Input placeholder="Nhập tải lượng virus" type="number" />
+          </Form.Item>
+          <Form.Item
+            name="treatmentHistory"
+            label="Lịch sử điều trị"
+            rules={[{ required: true, message: 'Vui lòng nhập lịch sử điều trị' }]}
+          >
+            <Input.TextArea rows={2} placeholder="Nhập lịch sử điều trị" />
+          </Form.Item>
+          <Form.Item
+            name="cd4Status"
+            label="Trạng thái CD4"
+            rules={[{ required: true, message: 'Vui lòng chọn trạng thái CD4' }]}
+          >
+            <Select placeholder="Chọn trạng thái CD4">
+              <Select.Option value="Normal">Bình thường</Select.Option>
+              <Select.Option value="Mild">Giảm nhẹ</Select.Option>
+              <Select.Option value="Moderate">Giảm vừa</Select.Option>
+              <Select.Option value="Severe">Giảm nặng</Select.Option>
+              <Select.Option value="Critical">Nguy kịch</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="viralLoadStatus"
+            label="Trạng thái tải lượng virus"
+            rules={[{ required: true, message: 'Vui lòng chọn trạng thái tải lượng virus' }]}
+          >
+            <Select placeholder="Chọn trạng thái tải lượng virus">
+              <Select.Option value="Undetectable">Không phát hiện</Select.Option>
+              <Select.Option value="Low">Thấp</Select.Option>
+              <Select.Option value="Medium">Trung bình</Select.Option>
+              <Select.Option value="High">Cao</Select.Option>
+              <Select.Option value="Very high">Rất cao</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="lastUpdated"
+            label="Cập nhật lần cuối"
+          >
+            <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" disabled />
+          </Form.Item>
+          <Form.Item style={{ textAlign: 'right' }}>
+            <Button onClick={handleModalClose} style={{ marginRight: 8 }}>Hủy</Button>
+            <Button type="primary" htmlType="submit">
+              {editingRecord ? 'Cập nhật' : 'Tạo mới'}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Detail Modal */}
+      <Modal
+        title="Chi tiết hồ sơ bệnh án"
+        open={detailModalVisible}
+        onCancel={closeDetailModal}
+        footer={null}
+        width={700}
+        destroyOnClose
+      >
+        {selectedRecord && (
+          <Descriptions column={1} bordered size="middle">
+            <Descriptions.Item label="Mã hồ sơ">{selectedRecord.medicalRecordId}</Descriptions.Item>
+            <Descriptions.Item label="Mã khách hàng">{selectedRecord.customerId}</Descriptions.Item>
+            <Descriptions.Item label="Tên khách hàng">{selectedRecord.customerName}</Descriptions.Item>
+            <Descriptions.Item label="Mã bác sĩ">{selectedRecord.doctorId}</Descriptions.Item>
+            <Descriptions.Item label="Tên bác sĩ">{selectedRecord.doctorName}</Descriptions.Item>
+            <Descriptions.Item label="Số lượng CD4">{selectedRecord.cd4Count}</Descriptions.Item>
+            <Descriptions.Item label="Tải lượng virus">{selectedRecord.viralLoad}</Descriptions.Item>
+            <Descriptions.Item label="Lịch sử điều trị">{selectedRecord.treatmentHistory}</Descriptions.Item>
+            <Descriptions.Item label="Trạng thái CD4">{selectedRecord.cd4Status}</Descriptions.Item>
+            <Descriptions.Item label="Trạng thái tải lượng virus">{selectedRecord.viralLoadStatus}</Descriptions.Item>
+            <Descriptions.Item label="Cập nhật lần cuối">{selectedRecord.lastUpdated ? moment(selectedRecord.lastUpdated).format('DD/MM/YYYY HH:mm') : ''}</Descriptions.Item>
+          </Descriptions>
+        )}
+      </Modal>
     </div>
   );
 };

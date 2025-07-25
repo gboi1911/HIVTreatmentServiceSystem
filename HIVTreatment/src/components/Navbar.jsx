@@ -195,6 +195,35 @@ export default function Navbar() {
         ),
         onClick: () => navigate('/user/appointment-history')
       },
+      // Add this for user/patient only
+      ...(userRole === 'user' || userRole === 'patient' || userRole === 'CUSTOMER'? [{
+        key: 'user-medical-record',
+        label: (
+          <div className="flex items-center gap-2 py-1">
+            <FileTextOutlined className="text-purple-500" />
+            <span>Hồ sơ bệnh án của tôi</span>
+          </div>
+        ),
+        onClick: () => navigate('/user/medical-record')
+      }, {
+        key: 'user-lab-results',
+        label: (
+          <div className="flex items-center gap-2 py-1">
+            <FileTextOutlined className="text-green-500" />
+            <span>Kết quả xét nghiệm của tôi</span>
+          </div>
+        ),
+        onClick: () => navigate('/user/lab-results')
+      }, {
+        key: 'user-treatment-plans',
+        label: (
+          <div className="flex items-center gap-2 py-1">
+            <FileTextOutlined className="text-blue-500" />
+            <span>Kế hoạch điều trị của tôi</span>
+          </div>
+        ),
+        onClick: () => navigate('/user/treatment-plans')
+      }] : []),
       ...(canAccessMedicalRecords ? [{
         key: 'medical-records',
         label: (

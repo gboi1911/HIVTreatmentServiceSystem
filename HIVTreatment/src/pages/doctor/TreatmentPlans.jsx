@@ -143,7 +143,6 @@ const TreatmentPlans = () => {
     editForm.setFieldsValue({
       ...plan,
       startDate: plan.startDate ? moment(plan.startDate) : null,
-      endDate: plan.endDate ? moment(plan.endDate) : null,
     });
   };
 
@@ -152,13 +151,14 @@ const TreatmentPlans = () => {
     try {
       setLoading(true);
       const payload = {
-        ...values,
+        medicalRecordId: values.medicalRecordId,
+        doctorId: 1,
+        arvRegimen: values.arvRegimen,
+        applicableGroup: values.applicableGroup,
+        note: values.note || '',
         startDate: values.startDate && moment.isMoment(values.startDate)
           ? values.startDate.format('YYYY-MM-DD')
           : values.startDate || null,
-        endDate: values.endDate && moment.isMoment(values.endDate)
-          ? values.endDate.format('YYYY-MM-DD')
-          : values.endDate || null,
       };
       console.log("payload", payload)
       console.log("editingPlan", editingPlan)
@@ -197,15 +197,14 @@ const TreatmentPlans = () => {
     try {
       setLoading(true);
       const payload = {
-        ...values,
-        // doctorId: userInfo.id,
-        doctorId: 1,
+        medicalRecordId: values.medicalRecordId,
+        doctorId: userInfo.id,
+        arvRegimen: values.arvRegimen,
+        applicableGroup: values.applicableGroup,
+        note: values.note || '',
         startDate: values.startDate && moment.isMoment(values.startDate)
           ? values.startDate.format('YYYY-MM-DD')
           : values.startDate || null,
-        endDate: values.endDate && moment.isMoment(values.endDate)
-          ? values.endDate.format('YYYY-MM-DD')
-          : values.endDate || null,
       };
       await createTreatmentPlan(payload);
       message.success('Tạo kế hoạch điều trị thành công');
@@ -500,7 +499,6 @@ const TreatmentPlans = () => {
             initialValues={{
               ...editingPlan,
               startDate: editingPlan.startDate ? moment(editingPlan.startDate) : null,
-              endDate: editingPlan.endDate ? moment(editingPlan.endDate) : null,
             }}
           >
             <Form.Item
@@ -541,19 +539,14 @@ const TreatmentPlans = () => {
             <Form.Item
               name="note"
               label="Ghi chú"
+              rules={[{ max: 500, message: 'Ghi chú không được vượt quá 500 ký tự' }]}
             >
-              <Input.TextArea rows={2} placeholder="Nhập ghi chú (nếu có)" />
+              <Input.TextArea rows={2} placeholder="Nhập ghi chú (nếu có)" maxLength={500} />
             </Form.Item>
             <Form.Item
               name="startDate"
               label="Ngày bắt đầu"
               rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu' }]}
-            >
-              <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" />
-            </Form.Item>
-            <Form.Item
-              name="endDate"
-              label="Ngày kết thúc"
             >
               <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" />
             </Form.Item>
@@ -616,8 +609,9 @@ const TreatmentPlans = () => {
           <Form.Item
             name="note"
             label="Ghi chú"
+            rules={[{ max: 500, message: 'Ghi chú không được vượt quá 500 ký tự' }]}
           >
-            <Input.TextArea rows={2} placeholder="Nhập ghi chú (nếu có)" />
+            <Input.TextArea rows={2} placeholder="Nhập ghi chú (nếu có)" maxLength={500} />
           </Form.Item>
           <Form.Item
             name="startDate"
