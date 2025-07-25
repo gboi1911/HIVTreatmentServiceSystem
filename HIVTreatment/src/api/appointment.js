@@ -359,7 +359,7 @@ export const cancelAppointment = async (appointmentId) => {
 };
 
 // Update appointment status
-export const updateAppointmentStatus = async (appointmentId, status) => {
+export const updateAppointmentStatus = async (appointmentId, status, note = '') => {
   try {
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE}/appointment/${appointmentId}/status`, {
@@ -368,7 +368,7 @@ export const updateAppointmentStatus = async (appointmentId, status) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status, note })
     });
 
     if (!response.ok) {

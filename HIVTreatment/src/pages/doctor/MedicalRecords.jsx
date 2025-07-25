@@ -27,7 +27,7 @@ import {
   DownloadOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   getMedicalRecords, 
   getMedicalRecordsByCustomer,
@@ -53,6 +53,7 @@ const MedicalRecords = () => {
   const [viralLoadRange, setViralLoadRange] = useState([null, null]);
   const [dateRange, setDateRange] = useState([null, null]);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Add modal state and form
   const [modalVisible, setModalVisible] = useState(false);
@@ -97,7 +98,13 @@ const MedicalRecords = () => {
         await updateMedicalRecord(editingRecord.medicalRecordId, payload);
         message.success('Cập nhật hồ sơ bệnh án thành công');
       } else {
-        await createMedicalRecord(payload);
+        const medicalRecord = await createMedicalRecord({
+          customerId: Number(values.customerId),
+          doctorId: Number(values.doctorId),
+          cd4Count: Number(values.cd4Count),
+          viralLoad: Number(values.viralLoad),
+          treatmentHistory: values.treatmentHistory || ''
+        });
         message.success('Tạo hồ sơ bệnh án thành công');
       }
       handleModalClose();
@@ -146,6 +153,18 @@ const MedicalRecords = () => {
   useEffect(() => {
     loadMedicalRecords();
   }, [filterType, cd4Range, viralLoadRange]);
+
+  // Prefill khi truy cập từ appointment
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const customerId = params.get('customerId');
+    const appointmentId = params.get('appointmentId');
+    if (location.pathname.endsWith('/create') && customerId) {
+      setEditingRecord(null);
+      setModalVisible(true);
+      form.setFieldsValue({ customerId });
+    }
+  }, [location, form]);
 
   // Delete medical record
   const handleDelete = async (recordId) => {

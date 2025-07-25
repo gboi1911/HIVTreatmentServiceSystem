@@ -12,6 +12,7 @@ import {
 import UserMedicalRecord from './pages/user/UserMedicalRecord';
 import UserLabResults from './pages/user/UserLabResults';
 import UserTreatmentPlans from './pages/user/UserTreatmentPlans';
+import CombinedMedicalForm from './pages/doctor/CombinedMedicalForm';
 
 // Public pages (no authentication required)
 const Home = React.lazy(() => import("./pages/Home"));
@@ -300,6 +301,14 @@ function App() {
               }
             />
             <Route
+              path="doctor/medical-records/create"
+              element={
+                <DoctorRoute>
+                  <MedicalRecords />
+                </DoctorRoute>
+              }
+            />
+            <Route
               path="doctor/medical-records"
               element={
                 <DoctorRoute>
@@ -314,6 +323,10 @@ function App() {
                   <DoctorProfile />
                 </DoctorRoute>
               }
+            />
+            <Route
+              path="doctor/medical-form"
+              element={<DoctorRoute><CombinedMedicalForm /></DoctorRoute>}
             />
           </Route>
 

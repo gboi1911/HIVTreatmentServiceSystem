@@ -1,23 +1,92 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/medical-records'; // Đổi lại đúng port/backend nếu cần
+// Sửa URL để phù hợp với cấu trúc API của backend
+const API_URL = 'https://hiv.purepixel.io.vn/api/medical-record'; // Đã bỏ 's' ở cuối
 
 export const getMedicalRecords = async () => {
-  const res = await axios.get(API_URL);
+  const token = localStorage.getItem('token');
+  console.log('Getting medical records with token:', token ? 'Token exists' : 'No token');
+  
+  const res = await axios.get(API_URL, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
   return res.data;
 };
 
 export const createMedicalRecord = async (data) => {
-  const res = await axios.post(API_URL, data);
+  const token = localStorage.getItem('token');
+  console.log('Creating medical record with token:', token ? 'Token exists' : 'No token');
+  console.log('Request data:', data);
+  
+  const res = await axios.post(API_URL, data, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
   return res.data;
 };
 
 export const updateMedicalRecord = async (id, data) => {
-  const res = await axios.put(`${API_URL}/${id}`, data);
+  const token = localStorage.getItem('token');
+  const res = await axios.put(`${API_URL}/${id}`, data, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
   return res.data;
 };
 
 export const deleteMedicalRecord = async (id) => {
-  const res = await axios.delete(`${API_URL}/${id}`);
+  const token = localStorage.getItem('token');
+  const res = await axios.delete(`${API_URL}/${id}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
+export const getMedicalRecordsByCustomer = async (customerId) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/customer/${customerId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
+export const getMedicalRecordsByDoctor = async (doctorId) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/doctor/${doctorId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
+export const getMedicalRecordsByCd4Range = async (minCd4, maxCd4) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/cd4-range`, { 
+    params: { minCd4, maxCd4 },
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
+export const getMedicalRecordsByViralLoadRange = async (minViralLoad, maxViralLoad) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/viral-load-range`, { 
+    params: { minViralLoad, maxViralLoad },
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
   return res.data;
 };
