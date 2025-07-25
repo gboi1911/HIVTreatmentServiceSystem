@@ -127,12 +127,14 @@ export default function Appointments() {
       setLoading(true);
       let response;
       
-      if (filters.status) {
-        response = await getAppointmentsByDoctorAndStatus(userInfo.id, filters.status);
-      } else {
-        response = await getAppointmentsByDoctor(userInfo.id);
-      }
-      
+      // if (filters.status) {
+      //   response = await getAppointmentsByDoctorAndStatus(userInfo.id, filters.status);
+      // } else {
+      //   response = await getAppointmentsByDoctor(userInfo.id);
+      // }
+      // Use getAllAppointments to fetch all appointments
+      response = await getAllAppointments();
+      console.log(response)
       // Handle different response formats
       let appointmentsList = [];
       if (Array.isArray(response)) {
@@ -153,20 +155,21 @@ export default function Appointments() {
         datetime: moment(appt.datetime || appt.appointmentTime || new Date())
       }));
       
-      // Filter by date range if selected
-      if (filters.dateRange && filters.dateRange[0] && filters.dateRange[1]) {
-        const [startDate, endDate] = filters.dateRange;
-        appointmentsList = appointmentsList.filter(appointment => {
-          if (!appointment.datetime) return false;
-          return appointment.datetime.isBetween(
-            startDate.startOf('day'), 
-            endDate.endOf('day'), 
-            'day', 
-            '[]'
-          );
-        });
-      }
-      
+      // // Filter by date range if selected
+      // if (filters.dateRange && filters.dateRange[0] && filters.dateRange[1]) {
+      //   const [startDate, endDate] = filters.dateRange;
+      //   appointmentsList = appointmentsList.filter(appointment => {
+      //     if (!appointment.datetime) return false;
+      //     return appointment.datetime.isBetween(
+      //       startDate.startOf('day'), 
+      //       endDate.endOf('day'), 
+      //       'day', 
+      //       '[]'
+      //     );
+      //   });
+      // }
+      appointmentsList = appointmentsList.filter(appt => appt.status === "CONFIRMED");
+
       setAppointments(appointmentsList);
     } catch (error) {
       console.error('Error fetching appointments:', error);
