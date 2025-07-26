@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Button, Space, Select, DatePicker, message, Modal } from 'antd';
+import { Table, Tag, Button, Space, Select, DatePicker, message, Modal, Input, Card, Tooltip } from 'antd';
 import { 
   getAppointmentsByDoctor, 
   updateAppointmentStatus,
@@ -10,6 +10,7 @@ import {
 import { useAuthStatus } from '../../hooks/useAuthStatus';
 import moment from 'moment';
 import 'moment/locale/vi';
+import { SearchOutlined, PhoneOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
@@ -236,38 +237,30 @@ export default function Appointments() {
 
   return (
     <div style={{ padding: 24 }}>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Quản lý lịch hẹn</h2>
-        <div className="flex space-x-4">
-          <RangePicker
-            value={filters.dateRange}
-            onChange={(dates) => handleFilterChange('dateRange', dates)}
-            format="DD/MM/YYYY"
-            className="w-64"
-          />
-          <Select
-            placeholder="Lọc theo trạng thái"
-            allowClear
-            style={{ width: 200 }}
-            onChange={(value) => handleFilterChange('status', value)}
-            value={filters.status}
-          >
-            {statusOptions.map(option => (
-              <Option key={option.value} value={option.value}>
-                <Tag color={option.color}>{option.label}</Tag>
-              </Option>
-            ))}
-          </Select>
-          <Button 
-            type="primary" 
+      <h2 className="text-xl font-semibold" style={{ marginBottom: 16 }}>Quản lý lịch hẹn</h2>
+      <Card style={{ marginBottom: 24, maxWidth: 500 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Tooltip title="Nhập số điện thoại bệnh nhân để lọc">
+            <Input
+              prefix={<PhoneOutlined />}
+              placeholder="Lọc theo số điện thoại"
+              value={filterPhone}
+              allowClear
+              onChange={e => setFilterPhone(e.target.value)}
+              style={{ width: 250 }}
+            />
+          </Tooltip>
+          <Button
+            type="primary"
+            icon={<SearchOutlined />}
             onClick={fetchAppointments}
             loading={loading}
           >
             Làm mới
           </Button>
         </div>
-      </div>
-      
+      </Card>
+      {/* Old filter UI removed and replaced by Card above */}
       <Table 
         columns={columns} 
         dataSource={appointments} 
