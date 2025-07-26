@@ -23,7 +23,8 @@ import {
   ClockCircleOutlined,
   EnvironmentOutlined,
   MailOutlined,
-  StarOutlined
+  StarOutlined,
+  ReadOutlined
 } from "@ant-design/icons";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStatus } from "../hooks/useAuthStatus";
@@ -59,7 +60,11 @@ const getOrganizedMenuItems = (canAccessMedicalRecords, userRole) => {
     { path: "/consultation-booking", label: "Đặt lịch tư vấn", icon: <CalendarOutlined />, description: "Đặt lịch gặp bác sĩ tư vấn" },
     { path: "/guides", label: "Hướng dẫn & Bảng giá", icon: <BookOutlined />, description: "Quy trình khám và bảng giá dịch vụ" },
     { path: "/health-and-life", label: "Sức khoẻ & đời sống", icon: <HeartOutlined />, description: "Thông tin chăm sóc sức khỏe hàng ngày" },
-    ...(userRole === 'STAFF' ? [{ path: "/blog/staff", label: "Quản lý Blog", icon: <FileTextOutlined />, description: "Tạo và quản lý bài viết blog" }] : []),
+    { path: "/education", label: "Khóa học HIV/AIDS", icon: <ReadOutlined />, description: "Tài liệu giáo dục và hướng dẫn chuyên sâu" },
+    ...(userRole === 'STAFF' ? [
+      { path: "/blog/staff", label: "Quản lý Blog", icon: <FileTextOutlined />, description: "Tạo và quản lý bài viết blog" },
+      { path: "/education/staff", label: "Quản lý Khóa học", icon: <ReadOutlined />, description: "Tạo và quản lý khóa học giáo dục" }
+    ] : []),
   ] : [];
 
   const medicalMenuItems = canAccessMedicalRecords && userRole !== 'DOCTOR' ? [
@@ -79,7 +84,6 @@ const getOrganizedMenuItems = (canAccessMedicalRecords, userRole) => {
     { path: "/doctor/medical-records", label: "Quản lý hồ sơ bệnh án", icon: <FileTextOutlined /> },
     { path: "/doctor/lab-results", label: "Quản lý kết quả xét nghiệm", icon: <ExperimentOutlined /> },
     { path: "/doctor/treatment-plans", label: "Quản lý kế hoạch điều trị", icon: <MedicineBoxOutlined /> },
-
   ]
   return {
     services: servicesMenuItems,
@@ -562,7 +566,8 @@ export default function Navbar() {
                       current.includes('/health-and-life') || 
                       current.includes('/assessment') || 
                       current.includes('/consultation-booking') ||
-                      current.includes('/blog/staff') // Added for staff
+                      current.includes('/blog/staff') || // Added for staff
+                      current.includes('/education') // Added for education
                     )}
                     onMouseEnter={() => setHoveredDropdown('services')}
                     onMouseLeave={() => setHoveredDropdown(null)}
@@ -571,7 +576,8 @@ export default function Navbar() {
                       current.includes('/health-and-life') || 
                       current.includes('/assessment') || 
                       current.includes('/consultation-booking') ||
-                      current.includes('/blog/staff') ? 'text-blue-500' : ''} />
+                      current.includes('/blog/staff') ||
+                      current.includes('/education') ? 'text-blue-500' : ''} />
                     Dịch vụ
                     <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
                       className={hoveredDropdown === 'services' ? 'rotate-180' : ''} />
