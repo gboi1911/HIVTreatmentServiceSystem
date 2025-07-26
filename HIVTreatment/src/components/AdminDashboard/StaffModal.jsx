@@ -166,6 +166,13 @@ export const StaffModal = ({
               Hủy
             </Button>
           </Space>
+          {isCreate && (
+            <div className="mt-2 text-xs text-gray-500">
+              <p>⚠️ Quá trình tạo nhân viên sẽ:</p>
+              <p>1. Đăng ký tài khoản với vai trò STAFF</p>
+              <p>2. Tạo hồ sơ nhân viên trong hệ thống</p>
+            </div>
+          )}
         </Form.Item>
       </Form>
     </Modal>

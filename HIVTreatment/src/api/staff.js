@@ -1,3 +1,5 @@
+import { registerUser } from './auth';
+
 const API_BASE = "https://hiv.purepixel.io.vn/api";
 
 // Get all staff
@@ -93,6 +95,29 @@ export const createStaff = async (staffData) => {
       throw new Error('Mật khẩu phải có ít nhất 6 ký tự');
     }
     
+    // Step 1: Register the account with STAFF role
+    console.log('📝 Step 1: Registering account with STAFF role...');
+    const registrationData = {
+      fullName: staffData.name,
+      email: staffData.email,
+      phone: staffData.phone,
+      password: staffData.password,
+      role: 'STAFF', // Set role to STAFF
+      gender: staffData.gender
+    };
+    
+    console.log('📤 Registration data:', registrationData);
+    
+    try {
+      const registrationResult = await registerUser(registrationData);
+      console.log('✅ Account registration successful:', registrationResult);
+    } catch (registrationError) {
+      console.error('❌ Account registration failed:', registrationError);
+      throw new Error(`Không thể đăng ký tài khoản: ${registrationError.message}`);
+    }
+    
+    // Step 2: Create staff record
+    console.log('📝 Step 2: Creating staff record...');
     const requestBody = {
       name: staffData.name,
       email: staffData.email,
@@ -101,7 +126,7 @@ export const createStaff = async (staffData) => {
       password: staffData.password
     };
     
-    console.log('📤 Sending request to API:', requestBody);
+    console.log('📤 Sending staff creation request:', requestBody);
     
     const response = await fetch(`${API_BASE}/staff`, {
       method: 'POST',

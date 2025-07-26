@@ -79,13 +79,32 @@ export const useStaffManagement = () => {
   const handleCreateStaff = async (staffData) => {
     try {
       setLoading(true);
+      console.log('🔄 Starting staff creation process...');
+      
+      // Show initial message
+      message.loading('Đang tạo nhân viên...', 0);
+      
       await createStaff(staffData);
-      message.success('Tạo nhân viên thành công');
+      
+      // Clear loading message and show success
+      message.destroy();
+      message.success('Tạo nhân viên thành công! Tài khoản đã được đăng ký với vai trò STAFF.');
       await loadStaff(); // Reload data
       return true;
     } catch (error) {
       console.error('Create staff error:', error);
-      message.error('Tạo nhân viên thất bại: ' + error.message);
+      message.destroy();
+      
+      // Provide specific error messages
+      if (error.message.includes('đăng ký tài khoản')) {
+        message.error('Tạo nhân viên thất bại: ' + error.message);
+      } else if (error.message.includes('email')) {
+        message.error('Email đã tồn tại hoặc không hợp lệ');
+      } else if (error.message.includes('phone')) {
+        message.error('Số điện thoại không hợp lệ');
+      } else {
+        message.error('Tạo nhân viên thất bại: ' + error.message);
+      }
       return false;
     } finally {
       setLoading(false);
