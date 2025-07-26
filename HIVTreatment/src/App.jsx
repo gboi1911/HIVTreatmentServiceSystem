@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import StaffLayout from "./components/StaffLayout";
 import { EnhancedPageLoader } from "./components/LoadingComponents";
 import {
   ProtectedRoute,
@@ -12,6 +13,9 @@ import {
 import UserMedicalRecord from './pages/user/UserMedicalRecord';
 import UserLabResults from './pages/user/UserLabResults';
 import UserTreatmentPlans from './pages/user/UserTreatmentPlans';
+import CombinedMedicalForm from './pages/doctor/CombinedMedicalForm';
+import StaffFollowUpManagement from './pages/staff/StaffFollowUpManagement';
+import CompletedTreatments from './pages/staff/CompletedTreatments';
 
 // Public pages (no authentication required)
 const Home = React.lazy(() => import("./pages/Home"));
@@ -43,6 +47,7 @@ const AppointmentHistory = React.lazy(() =>
 );
 const BookingSuccess = React.lazy(() => import("./pages/BookingSuccess"));
 const UserProfile = React.lazy(() => import("./pages/user/UserProfile"));
+const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
 
 // Assessment pages
 const RiskAssessment = React.lazy(() =>
@@ -57,7 +62,7 @@ const AssessmentHistory = React.lazy(() =>
 
 // Medical Record pages
 const MedicalRecords = React.lazy(() =>
-  import("./pages/doctor/MedicalRecords")
+  import("./pages/MedicalRecords")
 );
 
 //Appointment Management
@@ -219,6 +224,26 @@ function App() {
                 </UserRoute>
               }
             />
+
+            {/* User Dashboard route */}
+            <Route
+              path="user/dashboard"
+              element={
+                <UserRoute>
+                  <UserDashboard />
+                </UserRoute>
+              }
+            />
+
+            {/* Medical Records route */}
+            <Route
+              path="medical-records"
+              element={
+                <ProtectedRoute>
+                  <MedicalRecords />
+                </ProtectedRoute>
+              }
+            />
           </Route>
 
           {/* Auth routes without layout */}
@@ -326,6 +351,14 @@ function App() {
               }
             />
             <Route
+              path="doctor/medical-records"
+              element={
+                <DoctorRoute>
+                  <MedicalRecords />
+                </DoctorRoute>
+              }
+            />
+            <Route
               path="doctor/profile"
               element={
                 <DoctorRoute>
@@ -333,25 +366,31 @@ function App() {
                 </DoctorRoute>
               }
             />
+            <Route
+              path="doctor/medical-form"
+              element={<DoctorRoute><CombinedMedicalForm /></DoctorRoute>}
+            />
           </Route>
 
-          {/* Staff routes
-          <Route 
-            path="staff/dashboard" 
-            element={
-              <StaffRoute>
-                <StaffDashboard />
-              </StaffRoute>
-            } 
-          />
-          <Route 
-            path="staff/patients" 
-            element={
-              <StaffRoute>
-                <PatientManagement />
-              </StaffRoute>
-            } 
-          /> */}
+          {/* Staff routes */}
+          <Route path="/staff" element={<StaffLayout />}>
+            <Route
+              path="follow-up-management"
+              element={
+                <StaffRoute>
+                  <StaffFollowUpManagement />
+                </StaffRoute>
+              }
+            />
+            <Route
+              path="completed-treatments"
+              element={
+                <StaffRoute>
+                  <CompletedTreatments />
+                </StaffRoute>
+              }
+            />
+          </Route>
 
           {/* Fallback route */}
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}

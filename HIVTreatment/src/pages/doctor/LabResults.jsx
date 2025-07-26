@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, InputNumber, DatePicker, Select, message, Space } from 'antd';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
-import { getLabResultsByDoctor, createLabResult, updateLabResult, deleteLabResult, getAllLabResults } from '../../api/labResult';
-import { getMedicalRecordsByDoctor, getMedicalRecords } from '../../api/medicalRecord';
+import { createLabResult, updateLabResult, deleteLabResult, getAllLabResults } from '../../api/labResult';
+import { getMedicalRecords } from '../../api/medicalRecord';
 import { useAuthStatus } from '../../hooks/useAuthStatus';
 import moment from 'moment';
 
@@ -25,7 +25,7 @@ export default function LabResults() {
       const data = await getAllLabResults();
       console.log(data)
       setLabResults(Array.isArray(data) ? data : (data.data || []));
-    } catch (error) {
+    } catch {
       message.error('Không thể tải kết quả xét nghiệm');
     } finally {
       setLoading(false);
@@ -39,7 +39,7 @@ export default function LabResults() {
       const data = await getMedicalRecords();
       console.log(data)
       setMedicalRecords(Array.isArray(data) ? data : (data.data || []));
-    } catch (error) {
+    } catch {
       setMedicalRecords([]);
     }
   };
@@ -89,7 +89,7 @@ export default function LabResults() {
       }
       setModalVisible(false);
       fetchLabResults();
-    } catch (error) {
+    } catch {
       message.error('Lưu kết quả xét nghiệm thất bại');
     } finally {
       setLoading(false);
@@ -103,7 +103,7 @@ export default function LabResults() {
       await deleteLabResult(record.labResultId || record.id);
       message.success('Xóa kết quả xét nghiệm thành công');
       fetchLabResults();
-    } catch (error) {
+    } catch {
       message.error('Xóa kết quả xét nghiệm thất bại');
     } finally {
       setLoading(false);

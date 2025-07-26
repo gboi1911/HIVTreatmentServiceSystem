@@ -75,12 +75,12 @@ export default function Home() {
             alignItems: "center",
           }}
         >
-          <Ionicons name="bulb-outline" size={30} color="#008001" />
+          <Ionicons name="bulb-outline" size={30} color="blue" />
           <Text
             style={{
               marginLeft: 12,
               fontSize: 16,
-              color: "#008001",
+              color: "blue",
               flex: 1,
               fontWeight: "bold",
             }}
@@ -283,7 +283,7 @@ function EducationMaterialCard({ icon = "book-outline", title, desc, link }) {
       onPress={() => Linking.openURL(link)}
       activeOpacity={0.7}
       style={{
-        backgroundColor: "#F1FAFF",
+        backgroundColor: "#D6E8FF",
         borderRadius: 18,
         padding: 16,
         marginBottom: 18,
@@ -298,7 +298,7 @@ function EducationMaterialCard({ icon = "book-outline", title, desc, link }) {
     >
       <View
         style={{
-          backgroundColor: "#e1f5e7",
+          backgroundColor: "#D6E8FF",
           borderRadius: 50,
           width: 44,
           height: 44,
@@ -307,7 +307,7 @@ function EducationMaterialCard({ icon = "book-outline", title, desc, link }) {
           marginRight: 16,
         }}
       >
-        <Ionicons name={icon as any} size={24} color="#008001" />
+        <Ionicons name={icon as any} size={24} color="#1E90FF" />
       </View>
       <View style={{ flex: 1 }}>
         <Text
@@ -322,7 +322,7 @@ function EducationMaterialCard({ icon = "book-outline", title, desc, link }) {
         </Text>
         <Text style={{ fontSize: 14, color: "#445" }}>{desc}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={20} color="#008001" />
+      <Ionicons name="chevron-forward" size={20} color="#1E90FF" />
     </TouchableOpacity>
   );
 }

@@ -23,24 +23,19 @@ export default function BookAppointment({ navigation }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  // Thông tin khách hàng
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [birthYear, setBirthYear] = useState("");
   const [gender, setGender] = useState("Nam");
   const [address, setAddress] = useState("");
 
-  // Nghiệp vụ
   const [type, setType] = useState("Khám mới");
   const [note, setNote] = useState("");
 
-  // Khi chọn ngày hoặc giờ
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDatePicker(false);
-    if (currentDate) {
-      setDate(new Date(currentDate));
-    }
+    if (currentDate) setDate(new Date(currentDate));
   };
 
   const onChangeTime = (event, selectedDate) => {
@@ -63,7 +58,6 @@ export default function BookAppointment({ navigation }) {
         Đăng ký lịch khám & điều trị HIV
       </Text>
 
-      {/* THÔNG TIN KHÁCH HÀNG */}
       <Text style={{ fontWeight: "bold", marginBottom: 4 }}>Họ tên</Text>
       <TextInput
         style={inputStyle}
@@ -100,9 +94,10 @@ export default function BookAppointment({ navigation }) {
               flexDirection: "row",
               alignItems: "center",
               marginRight: 18,
-              backgroundColor: gender === g ? "#e1f5e7" : "#fff",
+              backgroundColor:
+                gender === g ? "rgba(30,144,255,0.08)" : "#fff",
               borderWidth: 1,
-              borderColor: gender === g ? "#008001" : "#eee",
+              borderColor: gender === g ? "#1E90FF" : "#eee",
               borderRadius: 18,
               paddingHorizontal: 16,
               paddingVertical: 8,
@@ -111,7 +106,7 @@ export default function BookAppointment({ navigation }) {
             <Ionicons
               name={gender === g ? "radio-button-on" : "radio-button-off"}
               size={18}
-              color="#008001"
+              color="#1E90FF"
               style={{ marginRight: 6 }}
             />
             <Text>{g}</Text>
@@ -127,7 +122,6 @@ export default function BookAppointment({ navigation }) {
         onChangeText={setAddress}
       />
 
-      {/* NGHIỆP VỤ KHÁM */}
       <Text style={{ fontWeight: "bold", marginBottom: 4, marginTop: 6 }}>
         Hình thức khám
       </Text>
@@ -140,9 +134,10 @@ export default function BookAppointment({ navigation }) {
               flexDirection: "row",
               alignItems: "center",
               marginRight: 18,
-              backgroundColor: type === typeItem ? "#e1f5e7" : "#fff",
+              backgroundColor:
+                type === typeItem ? "rgba(30,144,255,0.08)" : "#fff",
               borderWidth: 1,
-              borderColor: type === typeItem ? "#008001" : "#eee",
+              borderColor: type === typeItem ? "#1E90FF" : "#eee",
               borderRadius: 18,
               paddingHorizontal: 16,
               paddingVertical: 8,
@@ -151,7 +146,7 @@ export default function BookAppointment({ navigation }) {
             <Ionicons
               name={type === typeItem ? "radio-button-on" : "radio-button-off"}
               size={18}
-              color="#008001"
+              color="#1E90FF"
               style={{ marginRight: 6 }}
             />
             <Text>{typeItem}</Text>
@@ -159,7 +154,6 @@ export default function BookAppointment({ navigation }) {
         ))}
       </View>
 
-      {/* NGÀY VÀ GIỜ KHÁM */}
       <Text style={{ fontWeight: "bold", marginBottom: 4 }}>
         Chọn ngày khám
       </Text>
@@ -176,7 +170,7 @@ export default function BookAppointment({ navigation }) {
         activeOpacity={0.8}
       >
         <Text>{date.toLocaleDateString()}</Text>
-        <Ionicons name="calendar-outline" size={20} color="#008001" />
+        <Ionicons name="calendar-outline" size={20} color="#1E90FF" />
       </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
@@ -206,7 +200,7 @@ export default function BookAppointment({ navigation }) {
         <Text>
           {date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
         </Text>
-        <Ionicons name="time-outline" size={20} color="#008001" />
+        <Ionicons name="time-outline" size={20} color="#1E90FF" />
       </TouchableOpacity>
       {showTimePicker && (
         <DateTimePicker
@@ -218,7 +212,6 @@ export default function BookAppointment({ navigation }) {
         />
       )}
 
-      {/* CHỌN BÁC SĨ */}
       <Text style={{ fontWeight: "bold", marginBottom: 4, marginTop: 10 }}>
         Chọn bác sĩ điều trị
       </Text>
@@ -229,27 +222,29 @@ export default function BookAppointment({ navigation }) {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            backgroundColor: selectedDoctor === doc.id ? "#e1f5e7" : "#fff",
+            backgroundColor:
+              selectedDoctor === doc.id ? "rgba(30,144,255,0.08)" : "#fff",
             borderRadius: 8,
             padding: 12,
             marginBottom: 8,
             borderWidth: 1,
-            borderColor: selectedDoctor === doc.id ? "#008001" : "#eee",
+            borderColor: selectedDoctor === doc.id ? "#1E90FF" : "#eee",
           }}
         >
           <Ionicons
             name={
-              selectedDoctor === doc.id ? "radio-button-on" : "radio-button-off"
+              selectedDoctor === doc.id
+                ? "radio-button-on"
+                : "radio-button-off"
             }
             size={20}
-            color="#008001"
+            color="#1E90FF"
             style={{ marginRight: 10 }}
           />
           <Text>{doc.name}</Text>
         </TouchableOpacity>
       ))}
 
-      {/* LÝ DO KHÁM / GHI CHÚ */}
       <Text style={{ fontWeight: "bold", marginBottom: 4, marginTop: 10 }}>
         Lý do khám / Triệu chứng / Ghi chú
       </Text>
@@ -261,6 +256,7 @@ export default function BookAppointment({ navigation }) {
           padding: 12,
           minHeight: 60,
           marginBottom: 24,
+          backgroundColor: "#fff",
         }}
         placeholder="Nhập triệu chứng hoặc yêu cầu"
         multiline
@@ -268,16 +264,14 @@ export default function BookAppointment({ navigation }) {
         onChangeText={setNote}
       />
 
-      {/* Nút xác nhận */}
       <TouchableOpacity
         style={{
-          backgroundColor: "#008001",
+          backgroundColor: "#1E90FF",
           padding: 16,
           borderRadius: 10,
           alignItems: "center",
         }}
         onPress={() => {
-          // Validate cơ bản
           if (!name || !phone || !birthYear || !address) {
             Toast.show({
               type: "error",

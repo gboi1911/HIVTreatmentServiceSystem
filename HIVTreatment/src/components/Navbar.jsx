@@ -50,6 +50,7 @@ const getQuickLinks = (userRole, isLoggedIn) => {
 
   // Add user-specific links for logged-in users
   if (isLoggedIn) {
+    baseLinks.push({ path: "/user/dashboard", label: "Dashboard của tôi", icon: <DashboardOutlined /> });
     baseLinks.push({ path: "/user/appointment-history", label: "Lịch sử cuộc hẹn", icon: <CalendarOutlined /> });
   }
 
@@ -70,7 +71,7 @@ const getOrganizedMenuItems = (canAccessMedicalRecords, userRole) => {
     ] : []),
   ] : [];
 
-  const medicalMenuItems = canAccessMedicalRecords && userRole !== 'DOCTOR' ? [
+  const medicalMenuItems = canAccessMedicalRecords ? [
     { path: "/medical-records", label: "Hồ sơ bệnh án", icon: <FileTextOutlined />, description: "Quản lý hồ sơ bệnh án" },
     { path: "/treatment-plans", label: "Kế hoạch điều trị", icon: <MedicineBoxOutlined />, description: "Quản lý kế hoạch điều trị ARV" },
     { path: "/appointment-management", label: "Quản lý cuộc hẹn", icon: <CalendarOutlined />, description: "Quản lý lịch hẹn bệnh nhân" },
@@ -88,7 +89,14 @@ const getOrganizedMenuItems = (canAccessMedicalRecords, userRole) => {
     { path: "/doctor/lab-results", label: "Quản lý kết quả xét nghiệm", icon: <ExperimentOutlined /> },
     { path: "/doctor/treatment-plans", label: "Quản lý kế hoạch điều trị", icon: <MedicineBoxOutlined /> },
   ]
+
+  // Add user dashboard for USER role
+  const userMenuItems = userRole === 'USER' ? [
+    { path: '/user/dashboard', label: 'Dashboard của tôi', icon: <DashboardOutlined />, description: 'Tổng quan sức khỏe cá nhân' }
+  ] : [];
+
   return {
+    user: userMenuItems,
     services: servicesMenuItems,
     medical: medicalMenuItems,
     support: supportMenuItems,
@@ -659,6 +667,13 @@ export default function Navbar() {
               </div>
             </Dropdown>
           )}
+
+          {/* Render user dashboard menu if present */}
+          {organizedMenuItems.user && organizedMenuItems.user.map(item => (
+            <Menu.Item key={item.path} icon={item.icon} onClick={() => navigate(item.path)}>
+              {item.label}
+            </Menu.Item>
+          ))}
         </div>
 
         {/* Call to action */}

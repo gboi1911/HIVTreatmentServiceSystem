@@ -16,24 +16,24 @@ const techData = [
     {
         id: 2,
         image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=500&fit=crop&q=60",
-        title: "Cứu sống thai nhi bị suy tim bào thai nặng do tổn thương dẫn truyền nhĩ thất",
-        department: "Sản khoa",
-        category: "Tim mạch",
+        title: "Cứu sống bệnh nhân HIV với phác đồ ARV mới nhất",
+        department: "Nội khoa",
+        category: "Điều trị",
         date: "2025-01-15"
     },
     {
         id: 3,
         image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=500&fit=crop&q=60",
-        title: "Can thiệp tim bào thai – Giấc mơ lớn thành hiện thực",
-        department: "Tim mạch",
+        title: "Can thiệp điều trị HIV – Giấc mơ lớn thành hiện thực",
+        department: "Nội khoa",
         category: "Công nghệ",
         date: "2025-01-15"
     },
     {
         id: 4,
         image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=500&fit=crop&q=60",
-        title: "Bước tiến đáng tự hào trong Can thiệp tim bào thai. Chào đón 2025 với niềm hy vọng mới",
-        department: "Nhi khoa",
+        title: "Bước tiến đáng tự hào trong điều trị HIV/AIDS. Chào đón 2025 với niềm hy vọng mới",
+        department: "Nội khoa",
         category: "Nghiên cứu",
         date: "2025-01-15"
     },
@@ -105,7 +105,7 @@ export default function NewTechSection() {
         const icons = {
             'Ngoại khoa': <MedicineBoxOutlined />,
             'Tim mạch': <HeartOutlined />,
-            'Sản khoa': <StarOutlined />,
+            'Nội khoa': <MedicineBoxOutlined />,
             'Nhi khoa': <StarOutlined />,
             'Chẩn đoán': <EyeOutlined />,
             'Phẫu thuật': <ExperimentOutlined />

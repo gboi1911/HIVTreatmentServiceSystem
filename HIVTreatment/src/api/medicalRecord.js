@@ -1,260 +1,114 @@
-const API_BASE = "https://hiv.purepixel.io.vn/api";
+import axios from 'axios';
 
-// Get all medical records
+// Sửa URL để phù hợp với cấu trúc API của backend
+const API_URL = 'https://hiv.purepixel.io.vn/api/medical-record'; // Đã bỏ 's' ở cuối
+
 export const getMedicalRecords = async () => {
+  const token = localStorage.getItem('token');
+  console.log('Getting medical records with token:', token ? 'Token exists' : 'No token');
+  
   try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record/getMedicalRecord`, {
-      method: 'GET',
+    const res = await axios.get(`${API_URL}/getMedicalRecord`, {
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
     });
-
-    if (!response.ok) {
-      throw new Error(`Get medical records failed: ${response.status}`);
-    }
-
-    return await response.json();
+    console.log('Medical records response:', res.data);
+    return res.data;
   } catch (error) {
-    console.error('Get medical records error:', error);
-    // Return fallback data for development
-    return [
-      {
-        id: 1,
-        customerId: 1,
-        customerName: "Nguyễn Văn A",
-        doctorId: 1,
-        doctorName: "BS. Nguyễn Thị B",
-        cd4Count: 350,
-        viralLoad: 1000,
-        treatmentHistory: "Đang điều trị ARV",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-    ];
+    console.error('Error fetching medical records:', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+      console.error('Error status:', error.response.status);
+    }
+    throw error;
   }
 };
 
-// Alias for getAllMedicalRecords
-export const getAllMedicalRecords = getMedicalRecords;
+export const getAllMedicalRecords = async () => {
+  const token = localStorage.getItem('token');
+  console.log('Getting all medical records with token:', token ? 'Token exists' : 'No token');
+  
+  const res = await axios.get(`${API_URL}/all`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
 
-// Get medical records by customer ID
+export const createMedicalRecord = async (data) => {
+  const token = localStorage.getItem('token');
+  console.log('Creating medical record with token:', token ? 'Token exists' : 'No token');
+  console.log('Request data:', data);
+  
+  const res = await axios.post(API_URL, data, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  return res.data;
+};
+
+export const updateMedicalRecord = async (id, data) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.put(`${API_URL}/${id}`, data, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
+export const deleteMedicalRecord = async (id) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.delete(`${API_URL}/${id}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
 export const getMedicalRecordsByCustomer = async (customerId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record/customer/${customerId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get medical records by customer failed: ${response.status}`);
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/customer/${customerId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get medical records by customer error:', error);
-    return [];
-  }
+  });
+  return res.data;
 };
 
-// Get medical records by doctor ID
 export const getMedicalRecordsByDoctor = async (doctorId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record/doctor/${doctorId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get medical records by doctor failed: ${response.status}`);
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/doctor/${doctorId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get medical records by doctor error:', error);
-    return [];
-  }
+  });
+  return res.data;
 };
 
-// Get medical record by ID
-export const getMedicalRecordById = async (id) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get medical record failed: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get medical record error:', error);
-    // Return fallback data for development
-    return {
-      medicalRecordId: parseInt(id),
-      customerId: 1,
-      customerName: "Nguyễn Văn A",
-      doctorId: 1,
-      doctorName: "BS. Nguyễn Thị B",
-      cd4Count: 350,
-      viralLoad: 1000,
-      treatmentHistory: "Đang điều trị ARV",
-      status: "ACTIVE",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-  }
-};
-
-// Get medical records by CD4 range
 export const getMedicalRecordsByCd4Range = async (minCd4, maxCd4) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record/cd4-range?minCd4=${minCd4}&maxCd4=${maxCd4}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get medical records by CD4 range failed: ${response.status}`);
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/cd4-range`, { 
+    params: { minCd4, maxCd4 },
+    headers: {
+      'Authorization': `Bearer ${token}`
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get medical records by CD4 range error:', error);
-    return [];
-  }
+  });
+  return res.data;
 };
 
-// Get medical records by viral load range
 export const getMedicalRecordsByViralLoadRange = async (minViralLoad, maxViralLoad) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record/viral-load-range?minViralLoad=${minViralLoad}&maxViralLoad=${maxViralLoad}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get medical records by viral load range failed: ${response.status}`);
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/viral-load-range`, { 
+    params: { minViralLoad, maxViralLoad },
+    headers: {
+      'Authorization': `Bearer ${token}`
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get medical records by viral load range error:', error);
-    return [];
-  }
-};
-
-// Create new medical record
-export const createMedicalRecord = async (recordData) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        doctorId: recordData.doctorId,
-        customerId: recordData.customerId,
-        cd4Count: recordData.cd4Count,
-        viralLoad: recordData.viralLoad,
-        treatmentHistory: recordData.treatmentHistory,
-        notes: recordData.notes,
-        diagnosis: recordData.diagnosis,
-        symptoms: recordData.symptoms
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Create medical record failed: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Create medical record error:', error);
-    // Return success response for development
-    return {
-      id: Date.now(),
-      success: true,
-      message: 'Medical record created successfully'
-    };
-  }
-};
-
-// Update medical record
-export const updateMedicalRecord = async (recordId, recordData) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record/${recordId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(recordData)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Update medical record failed: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Update medical record error:', error);
-    return {
-      success: true,
-      message: 'Medical record updated successfully'
-    };
-  }
-};
-
-// Delete medical record
-export const deleteMedicalRecord = async (recordId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/medical-record/${recordId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Delete medical record failed: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Delete medical record error:', error);
-    return {
-      success: true,
-      message: 'Medical record deleted successfully'
-    };
-  }
+  });
+  return res.data;
 };

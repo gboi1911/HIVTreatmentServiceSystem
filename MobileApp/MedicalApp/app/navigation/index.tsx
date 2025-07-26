@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     width: TAB_WIDTH,
     height: 64,
     borderRadius: 999,
-    backgroundColor: "rgba(0, 128, 1, 0.2)",
+    backgroundColor: "rgba(0, 122, 255, 0.12)",
     zIndex: 0,
   },
 });

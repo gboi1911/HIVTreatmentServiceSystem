@@ -8,42 +8,42 @@ const newsData = [
     {
         id: 1,
         image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400&h=250&fit=crop",
-        title: "Hội nghị Sản Phụ Khoa Việt – Pháp 2025: chuyển sâu – chuyển giá – chuyển giao tri thức",
+        title: "Hội nghị HIV/AIDS Việt Nam 2025: Cập nhật phác đồ điều trị ARV mới nhất",
         date: "2025-01-15",
         category: "Hội nghị"
     },
     {
         id: 2,
         image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop",
-        title: "Cập nhật kiến thức – kết nối thế hệ tại hội nghị Sản Phụ Khoa Việt – Pháp 2025",
+        title: "Cập nhật kiến thức – kết nối thế hệ tại hội nghị HIV/AIDS Việt Nam 2025",
         date: "2025-01-20",
         category: "Sự kiện"
     },
     {
         id: 3,
         image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop",
-        title: "Hội nghị Sản Phụ Khoa Việt – Pháp 2025: cập nhật toàn diện tri thức chăm sóc tuyến và, nội soi để hiểm muộn",
+        title: "Hội nghị HIV/AIDS Việt Nam 2025: cập nhật toàn diện tri thức chăm sóc và điều trị HIV",
         date: "2025-01-25",
         category: "Nghiên cứu"
     },
     {
         id: 4,
         image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=250&fit=crop",
-        title: "Hội nghị Sản Phụ Khoa Việt – Pháp 2025: chuổi phiên khoa học sáng 8/5: cập nhật sâu sắng – hội nhập toàn diện",
+        title: "Hội nghị HIV/AIDS Việt Nam 2025: chuỗi phiên khoa học cập nhật phác đồ điều trị ARV",
         date: "2025-02-01",
         category: "Khoa học"
     },
     {
         id: 5,
         image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=250&fit=crop",
-        title: "Bệnh viện Từ Dũ vinh dự đón nhận chứng nhận Trung tâm can thiệp báo thai chuẩn Châu Âu đầu tiên tại Việt Nam",
+        title: "Trung tâm Điều trị HIV/AIDS vinh dự đón nhận chứng nhận Trung tâm điều trị HIV chuẩn quốc tế",
         date: "2025-02-05",
         category: "Tin tức"
     },
     {
         id: 6,
         image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=250&fit=crop",
-        title: "Hội thảo khoa học về công nghệ mới trong điều trị bệnh phụ khoa",
+        title: "Hội thảo khoa học về công nghệ mới trong điều trị HIV/AIDS",
         date: "2025-02-10",
         category: "Công nghệ"
     }
