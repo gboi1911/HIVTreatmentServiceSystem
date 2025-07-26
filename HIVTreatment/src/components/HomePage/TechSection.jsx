@@ -7,37 +7,37 @@ const newsData = [
     {
         id: 1,
         image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=300&h=200&fit=crop",
-        title: "Thông tin thuốc tháng 4/2025",
+        title: "Thông tin thuốc ARV tháng 4/2025",
         date: "2025-01-15"
     },
     {
         id: 2,
         image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop",
-        title: "Lần đầu Việt Nam có trung tâm can thiệp bào thai chuẩn Châu Âu (Báo Pháp Luật)",
+        title: "Lần đầu Việt Nam có trung tâm điều trị HIV chuẩn quốc tế (Báo Pháp Luật)",
         date: "2025-01-20"
     },
     {
         id: 3,
         image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop",
-        title: "Khai mạc hội nghị Sản Phụ Khoa Việt - Pháp - Châu Á Thái Bình Dương 2025 lần thứ 25 (Truyền hình HTV)",
+        title: "Khai mạc hội nghị HIV/AIDS Việt Nam - Châu Á Thái Bình Dương 2025 lần thứ 25 (Truyền hình HTV)",
         date: "2025-01-25"
     },
     {
         id: 4,
         image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=300&h=200&fit=crop",
-        title: "Cơ hội tiếp cận tiến bộ y học thế giới cho ngành sản phụ khoa Việt Nam (Báo Sức Khoẻ 24h)",
+        title: "Cơ hội tiếp cận tiến bộ y học thế giới cho ngành điều trị HIV/AIDS Việt Nam (Báo Sức Khoẻ 24h)",
         date: "2025-02-01"
     },
     {
         id: 5,
         image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=300&h=200&fit=crop",
-        title: "14 chuyên gia đầu ngành chia sẻ kiến thức mới nhất về Sản phụ khoa (Báo Giáo dục thời đại)",
+        title: "14 chuyên gia đầu ngành chia sẻ kiến thức mới nhất về điều trị HIV/AIDS (Báo Giáo dục thời đại)",
         date: "2025-02-05"
     },
     {
         id: 6,
         image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=300&h=200&fit=crop",
-        title: "Hội thảo khoa học về công nghệ mới trong điều trị bệnh phụ khoa",
+        title: "Hội thảo khoa học về công nghệ mới trong điều trị HIV/AIDS",
         date: "2025-02-10"
     }
 ];

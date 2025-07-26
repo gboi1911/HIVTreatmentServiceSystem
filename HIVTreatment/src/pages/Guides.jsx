@@ -38,7 +38,7 @@ const newsData = [
     {
         id: 1,
         image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400&h=250&fit=crop",
-        title: "Hội nghị Sản Phụ Khoa Việt – Pháp 2025: chuyển sâu – chuyển giá – chuyển giao tri thức",
+        title: "Hội nghị HIV/AIDS Việt Nam 2025: Cập nhật phác đồ điều trị ARV mới nhất",
         date: "2025-01-15",
         category: "Hội nghị",
         readTime: "5 phút",
@@ -50,7 +50,7 @@ const newsData = [
     {
         id: 2,
         image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop",
-        title: "Cập nhật kiến thức – kết nối thế hệ tại hội nghị Sản Phụ Khoa Việt – Pháp 2025",
+        title: "Cập nhật kiến thức – kết nối thế hệ tại hội nghị HIV/AIDS Việt Nam 2025",
         date: "2025-01-20",
         category: "Sự kiện",
         readTime: "3 phút",
@@ -61,7 +61,7 @@ const newsData = [
     {
         id: 3,
         image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop",
-        title: "Hội nghị Sản Phụ Khoa Việt – Pháp 2025: cập nhật toàn diện tri thức chăm sóc tuyến và, nội soi để hiểm muộn",
+        title: "Hội nghị HIV/AIDS Việt Nam 2025: cập nhật toàn diện tri thức chăm sóc và điều trị HIV",
         date: "2025-01-25",
         category: "Nghiên cứu",
         readTime: "7 phút",
@@ -72,7 +72,7 @@ const newsData = [
     {
         id: 4,
         image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=250&fit=crop",
-        title: "Hội nghị Sản Phụ Khoa Việt – Pháp 2025: chuổi phiên khoa học sáng 8/5: cập nhật sâu sắng – hội nhập toàn diện",
+        title: "Hội nghị HIV/AIDS Việt Nam 2025: chuỗi phiên khoa học cập nhật phác đồ điều trị ARV",
         date: "2025-02-01",
         category: "Khoa học",
         readTime: "4 phút",
@@ -83,7 +83,7 @@ const newsData = [
     {
         id: 5,
         image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=250&fit=crop",
-        title: "Bệnh viện Từ Dũ vinh dự đón nhận chứng nhận Trung tâm can thiệp báo thai chuẩn Châu Âu đầu tiên tại Việt Nam",
+        title: "Trung tâm Điều trị HIV/AIDS vinh dự đón nhận chứng nhận Trung tâm điều trị HIV chuẩn quốc tế",
         date: "2025-02-05",
         category: "Tin tức",
         readTime: "6 phút",
@@ -95,7 +95,7 @@ const newsData = [
     {
         id: 6,
         image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=250&fit=crop",
-        title: "Hội thảo khoa học về công nghệ mới trong điều trị bệnh phụ khoa",
+        title: "Hội thảo khoa học về công nghệ mới trong điều trị HIV/AIDS",
         date: "2025-02-10",
         category: "Công nghệ",
         readTime: "8 phút",
@@ -155,37 +155,37 @@ export default function Guides() {
         },
         { 
             key: '2',
-            name: 'Khám thai', 
+            name: 'Khám HIV', 
             icon: <SmileOutlined />, 
-            description: 'Chăm sóc thai kỳ chuyên nghiệp với công nghệ hiện đại',
+            description: 'Tư vấn và xét nghiệm HIV chuyên nghiệp với công nghệ hiện đại',
             color: 'bg-pink-50 text-pink-600 border-pink-200'
         },
         { 
             key: '3',
-            name: 'Dịch vụ sanh/mổ', 
+            name: 'Điều trị ARV', 
             icon: <HeartOutlined />, 
-            description: 'Dịch vụ sinh nở an toàn với tiêu chuẩn quốc tế',
+            description: 'Điều trị ARV an toàn với tiêu chuẩn quốc tế',
             color: 'bg-red-50 text-red-600 border-red-200'
         },
         { 
             key: '4',
-            name: 'Khám Phụ Khoa', 
+            name: 'Tư vấn HIV/AIDS', 
             icon: <MedicineBoxOutlined />, 
-            description: 'Chuyên khoa phụ nữ với đội ngũ bác sĩ giàu kinh nghiệm',
+            description: 'Tư vấn chuyên sâu với đội ngũ bác sĩ giàu kinh nghiệm',
             color: 'bg-purple-50 text-purple-600 border-purple-200'
         },
         { 
             key: '5',
-            name: 'Khám Hiếm muộn', 
+            name: 'Theo dõi điều trị', 
             icon: <HeartOutlined />, 
-            description: 'Hỗ trợ sinh sản và điều trị hiếm muộn hiệu quả',
+            description: 'Theo dõi và hỗ trợ điều trị HIV hiệu quả',
             color: 'bg-green-50 text-green-600 border-green-200'
         },
         { 
             key: '6',
-            name: 'Khám Nhi', 
+            name: 'Hỗ trợ tâm lý', 
             icon: <UserOutlined />, 
-            description: 'Chăm sóc sức khỏe toàn diện cho trẻ em',
+            description: 'Hỗ trợ tâm lý toàn diện cho người nhiễm HIV',
             color: 'bg-orange-50 text-orange-600 border-orange-200'
         }
     ];
@@ -320,10 +320,10 @@ export default function Guides() {
                             </div>
                             <div>
                                 <Title level={2} className="!mb-1  bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                    Bệnh viện Từ Dũ
+                                    Trung tâm Điều trị HIV/AIDS
                                 </Title>
                                 <Text className="text-gray-600 font-medium">
-                                    Chăm sóc sức khỏe chuyên nghiệp • Tin cậy hàng đầu
+                                    Chăm sóc và điều trị HIV/AIDS chuyên nghiệp • Tin cậy hàng đầu
                                 </Text>
                             </div>
                         </motion.div>

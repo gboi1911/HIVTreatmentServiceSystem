@@ -60,7 +60,7 @@ export default function AppointmentManagementPage() {
 
   const handleStatusChange = async (appointmentId, newStatus) => {
     try {
-      await updateAppointmentStatus(appointmentId, newStatus, token);
+      await updateAppointmentStatus(appointmentId, newStatus, '');
       message.success("Cập nhật trạng thái thành công");
       if (statusFilter) {
         fetchAppointmentsByStatus(statusFilter);

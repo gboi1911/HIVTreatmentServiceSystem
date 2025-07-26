@@ -7,12 +7,22 @@ export const getMedicalRecords = async () => {
   const token = localStorage.getItem('token');
   console.log('Getting medical records with token:', token ? 'Token exists' : 'No token');
   
-  const res = await axios.get(API_URL, {
-    headers: {
-      'Authorization': `Bearer ${token}`
+  try {
+    const res = await axios.get(`${API_URL}/getMedicalRecord`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    console.log('Medical records response:', res.data);
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching medical records:', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+      console.error('Error status:', error.response.status);
     }
-  });
-  return res.data;
+    throw error;
+  }
 };
 
 export const getAllMedicalRecords = async () => {

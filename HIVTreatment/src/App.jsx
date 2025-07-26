@@ -47,6 +47,7 @@ const AppointmentHistory = React.lazy(() =>
 );
 const BookingSuccess = React.lazy(() => import("./pages/BookingSuccess"));
 const UserProfile = React.lazy(() => import("./pages/user/UserProfile"));
+const UserDashboard = React.lazy(() => import("./pages/UserDashboard"));
 
 // Assessment pages
 const RiskAssessment = React.lazy(() =>
@@ -61,7 +62,7 @@ const AssessmentHistory = React.lazy(() =>
 
 // Medical Record pages
 const MedicalRecords = React.lazy(() =>
-  import("./pages/doctor/MedicalRecords")
+  import("./pages/MedicalRecords")
 );
 
 //Appointment Management
@@ -223,6 +224,26 @@ function App() {
                 </UserRoute>
               }
             />
+
+            {/* User Dashboard route */}
+            <Route
+              path="user/dashboard"
+              element={
+                <UserRoute>
+                  <UserDashboard />
+                </UserRoute>
+              }
+            />
+
+            {/* Medical Records route */}
+            <Route
+              path="medical-records"
+              element={
+                <ProtectedRoute>
+                  <MedicalRecords />
+                </ProtectedRoute>
+              }
+            />
           </Route>
 
           {/* Auth routes without layout */}
@@ -322,7 +343,7 @@ function App() {
               }
             />
             <Route
-              path="doctor/medical-records/create"
+              path="doctor/medical-records"
               element={
                 <DoctorRoute>
                   <MedicalRecords />

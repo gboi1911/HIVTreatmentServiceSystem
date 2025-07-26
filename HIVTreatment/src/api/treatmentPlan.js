@@ -96,7 +96,7 @@ export const getARVRegimenTemplates = () => {
     {
       name: "AZT/3TC/LPV/r",
       fullName: "Zidovudine/Lamivudine/Lopinavir/ritonavir",
-      applicableGroup: "Phụ nữ mang thai",
+      applicableGroup: "Phụ nữ nhiễm HIV",
       dosage: "AZT/3TC: 2 lần/ngày, LPV/r: 2 lần/ngày",
       notes: "Theo dõi chặt chẽ tác dụng phụ"
     },

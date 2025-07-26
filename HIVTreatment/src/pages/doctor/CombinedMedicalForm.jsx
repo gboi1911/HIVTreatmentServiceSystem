@@ -170,7 +170,7 @@ const TreatmentPlanForm = ({ medicalRecordId, doctorId, onBack, onComplete, appo
           <Select placeholder="Chọn nhóm" size="large"> 
             <Option value="adult">Người lớn</Option> 
             <Option value="child">Trẻ em</Option> 
-            <Option value="pregnant">Phụ nữ mang thai</Option> 
+            <Option value="pregnant">Phụ nữ nhiễm HIV</Option> 
           </Select> 
         </Form.Item>
         

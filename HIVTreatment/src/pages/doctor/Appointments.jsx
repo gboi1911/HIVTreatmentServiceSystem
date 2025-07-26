@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Tag, Button, Space, Select, DatePicker, message, Modal, Input, Card, Tooltip } from 'antd';
 import { 
-  getAppointmentsByDoctor, 
   updateAppointmentStatus,
-  getAppointmentsByStatus,
-  getAppointmentsByDoctorAndStatus,
-  getAllAppointments 
+  getAllAppointments,
+  cleanAppointmentNotes
 } from '../../api/appointment';
 import { useAuthStatus } from '../../hooks/useAuthStatus';
 import moment from 'moment';
@@ -27,10 +25,8 @@ const statusOptions = [
 export default function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    status: null,
-    dateRange: [moment().startOf('day'), moment().endOf('day')]
-  });
+  const [filterPhone, setFilterPhone] = useState('');
+
   const { userInfo } = useAuthStatus();
   const navigate = useNavigate();
 
@@ -39,11 +35,6 @@ export default function Appointments() {
       setLoading(true);
       let response;
       
-      // if (filters.status) {
-      //   response = await getAppointmentsByDoctorAndStatus(userInfo.id, filters.status);
-      // } else {
-      //   response = await getAppointmentsByDoctor(userInfo.id);
-      // }
       // Use getAllAppointments to fetch all appointments
       response = await getAllAppointments();
       console.log('API response:', response);
@@ -70,19 +61,6 @@ export default function Appointments() {
         customerPhone: appt.customerPhone || '---' // Đảm bảo luôn có số điện thoại
       }));
       
-      // // Filter by date range if selected
-      // if (filters.dateRange && filters.dateRange[0] && filters.dateRange[1]) {
-      //   const [startDate, endDate] = filters.dateRange;
-      //   appointmentsList = appointmentsList.filter(appointment => {
-      //     if (!appointment.datetime) return false;
-      //     return appointment.datetime.isBetween(
-      //       startDate.startOf('day'), 
-      //       endDate.endOf('day'), 
-      //       'day', 
-      //       '[]'
-      //     );
-      //   });
-      // }
       appointmentsList = appointmentsList.filter(appt => appt.status === "CONFIRMED");
       console.log('Filtered appointments:', appointmentsList);
 
@@ -121,27 +99,34 @@ export default function Appointments() {
     }
     
     try {
-      // Chỉ truyền id và status, không truyền note
-      await updateAppointmentStatus(appointmentId, newStatus);
+      // Chỉ truyền id và status, không truyền note để tránh lưu JWT token
+      await updateAppointmentStatus(appointmentId, newStatus, '');
       message.success('Cập nhật trạng thái thành công');
       fetchAppointments();
     } catch (error) {
+      console.error('Error updating appointment status:', error);
       message.error('Có lỗi xảy ra khi cập nhật trạng thái');
     }
   };
 
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
+  const handleCleanNotes = async () => {
+    try {
+      await cleanAppointmentNotes();
+      message.success('Đã dọn dẹp ghi chú chứa JWT token thành công');
+      fetchAppointments();
+    } catch (error) {
+      console.error('Error cleaning notes:', error);
+      message.error('Có lỗi xảy ra khi dọn dẹp ghi chú');
+    }
   };
+
+
 
   useEffect(() => {
     if (userInfo?.id) {
       fetchAppointments();
     }
-  }, [userInfo, filters.status, filters.dateRange]);
+  }, [userInfo]);
 
   // Đưa columns vào trong component để dùng đúng handleStatusUpdate
   const columns = [
@@ -257,6 +242,13 @@ export default function Appointments() {
             loading={loading}
           >
             Làm mới
+          </Button>
+          <Button
+            type="default"
+            onClick={handleCleanNotes}
+            loading={loading}
+          >
+            Dọn dẹp ghi chú
           </Button>
         </div>
       </Card>

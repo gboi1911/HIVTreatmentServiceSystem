@@ -93,7 +93,7 @@ export default function CategorySection() {
         const icons = {
             'Ngoại khoa': <MedicineBoxOutlined />,
             'Tim mạch': <HeartOutlined />,
-            'Sản khoa': <StarOutlined />,
+            'Nội khoa': <MedicineBoxOutlined />,
             'Nhi khoa': <StarOutlined />,
             'Chẩn đoán': <EyeOutlined />,
             'Phẫu thuật': <ExperimentOutlined />

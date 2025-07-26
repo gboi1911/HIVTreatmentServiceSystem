@@ -381,3 +381,26 @@ export const updateAppointmentStatus = async (appointmentId, status, note = '') 
     throw error;
   }
 };
+
+// Clean appointment notes (remove JWT tokens)
+export const cleanAppointmentNotes = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/appointment/clean-notes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Clean appointment notes failed: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Clean appointment notes error:', error);
+    throw error;
+  }
+};

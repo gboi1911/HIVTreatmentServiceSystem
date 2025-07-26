@@ -39,9 +39,9 @@ export const EnhancedPageLoader = () => (
       {/* Hospital Name */}
       <div className="mb-6">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-          Bệnh viện Từ Dũ
+          Trung tâm Điều trị HIV/AIDS
         </h2>
-        <p className="text-gray-600 font-medium">Chăm sóc sức khỏe chuyên nghiệp</p>
+        <p className="text-gray-600 font-medium">Chăm sóc và điều trị HIV/AIDS chuyên nghiệp</p>
       </div>
 
       {/* Loading Text with Animation */}
