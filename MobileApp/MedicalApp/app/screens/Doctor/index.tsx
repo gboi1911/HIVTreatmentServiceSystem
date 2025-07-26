@@ -42,7 +42,7 @@ const arvRegimens = [
   {
     id: "2",
     name: "TDF + 3TC + EFV",
-    for: "Phụ nữ mang thai",
+    for: "Phụ nữ nhiễm HIV",
     drugs: [
       { name: "Tenofovir (TDF)", dose: "300mg/ngày" },
       { name: "Lamivudine (3TC)", dose: "300mg/ngày" },

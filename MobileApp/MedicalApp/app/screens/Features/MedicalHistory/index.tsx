@@ -11,11 +11,11 @@ export default function MedicalHistoryTabs() {
       id={undefined}
       initialRouteName="TestInfo"
       screenOptions={{
-        tabBarActiveTintColor: "#008001",
+        tabBarActiveTintColor: "#1E90FF", // xanh dương
         tabBarLabelStyle: { fontWeight: "bold", fontSize: 15 },
-        tabBarIndicatorStyle: { backgroundColor: "#008001", height: 3 },
+        tabBarIndicatorStyle: { backgroundColor: "#1E90FF", height: 3 }, // xanh dương
         tabBarStyle: { backgroundColor: "#fff" },
-        tabBarPressColor: "#ffff",
+        tabBarPressColor: "#fff",
         tabBarPressOpacity: 0,
       }}
     >

@@ -11,12 +11,15 @@ export const createLabResult = async (labResultData) => {
     }
     const requestData = {
       medicalRecordId: labResultData.medicalRecordId,
+      // doctorId: labResultData.doctorId,
       doctorId: 1,
       result: labResultData.result,
-      cd4Count: labResultData.cd4Count,
+      cd4Count: labResultData.cd4Count || 0,
       testDate: labResultData.testDate,
       note: labResultData.note || ''
     };
+    
+    console.log('Sending lab result payload:', requestData);
     const response = await fetch(`${API_BASE}/lab-result`, {
       method: 'POST',
       headers: {
@@ -29,12 +32,17 @@ export const createLabResult = async (labResultData) => {
       let errorMessage = `Create lab result failed: ${response.status}`;
       try {
         const errorText = await response.text();
+        console.error('Backend error response:', errorText);
         if (errorText.includes('400')) {
-          errorMessage = 'Thông tin kết quả xét nghiệm không hợp lệ';
+          errorMessage = `Thông tin kết quả xét nghiệm không hợp lệ: ${errorText}`;
         } else if (errorText.includes('401')) {
           errorMessage = 'Phiên đăng nhập đã hết hạn';
+        } else {
+          errorMessage = `Server error: ${errorText}`;
         }
-      } catch {}
+      } catch (e) {
+        console.error('Error parsing response:', e);
+      }
       throw new Error(errorMessage);
     }
     const result = await response.json();
@@ -107,6 +115,28 @@ export const getLabResultsByDoctor = async (doctorId) => {
     return await response.json();
   } catch (error) {
     console.error('Get lab results by doctor error:', error);
+    throw error;
+  }
+};
+
+// Get lab results by customer
+export const getLabResultsByCustomer = async (customerId) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!customerId) throw new Error('Customer ID is required');
+    const response = await fetch(`${API_BASE}/lab-result/customer/${customerId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`Get lab results by customer failed: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Get lab results by customer error:', error);
     throw error;
   }
 };

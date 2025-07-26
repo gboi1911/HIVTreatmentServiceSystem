@@ -11,8 +11,8 @@ export default function CardSection() {
       title: "Chương Trình Truyền Thông",
       description: (
         <>
-          Tổng hợp những giá trị sinh thành & <br />
-          lấy thật dịch vụ tại bệnh viện TỪ DŨ
+          Tổng hợp thông tin về HIV/AIDS & <br />
+          dịch vụ tại Trung tâm Điều trị HIV/AIDS
         </>
       ),
       buttonText: "Xem thêm",
@@ -23,8 +23,8 @@ export default function CardSection() {
       description: (
         <>
           Bản đồ đường đi <br />
-          Khám tiền sản, Khám Nhi <br />
-          Thủ tục nhập viện, xuất viện
+          Khám HIV, Xét nghiệm <br />
+          Thủ tục đăng ký điều trị
         </>
       ),
       buttonText: "Xem thêm",
@@ -34,9 +34,9 @@ export default function CardSection() {
       title: "Hỏi & Đáp",
       description: (
         <>
-          Sinh thường hay sinh mổ chủ động <br />
-          Nên cho trẻ dùng nấm và sinh trong <br />
-          bao lâu thì đủ?
+          Điều trị ARV có hiệu quả không? <br />
+          Làm thế nào để phòng tránh lây nhiễm? <br />
+          Chế độ dinh dưỡng cho người nhiễm HIV?
         </>
       ),
       buttonText: "Xem thêm",

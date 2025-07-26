@@ -1,216 +1,72 @@
-const API_BASE = "https://hiv.purepixel.io.vn/api";
+import axios from 'axios';
 
-// Get all treatment plans
+// Sửa URL để phù hợp với cấu trúc API của backend
+const API_URL = 'https://hiv.purepixel.io.vn/api/treatment-plan';
+
 export const getTreatmentPlans = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/treatment-plan/getTreatmentPlan`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get treatment plans failed: ${response.status}`);
+  const token = localStorage.getItem('token');
+  console.log('Getting treatment plans with token:', token ? 'Token exists' : 'No token');
+  
+  const res = await axios.get(API_URL, {
+    headers: {
+      'Authorization': `Bearer ${token}`
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get treatment plans error:', error);
-    // Return fallback data for development
-    return [
-      {
-        planId: 1,
-        medicalRecordId: 1,
-        patientName: "Nguyễn Văn A",
-        doctorId: 1,
-        doctorName: "BS. Nguyễn Thị C",
-        arvRegimen: "TDF/FTC/EFV",
-        applicableGroup: "Người lớn mới bắt đầu điều trị",
-        startDate: new Date().toISOString(),
-        endDate: null,
-        note: "Theo dõi sau 2 tuần",
-        status: "ACTIVE",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-    ];
-  }
+  });
+  return res.data;
 };
 
-// Get treatment plans by medical record ID
+export const createTreatmentPlan = async (data) => {
+  const token = localStorage.getItem('token');
+  console.log('Creating treatment plan with token:', token ? 'Token exists' : 'No token');
+  console.log('Request data:', data);
+  
+  const res = await axios.post(API_URL, data, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  return res.data;
+};
+
+export const updateTreatmentPlan = async (id, data) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.put(`${API_URL}/${id}`, data, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
+export const deleteTreatmentPlan = async (id) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.delete(`${API_URL}/${id}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.data;
+};
+
 export const getTreatmentPlansByMedicalRecord = async (medicalRecordId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/treatment-plan/medical-record/${medicalRecordId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get treatment plans by medical record failed: ${response.status}`);
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/medical-record/${medicalRecordId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get treatment plans by medical record error:', error);
-    return [];
-  }
+  });
+  return res.data;
 };
 
-// Get treatment plans by doctor ID
 export const getTreatmentPlansByDoctor = async (doctorId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/treatment-plan/doctor/${doctorId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get treatment plans by doctor failed: ${response.status}`);
+  const token = localStorage.getItem('token');
+  const res = await axios.get(`${API_URL}/doctor/${doctorId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get treatment plans by doctor error:', error);
-    return [];
-  }
-};
-
-// Get treatment plan by ID
-export const getTreatmentPlanById = async (planId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/treatment-plan/${planId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Get treatment plan failed: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Get treatment plan error:', error);
-    // Return fallback data for development
-    return {
-      planId: parseInt(planId),
-      medicalRecordId: 1,
-      patientName: "Nguyễn Văn A",
-      doctorId: 1,
-      doctorName: "BS. Nguyễn Thị C",
-      arvRegimen: "TDF/FTC/EFV",
-      applicableGroup: "Người lớn mới bắt đầu điều trị",
-      startDate: new Date().toISOString(),
-      endDate: null,
-      note: "Theo dõi sau 2 tuần",
-      status: "ACTIVE",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-  }
-};
-
-// Create new treatment plan
-export const createTreatmentPlan = async (planData) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/treatment-plan`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        medicalRecordId: planData.medicalRecordId,
-        doctorId: 1,
-        arvRegimen: planData.arvRegimen,
-        applicableGroup: planData.applicableGroup,
-        note: planData.note,
-        startDate: planData.startDate
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Create treatment plan failed: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Create treatment plan error:', error);
-    // Return success response for development
-    return {
-      planId: Date.now(),
-      success: true,
-      message: 'Treatment plan created successfully'
-    };
-  }
-};
-
-// Update treatment plan
-export const updateTreatmentPlan = async (planId, planData) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/treatment-plan/${planId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(planData)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Update treatment plan failed: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Update treatment plan error:', error);
-    return {
-      success: true,
-      message: 'Treatment plan updated successfully'
-    };
-  }
-};
-
-// Delete treatment plan
-export const deleteTreatmentPlan = async (planId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/treatment-plan/${planId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Delete treatment plan failed: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Delete treatment plan error:', error);
-    return {
-      success: true,
-      message: 'Treatment plan deleted successfully'
-    };
-  }
+  });
+  return res.data;
 };
 
 // ARV Regimen templates for HIV treatment
@@ -240,7 +96,7 @@ export const getARVRegimenTemplates = () => {
     {
       name: "AZT/3TC/LPV/r",
       fullName: "Zidovudine/Lamivudine/Lopinavir/ritonavir",
-      applicableGroup: "Phụ nữ mang thai",
+      applicableGroup: "Phụ nữ nhiễm HIV",
       dosage: "AZT/3TC: 2 lần/ngày, LPV/r: 2 lần/ngày",
       notes: "Theo dõi chặt chẽ tác dụng phụ"
     },

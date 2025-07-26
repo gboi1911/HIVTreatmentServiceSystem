@@ -373,7 +373,7 @@ export const cancelAppointment = async (appointmentId) => {
 };
 
 // Update appointment status
-export const updateAppointmentStatus = async (appointmentId, status) => {
+export const updateAppointmentStatus = async (appointmentId, status, note = '') => {
   try {
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE}/appointment/${appointmentId}/status`, {
@@ -382,7 +382,7 @@ export const updateAppointmentStatus = async (appointmentId, status) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status, note })
     });
 
     if (!response.ok) {
@@ -392,6 +392,29 @@ export const updateAppointmentStatus = async (appointmentId, status) => {
     return await response.json();
   } catch (error) {
     console.error('Update appointment status error:', error);
+    throw error;
+  }
+};
+
+// Clean appointment notes (remove JWT tokens)
+export const cleanAppointmentNotes = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/appointment/clean-notes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Clean appointment notes failed: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Clean appointment notes error:', error);
     throw error;
   }
 };

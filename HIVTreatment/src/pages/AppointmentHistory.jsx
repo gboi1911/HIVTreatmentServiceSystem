@@ -285,7 +285,7 @@ export default function AppointmentHistory() {
         try {
           console.log('🚀 Calling updateAppointmentStatus with ID:', appointmentId);
           // Update appointment status to CANCELLED instead of deleting
-          await updateAppointmentStatus(appointmentId, 'CANCELLED');
+          await updateAppointmentStatus(appointmentId, 'CANCELLED', '');
           message.success('Hủy lịch hẹn thành công!');
           await loadAppointments();
         } catch (error) {
