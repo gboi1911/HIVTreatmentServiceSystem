@@ -79,6 +79,7 @@ const StaffManagement = React.lazy(() =>
 );
 const DoctorManagement = React.lazy(() => import("./pages/admin/DoctorManagement"));
 const EducationContentManagement = React.lazy(() => import("./pages/admin/EducationContentManagement"));
+const BlogManagement = React.lazy(() => import("./pages/admin/BlogManagement"));
 // const SystemSettings = React.lazy(() => import('./pages/admin/SystemSettings'));
 
 // // Staff only pages
@@ -262,6 +263,14 @@ function App() {
             element={
               <AdminRoute>
                 <EducationContentManagement />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin/blog-management"
+            element={
+              <AdminRoute>
+                <BlogManagement />
               </AdminRoute>
             }
           />

@@ -21,6 +21,7 @@ const navItems = [
   { key: "staff", label: "Quản lý nhân viên", icon: UserCog, path: "/admin/staff" },
   { key: "doctor", label: "Quản lý bác sĩ", icon: UserCheck, path: "/admin/doctors" },
   { key: "education", label: "Nội dung giáo dục", icon: BookOpen, path: "/admin/education-content" },
+  { key: "blog", label: "Blog/Tin tức", icon: FileText, path: "/admin/blog-management" },
   { key: "home", label: "Trang chủ", icon: HomeIcon, path: "/" }
 ];
 
