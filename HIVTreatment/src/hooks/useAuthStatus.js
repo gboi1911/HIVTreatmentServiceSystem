@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getCustomerById } from '../api/customer';
+import { getCustomersByAccountId } from '../api/customer';
 
 export const useAuthStatus = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,12 +29,31 @@ export const useAuthStatus = () => {
           };
         }
         if (parsedUserInfo) {
-          // If user is a patient/user and customerId is missing, fetch it
+          // If user is a patient/user and customerId is missing, fetch it using accountId
           if ((role === 'user' || role === 'patient' || role === 'CUSTOMER') && !parsedUserInfo.customerId && parsedUserInfo.id) {
             try {
-              const customerProfile = await getCustomerById(parsedUserInfo.id);
+              console.log('🔍 Fetching customer data for accountId:', parsedUserInfo.id);
+              const customerData = await getCustomersByAccountId(parsedUserInfo.id);
+              console.log('👤 Customer data received:', customerData);
+              
+              // Handle different response formats
+              let customerProfile = null;
+              if (Array.isArray(customerData) && customerData.length > 0) {
+                customerProfile = customerData[0]; // Take the first customer record
+              } else if (customerData && typeof customerData === 'object') {
+                customerProfile = customerData;
+              }
+              
               if (customerProfile && customerProfile.id) {
-                parsedUserInfo = { ...parsedUserInfo, ...customerProfile, customerId: customerProfile.id };
+                parsedUserInfo = { 
+                  ...parsedUserInfo, 
+                  ...customerProfile, 
+                  customerId: customerProfile.id,
+                  accountId: parsedUserInfo.id // Keep the original accountId
+                };
+                console.log('✅ Customer profile merged:', parsedUserInfo);
+              } else {
+                console.warn('⚠️ No customer profile found for accountId:', parsedUserInfo.id);
               }
             } catch (e) {
               console.warn('Could not fetch customer profile:', e);

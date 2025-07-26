@@ -10,18 +10,32 @@ export const bookAppointment = async (appointmentData) => {
       throw new Error('Missing required appointment data');
     }
 
+    console.log('📅 Original datetime from form:', appointmentData.datetime);
+    
+    // Use the datetime as-is without timezone conversion
+    // The formatDateTimeForBackend function already provides the correct format
     let formattedDateTime = appointmentData.datetime;
-
-    if (!formattedDateTime.includes('T') || !formattedDateTime.includes('Z')) {
+    
+    // Ensure the datetime is in the correct format for the backend
+    // Backend expects: YYYY-MM-DDTHH:mm:ss (without timezone)
+    if (!formattedDateTime.includes('T')) {
       console.warn('⚠️ DateTime not in expected format, attempting conversion...');
       try {
-        const date = new Date(appointmentData.datetime);
-        formattedDateTime = date.toISOString().replace(/\.\d{3}Z$/, '.000Z');
+        // If it's a date string without T, convert it
+        const date = new Date(formattedDateTime);
+        formattedDateTime = date.toISOString().split('.')[0]; // Remove milliseconds and timezone
       } catch (dateError) {
         console.error('❌ Date conversion failed:', dateError);
         throw new Error('Invalid date format');
       }
     }
+    
+    // Remove timezone if present (backend expects local time)
+    if (formattedDateTime.includes('Z')) {
+      formattedDateTime = formattedDateTime.replace('Z', '');
+    }
+    
+    console.log('📅 Formatted datetime for API:', formattedDateTime);
     
     const requestData = {
       customerId: appointmentData.customerId,
@@ -99,8 +113,8 @@ export const bookAppointment = async (appointmentData) => {
         id: fallbackId,
         appointmentId: fallbackId,
         success: true,
-        message: 'Appointment booked successfully (offline mode)',
         status: 'PENDING',
+        message: 'Đặt lịch thành công (chế độ offline)',
         timestamp: new Date().toISOString()
       };
     }

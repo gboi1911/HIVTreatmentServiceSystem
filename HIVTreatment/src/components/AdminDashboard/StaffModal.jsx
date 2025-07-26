@@ -82,16 +82,32 @@ export const StaffModal = ({
             <Form.Item
               name="phone"
               label="Số điện thoại"
-              rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }]}
+              rules={[
+                { required: true, message: 'Vui lòng nhập số điện thoại' },
+                {
+                  pattern: /^(84|0[3|5|7|8|9])+(\d{8})$/,
+                  message: 'Số điện thoại phải bắt đầu bằng 84 hoặc 03, 05, 07, 08, 09 và có 10-11 số'
+                }
+              ]}
             >
-              <Input placeholder="Nhập số điện thoại" />
+              <Input placeholder="VD: 0912345678 hoặc 84912345678" />
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
               name="gender"
               label="Giới tính"
-              rules={[{ required: true, message: 'Vui lòng chọn giới tính' }]}
+              rules={[
+                { required: true, message: 'Vui lòng chọn giới tính' },
+                {
+                  validator: (_, value) => {
+                    if (!value || ['Male', 'Female', 'Other'].includes(value)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Giới tính không hợp lệ'));
+                  }
+                }
+              ]}
             >
               <Select placeholder="Chọn giới tính">
                 {STAFF_GENDERS.map(gender => (
@@ -150,6 +166,13 @@ export const StaffModal = ({
               Hủy
             </Button>
           </Space>
+          {isCreate && (
+            <div className="mt-2 text-xs text-gray-500">
+              <p>⚠️ Quá trình tạo nhân viên sẽ:</p>
+              <p>1. Đăng ký tài khoản với vai trò STAFF</p>
+              <p>2. Tạo hồ sơ nhân viên trong hệ thống</p>
+            </div>
+          )}
         </Form.Item>
       </Form>
     </Modal>

@@ -35,8 +35,14 @@ export const getEducationContents = async () => {
 // Get education content by ID
 export const getEducationContentById = async (contentId) => {
   try {
+    console.log('getEducationContentById called with ID:', contentId);
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/education-content/${contentId}`, {
+    console.log('Token available:', !!token);
+    
+    const url = `${API_BASE}/education-content/${contentId}`;
+    console.log('Making request to:', url);
+    
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -44,13 +50,34 @@ export const getEducationContentById = async (contentId) => {
       }
     });
 
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
     if (!response.ok) {
-      throw new Error(`Get education content failed: ${response.status}`);
+      const errorText = await response.text();
+      console.error('API Error Response:', errorText);
+      throw new Error(`Get education content failed: ${response.status} - ${errorText}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log('API Response data:', data);
+    return data;
   } catch (error) {
     console.error('Get education content error:', error);
+    
+    // Return fallback data for development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Returning fallback data for development');
+      return {
+        postId: parseInt(contentId),
+        title: "Khóa học mẫu về HIV/AIDS",
+        content: "Đây là nội dung mẫu cho khóa học về HIV/AIDS. Trong môi trường phát triển, chúng ta sử dụng dữ liệu mẫu này để hiển thị giao diện.",
+        staffName: "BS. Nguyễn Văn A",
+        createdAt: "2024-06-01T10:00:00",
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop"
+      };
+    }
+    
     throw error;
   }
 };

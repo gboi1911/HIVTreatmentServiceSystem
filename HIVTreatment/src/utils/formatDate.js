@@ -30,8 +30,9 @@ export const formatDateTimeForBackend = (date, time, format = 'backend') => {
 
   switch (format) {
     case 'backend':
-      // Format like "2025-07-15T01:54:27.411Z" - what your backend expects
-      return combinedDateTime.utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+      // Use local time format that matches what the backend expects
+      // This ensures consistency between booking and history display
+      return combinedDateTime.format('YYYY-MM-DDTHH:mm:ss');
     
     case 'iso':
       return combinedDateTime.toISOString();

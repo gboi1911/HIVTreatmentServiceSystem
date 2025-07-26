@@ -7,6 +7,13 @@ import moment from 'moment';
 
 const UserTreatmentPlans = () => {
   const { userInfo, isLoggedIn, loading: authLoading } = useAuthStatus();
+  console.log('👤 UserTreatmentPlans - userInfo:', userInfo);
+  console.log('🆔 UserTreatmentPlans - Available IDs:', {
+    id: userInfo?.id,
+    customerId: userInfo?.customerId,
+    accountId: userInfo?.accountId
+  });
+  
   const [treatmentPlans, setTreatmentPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,19 +23,38 @@ const UserTreatmentPlans = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       const customerId = userInfo?.customerId || userInfo?.id;
-      if (authLoading || !isLoggedIn || !customerId) return;
+      console.log('🔍 UserTreatmentPlans - Using customerId:', customerId);
+      console.log('🔍 UserTreatmentPlans - userInfo.customerId:', userInfo?.customerId);
+      console.log('🔍 UserTreatmentPlans - userInfo.id:', userInfo?.id);
+      
+      if (authLoading || !isLoggedIn || !customerId) {
+        console.log('⚠️ UserTreatmentPlans - Skipping fetch:', {
+          authLoading,
+          isLoggedIn,
+          customerId
+        });
+        return;
+      }
+      
       setLoading(true);
       setError(null);
       try {
         // Get all medical records for this customer
+        console.log('📋 UserTreatmentPlans - Fetching medical records for customerId:', customerId);
         const records = await getMedicalRecordsByCustomer(customerId);
+        console.log('📋 UserTreatmentPlans - Medical records received:', records);
+        
         const allPlans = [];
         for (const record of Array.isArray(records) ? records : []) {
+          console.log('🔍 UserTreatmentPlans - Fetching plans for medical record:', record.medicalRecordId);
           const plans = await getTreatmentPlansByMedicalRecord(record.medicalRecordId);
+          console.log('🔍 UserTreatmentPlans - Plans for record:', plans);
           if (Array.isArray(plans)) allPlans.push(...plans);
         }
+        console.log('📋 UserTreatmentPlans - All plans collected:', allPlans);
         setTreatmentPlans(allPlans);
       } catch (err) {
+        console.error('❌ UserTreatmentPlans - Error fetching plans:', err);
         setError('Không thể tải kế hoạch điều trị.');
       } finally {
         setLoading(false);
