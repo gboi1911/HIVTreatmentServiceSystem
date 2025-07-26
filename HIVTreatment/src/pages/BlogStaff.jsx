@@ -278,37 +278,37 @@ export default function StaffBlogPage() {
         width={600}
         confirmLoading={loading}
       >
-        <Form 
+      <Form
           form={form} 
-          layout="vertical" 
-          onFinish={handleSubmit}
+        layout="vertical"
+        onFinish={handleSubmit}
           className="mt-4"
+      >
+        <Form.Item
+          label="Tiêu đề"
+          name="title"
+          rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
         >
-          <Form.Item
-            label="Tiêu đề"
-            name="title"
-            rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
-          >
             <Input 
               placeholder="Nhập tiêu đề blog..."
               size="large"
             />
-          </Form.Item>
+        </Form.Item>
           
-          <Form.Item
-            label="Nội dung"
-            name="content"
-            rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
-          >
+        <Form.Item
+          label="Nội dung"
+          name="content"
+          rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
+        >
             <TextArea 
               rows={6} 
               placeholder="Nhập nội dung blog..."
               showCount
               maxLength={2000}
             />
-          </Form.Item>
+        </Form.Item>
           
-          <Form.Item label="Hình ảnh" name="image">
+        <Form.Item label="Hình ảnh" name="image">
             <Upload 
               listType="picture-card" 
               maxCount={1} 
@@ -319,9 +319,9 @@ export default function StaffBlogPage() {
                 <UploadOutlined />
                 <div style={{ marginTop: 8 }}>Tải ảnh</div>
               </div>
-            </Upload>
-          </Form.Item>
-        </Form>
+          </Upload>
+        </Form.Item>
+      </Form>
       </Modal>
     </div>
   );

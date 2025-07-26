@@ -95,9 +95,15 @@ export const StaffManagement = () => {
 
   // Handle form submission for create/edit
   const handleFormSubmit = async (values) => {
+    console.log('📝 StaffManagement - Form values received:', values);
+    
+    // Remove confirmPassword from the data sent to API
+    const { confirmPassword, ...staffData } = values;
+    console.log('📤 StaffManagement - Data to be sent to API:', staffData);
+    
     const success = modalType === 'create' 
-      ? await handleCreateStaff(values)
-      : await handleUpdateStaff(selectedStaff.staffId, values);
+      ? await handleCreateStaff(staffData)
+      : await handleUpdateStaff(selectedStaff.staffId, staffData);
     
     if (success) {
       setModalVisible(false);

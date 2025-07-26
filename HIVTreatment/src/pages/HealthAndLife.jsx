@@ -138,8 +138,8 @@ export default function HealthAndLife() {
           <Col xs={24} lg={16}>
             <div className="mb-8">
               <Title level={3} className="mb-2 text-gray-800">
-                Bài viết nổi bật
-              </Title>
+              Bài viết nổi bật
+            </Title>
               <Text type="secondary">Các bài viết mới nhất về sức khỏe và đời sống</Text>
             </div>
             
@@ -148,8 +148,8 @@ export default function HealthAndLife() {
                 const blogId = blog.blogId || blog.id || blog.blog_id;
                 return (
                   <Col xs={24} md={12} key={blogId || index}>
-                    <Card
-                      hoverable
+                  <Card
+                    hoverable
                       className="h-full shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100"
                       bodyStyle={{ padding: 0 }}
                       onClick={() => handleBlogClick(blog)}
@@ -157,7 +157,7 @@ export default function HealthAndLife() {
                       <div className="relative">
                         <img
                           src={blog.image || "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop"}
-                          alt={blog.title}
+                      alt={blog.title}
                           className="w-full h-48 object-cover rounded-t-lg"
                         />
                         <div className="absolute top-3 left-3">
@@ -186,8 +186,8 @@ export default function HealthAndLife() {
                             lineHeight: '1.5'
                           }}
                         >
-                          {getFirstSentence(blog.content)}
-                        </Paragraph>
+                        {getFirstSentence(blog.content)}
+                      </Paragraph>
                         
                         <div className="flex items-center justify-between text-sm text-gray-500">
                           <div className="flex items-center gap-2">
@@ -204,9 +204,9 @@ export default function HealthAndLife() {
                             </span>
                           </div>
                         </div>
-                      </div>
-                    </Card>
-                  </Col>
+                    </div>
+                  </Card>
+                </Col>
                 );
               })}
             </Row>
@@ -228,16 +228,16 @@ export default function HealthAndLife() {
           <Col xs={24} lg={8}>
             <div className="mb-8">
               <Title level={3} className="mb-2 text-gray-800">
-                Tin tức HIV
-              </Title>
+              Tin tức HIV
+            </Title>
               <Text type="secondary">Cập nhật mới nhất về HIV/AIDS</Text>
             </div>
             
             <div className="space-y-6">
               {sideNews.map((news, index) => (
-                <Card
+                  <Card
                   key={index}
-                  hoverable
+                    hoverable
                   className="shadow-sm hover:shadow-md transition-all duration-200"
                   bodyStyle={{ padding: 16 }}
                 >
@@ -265,8 +265,8 @@ export default function HealthAndLife() {
                         {news.description}
                       </Text>
                     </div>
-                  </div>
-                </Card>
+                    </div>
+                  </Card>
               ))}
             </div>
           </Col>

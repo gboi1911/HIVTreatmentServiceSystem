@@ -11,6 +11,7 @@ import { useAuthStatus } from '../../hooks/useAuthStatus';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { SearchOutlined, PhoneOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -47,12 +48,7 @@ const columns = [
     title: 'Thời gian', 
     dataIndex: 'datetime', 
     key: 'datetime',
-    render: (datetime) => (
-      <div>
-        <div>{moment(datetime).format('HH:mm')}</div>
-        <div className="text-xs text-gray-500">{moment(datetime).format('DD/MM/YYYY')}</div>
-      </div>
-    )
+    render: (datetime) => dayjs(datetime).format('DD/MM/YYYY HH:mm')
   },
   { 
     title: 'Ghi chú', 

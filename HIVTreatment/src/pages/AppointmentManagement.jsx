@@ -116,7 +116,7 @@ export default function AppointmentManagementPage() {
       title: "Thời gian",
       dataIndex: "datetime",
       key: "datetime",
-      render: (datetime) => dayjs(datetime).format("HH:mm DD/MM/YYYY"),
+      render: (datetime) => dayjs(datetime).format("DD/MM/YYYY HH:mm"),
     },
     {
       title: "Trạng thái",

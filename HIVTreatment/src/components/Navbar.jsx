@@ -40,9 +40,12 @@ const getQuickLinks = (userRole, isLoggedIn) => {
     { path: "/contact", label: "Liên hệ", icon: <PhoneOutlined /> }
   ];
 
-  // Add dashboard link for admin and staff
-  if (userRole && ['ADMIN', 'MANAGER', 'STAFF', 'DOCTOR'].includes(userRole.toUpperCase())) {
+  // Add dashboard link only for ADMIN and MANAGER roles
+  if (userRole && ['ADMIN', 'MANAGER'].includes(userRole.toUpperCase())) {
+    console.log('🔐 Adding dashboard link for role:', userRole);
     baseLinks.unshift({ path: "/admin/dashboard", label: "Dashboard", icon: <DashboardOutlined /> });
+  } else {
+    console.log('🚫 Dashboard link not shown for role:', userRole);
   }
 
   // Add user-specific links for logged-in users

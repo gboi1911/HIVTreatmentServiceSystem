@@ -294,8 +294,10 @@ export default function AppointmentHistory() {
       dataIndex: 'datetime',
       key: 'datetime',
       render: (datetime) => (
-        <div>
-          <div>{dayjs(datetime).format('DD/MM/YYYY')}</div>
+        <div className="flex flex-col">
+          <Text strong>
+            {dayjs(datetime).format('DD/MM/YYYY')}
+          </Text>
           <Text type="secondary" className="text-sm">
             {dayjs(datetime).format('HH:mm')}
           </Text>

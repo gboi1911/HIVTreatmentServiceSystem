@@ -125,7 +125,7 @@ export default function StaffEducationPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <Title level={2} className="text-gray-800 mb-2">
-                Quản lý khóa học
+        Quản lý khóa học
               </Title>
               <Text type="secondary" className="text-lg">
                 Tạo và quản lý các khóa học giáo dục về HIV/AIDS
@@ -341,31 +341,31 @@ export default function StaffEducationPage() {
           footer={null}
           width={800}
         >
-          <Form
-            layout="vertical"
-            form={form}
-            onFinish={handleSubmit}
-          >
-            <Form.Item
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={handleSubmit}
+      >
+        <Form.Item
               label="Tiêu đề khóa học"
-              name="title"
-              rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
-            >
+          name="title"
+          rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
+        >
               <Input placeholder="Nhập tiêu đề khóa học" size="large" />
-            </Form.Item>
+        </Form.Item>
 
-            <Form.Item
-              label="Nội dung"
-              name="content"
-              rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
-            >
+        <Form.Item
+          label="Nội dung"
+          name="content"
+          rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
+        >
               <TextArea 
                 rows={8} 
                 placeholder="Nhập nội dung khóa học chi tiết..."
                 showCount
                 maxLength={5000}
               />
-            </Form.Item>
+        </Form.Item>
 
             <Form.Item
               label="Hình ảnh"
@@ -380,20 +380,20 @@ export default function StaffEducationPage() {
                   <UploadOutlined />
                   <div style={{ marginTop: 8 }}>Tải lên</div>
                 </div>
-              </Upload>
-            </Form.Item>
+          </Upload>
+        </Form.Item>
 
             <Form.Item className="mb-0">
               <Space>
-                <Button type="primary" htmlType="submit" loading={loading}>
+          <Button type="primary" htmlType="submit" loading={loading}>
                   {editing ? "Cập nhật" : "Tạo mới"}
                 </Button>
                 <Button onClick={() => setModalVisible(false)}>
                   Hủy
-                </Button>
+          </Button>
               </Space>
-            </Form.Item>
-          </Form>
+        </Form.Item>
+      </Form>
         </Modal>
       </div>
     </div>

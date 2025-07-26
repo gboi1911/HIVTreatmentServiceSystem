@@ -77,7 +77,7 @@ const BlogDetail = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Main Content */}
                     <div className="lg:col-span-3">
-                        <article className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
+                               <article className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
                             {/* Article Header */}
                             <div className="p-8 pb-0">
                                 <div className="flex items-center justify-between mb-6">
@@ -117,12 +117,12 @@ const BlogDetail = () => {
                             {/* Article Content */}
                             <div className="p-8">
                                 {blog.image && (
-                                    <div className="mb-8">
-                                        <img
+                                <div className="mb-8">
+                                    <img
                                             src={blog.image}
                                             alt={blog.title}
-                                            className="w-full h-64 md:h-80 object-cover rounded-lg mb-4"
-                                        />
+                                        className="w-full h-64 md:h-80 object-cover rounded-lg mb-4"
+                                    />
                                     </div>
                                 )}
 
@@ -156,7 +156,7 @@ const BlogDetail = () => {
 
                         {/* Related Articles */}
                         {relatedBlogs.length > 0 && (
-                            <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                        <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
                                 <Title level={3} className="mb-6">Bài viết liên quan</Title>
                                 <Row gutter={[16, 16]}>
                                     {relatedBlogs.map((item) => (
@@ -168,7 +168,7 @@ const BlogDetail = () => {
                                                     item.image ? (
                                                         <img
                                                             alt={item.title}
-                                                            src={item.image}
+                                                src={item.image}
                                                             className="h-48 object-cover"
                                                         />
                                                     ) : (
@@ -182,7 +182,7 @@ const BlogDetail = () => {
                                                 <Card.Meta
                                                     title={
                                                         <Link to={`/blog/${item.blogId}`} className="text-gray-900 hover:text-blue-600">
-                                                            {item.title}
+                                                {item.title}
                                                         </Link>
                                                     }
                                                     description={
@@ -199,18 +199,18 @@ const BlogDetail = () => {
                                                                     {item.staffName || 'Staff'}
                                                                 </span>
                                                                 <span className="flex items-center gap-1">
-                                                                    <CalendarOutlined />
+                                                    <CalendarOutlined />
                                                                     {new Date(item.createDate).toLocaleDateString("vi-VN")}
-                                                                </span>
-                                                            </div>
-                                                        </div>
+                                                </span>
+                                            </div>
+                                        </div>
                                                     }
                                                 />
                                             </Card>
                                         </Col>
-                                    ))}
+                                ))}
                                 </Row>
-                            </section>
+                        </section>
                         )}
                     </div>
 
@@ -245,30 +245,30 @@ const BlogDetail = () => {
                         {/* Recent News Sidebar */}
                         {relatedBlogs.length > 0 && (
                             <Card title="Bài viết gần đây" size="small" className="shadow-sm">
-                                <div className="space-y-4">
+                            <div className="space-y-4">
                                     {relatedBlogs.slice(0, 3).map((item) => (
                                         <div key={item.blogId} className="flex space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded" onClick={() => navigate(`/blog/${item.blogId}`)}>
                                             {item.image ? (
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.title}
-                                                    className="w-16 h-12 object-cover rounded flex-shrink-0"
-                                                />
+                                        <img
+                                            src={item.image}
+                                            alt={item.title}
+                                            className="w-16 h-12 object-cover rounded flex-shrink-0"
+                                        />
                                             ) : (
                                                 <div className="w-16 h-12 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
                                                     <FileTextOutlined style={{ color: '#d1d5db' }} />
                                                 </div>
                                             )}
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
-                                                    {item.title}
-                                                </h4>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                                                {item.title}
+                                            </h4>
                                                 <p className="text-xs text-gray-500">{new Date(item.createDate).toLocaleDateString("vi-VN")}</p>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </Card>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
                         )}
 
                         {/* Contact Info */}
