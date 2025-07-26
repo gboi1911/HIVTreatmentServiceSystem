@@ -86,6 +86,7 @@ export const formatAppointmentData = (formData, user, doctor) => {
   console.log('🔄 Formatting appointment data...');
   console.log('👤 User object received:', user);
   console.log('👨‍⚕️ Doctor object received:', doctor);
+  console.log('📅 Form data received:', formData);
   
   // Determine the correct customer ID
   const customerId = user.customerId || user.id;
@@ -103,6 +104,19 @@ export const formatAppointmentData = (formData, user, doctor) => {
   // Use the backend format that matches your server's expectation
   const formattedDateTime = formatDateTimeForBackend(formData.date, formData.time, 'backend');
   console.log('📅 Selected format (backend):', formattedDateTime);
+  console.log('📅 Original date object:', formData.date);
+  console.log('📅 Original time object:', formData.time);
+  console.log('📅 Combined datetime (local):', dayjs(formData.date).hour(formData.time.hour()).minute(formData.time.minute()).format('YYYY-MM-DD HH:mm:ss'));
+  
+  // Test: Verify that the formatted datetime matches what the user selected
+  const userSelectedDate = dayjs(formData.date).format('YYYY-MM-DD');
+  const userSelectedTime = formData.time.format('HH:mm');
+  const expectedDateTime = `${userSelectedDate}T${userSelectedTime}:00`;
+  console.log('🧪 Test - User selected date:', userSelectedDate);
+  console.log('🧪 Test - User selected time:', userSelectedTime);
+  console.log('🧪 Test - Expected datetime:', expectedDateTime);
+  console.log('🧪 Test - Actual formatted datetime:', formattedDateTime);
+  console.log('🧪 Test - Match:', expectedDateTime === formattedDateTime ? '✅ YES' : '❌ NO');
   
   const appointmentData = {
     customerId: customerId,

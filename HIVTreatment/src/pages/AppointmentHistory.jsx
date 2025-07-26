@@ -106,23 +106,37 @@ export default function AppointmentHistory() {
         appointmentsData = response.appointments;
       }
 
+      console.log('📋 Processed appointments data:', appointmentsData);
+
       // Transform appointments to match UI expectations
-      const transformedAppointments = appointmentsData.map(appointment => ({
-        // Fix: Use appointmentId as primary, fallback to id
-        id: appointment.appointmentId || appointment.id,
-        appointmentId: appointment.appointmentId || appointment.id, // Keep both for compatibility
-        doctorName: appointment.doctorName || appointment.doctor?.name || 'Chưa xác định',
-        consultationType: appointment.type || appointment.consultationType || 'Chưa xác định',
-        datetime: appointment.datetime,
-        status: appointment.status,
-        note: appointment.note || '',
-        createdAt: appointment.createdAt || appointment.created_at,
-        customerId: appointment.customerId,
-        doctorId: appointment.doctorId,
-        customerName: appointment.customerName,
-        customerPhone: appointment.customerPhone,
-        customerEmail: appointment.customerEmail
-      }));
+      const transformedAppointments = appointmentsData.map(appointment => {
+        console.log('📅 Appointment datetime from API:', appointment.datetime);
+        console.log('📅 Datetime type:', typeof appointment.datetime);
+        console.log('📅 Raw datetime value:', appointment.datetime);
+        
+        // Parse the datetime to see what we're working with
+        const parsedDate = dayjs(appointment.datetime);
+        console.log('📅 Parsed with dayjs:', parsedDate.format('YYYY-MM-DD HH:mm:ss'));
+        console.log('📅 Is valid dayjs:', parsedDate.isValid());
+        console.log('📅 Display format:', parsedDate.format('DD/MM/YYYY HH:mm'));
+        
+        return {
+          // Fix: Use appointmentId as primary, fallback to id
+          id: appointment.appointmentId || appointment.id,
+          appointmentId: appointment.appointmentId || appointment.id, // Keep both for compatibility
+          doctorName: appointment.doctorName || appointment.doctor?.name || 'Chưa xác định',
+          consultationType: appointment.type || appointment.consultationType || 'Chưa xác định',
+          datetime: appointment.datetime,
+          status: appointment.status,
+          note: appointment.note || '',
+          createdAt: appointment.createdAt || appointment.created_at,
+          customerId: appointment.customerId,
+          doctorId: appointment.doctorId,
+          customerName: appointment.customerName,
+          customerPhone: appointment.customerPhone,
+          customerEmail: appointment.customerEmail
+        };
+      });
 
       // Add debugging to see the actual appointment IDs
       console.log('🔍 Transformed appointments with IDs:', transformedAppointments.map(apt => ({

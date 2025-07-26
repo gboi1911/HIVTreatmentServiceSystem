@@ -68,7 +68,12 @@ export default function BookingSuccess() {
                 <Text type="secondary">Ngày giờ:</Text>
                 <Text strong>
                   {bookingData.datetime ? 
-                    dayjs(bookingData.datetime).format('DD/MM/YYYY HH:mm') : 
+                    (() => {
+                      console.log('📅 BookingSuccess - Raw datetime:', bookingData.datetime);
+                      console.log('📅 BookingSuccess - Parsed datetime:', dayjs(bookingData.datetime).format('YYYY-MM-DD HH:mm:ss'));
+                      console.log('📅 BookingSuccess - Display format:', dayjs(bookingData.datetime).format('DD/MM/YYYY HH:mm'));
+                      return dayjs(bookingData.datetime).format('DD/MM/YYYY HH:mm');
+                    })() : 
                     'Chưa xác định'
                   }
                 </Text>
