@@ -1,8 +1,9 @@
 import React from "react";
-import { Row, Col, Card, Typography, Spin } from "antd";
+import { Row, Col, Card, Typography, Spin, Tag, Avatar, message } from "antd";
 import { getBlogs } from "../api/blog";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CalendarOutlined, UserOutlined, FileTextOutlined } from "@ant-design/icons";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -87,9 +88,12 @@ export default function HealthAndLife() {
       try {
         setLoading(true);
         const data = await getBlogs(token);
-        setBlogs(data);
+        console.log('Blogs data:', data); // Debug log
+        setBlogs(Array.isArray(data) ? data : []);
       } catch (err) {
+        console.error('Error fetching blogs:', err);
         message.error("Không thể tải blog");
+        setBlogs([]);
       } finally {
         setLoading(false);
       }
@@ -99,8 +103,23 @@ export default function HealthAndLife() {
   }, [token]);
 
   const getFirstSentence = (text) => {
+    if (!text) return '';
     const match = text.match(/^(.*?\.)\s/);
     return match ? match[1] : text;
+  };
+
+  const handleBlogClick = (blog) => {
+    console.log('Blog clicked:', blog); // Debug log
+    
+    // Check if blog has an ID field
+    const blogId = blog.blogId || blog.id || blog.blog_id;
+    
+    if (blogId) {
+      navigate(`/blog/${blogId}`, { state: blog });
+    } else {
+      console.error('Blog has no ID:', blog);
+      message.error('Không thể mở blog này');
+    }
   };
 
   return (
@@ -117,103 +136,139 @@ export default function HealthAndLife() {
         <Row gutter={[32, 32]}>
           {/* Left: HIV Articles */}
           <Col xs={24} lg={16}>
-            <Title level={4} className="mb-4">
-              Bài viết nổi bật
-            </Title>
-            <Row gutter={[0, 24]}>
-              {blogs.map((blog, index) => (
-                <Col span={24} key={index}>
-                  <Card
-                    hoverable
-                    className="shadow-md rounded-lg"
-                    bodyStyle={{
-                      display: "flex",
-                      gap: 16,
-                      alignItems: "center",
-                    }}
-                    onClick={() =>
-                      navigate(`/blog/${blog.blogId}`, { state: blog })
-                    }
-                  >
-                    <img
-                      src="https://images.ctfassets.net/rufp5n9kfzfi/RhEwTxojbTvmh9HAskBIg/5508933c4f10fcb057e614b6fc28b41b/Queer_Liberation_March_2023-3000x2000.jpg?fm=webp&fit=thumb&q=65&w=1728&h=1152"
-                      alt={blog.title}
-                      className="w-40 h-28 object-cover rounded"
-                    />
-                    <div>
-                      <Title level={4}>{blog.title}</Title>
-                      <Paragraph type="secondary">
-                        {getFirstSentence(blog.content)}
-                      </Paragraph>
-                      <Text type="secondary">Đăng bởi: {blog.staffName}</Text>
-                    </div>
-                  </Card>
-                </Col>
-              ))}
+            <div className="mb-8">
+              <Title level={3} className="mb-2 text-gray-800">
+                Bài viết nổi bật
+              </Title>
+              <Text type="secondary">Các bài viết mới nhất về sức khỏe và đời sống</Text>
+            </div>
+            
+            <Row gutter={[24, 24]}>
+              {blogs.map((blog, index) => {
+                const blogId = blog.blogId || blog.id || blog.blog_id;
+                return (
+                  <Col xs={24} md={12} key={blogId || index}>
+                    <Card
+                      hoverable
+                      className="h-full shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100"
+                      bodyStyle={{ padding: 0 }}
+                      onClick={() => handleBlogClick(blog)}
+                    >
+                      <div className="relative">
+                        <img
+                          src={blog.image || "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop"}
+                          alt={blog.title}
+                          className="w-full h-48 object-cover rounded-t-lg"
+                        />
+                        <div className="absolute top-3 left-3">
+                          <Tag color="red" className="font-medium">MỚI</Tag>
+                        </div>
+                      </div>
+                      
+                      <div className="p-6">
+                        <Title level={4} className="mb-3 line-clamp-2" style={{ 
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}>
+                          {blog.title}
+                        </Title>
+                        
+                        <Paragraph 
+                          type="secondary" 
+                          className="mb-4 line-clamp-3"
+                          style={{ 
+                            display: '-webkit-box',
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            lineHeight: '1.5'
+                          }}
+                        >
+                          {getFirstSentence(blog.content)}
+                        </Paragraph>
+                        
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <div className="flex items-center gap-2">
+                            <Avatar size="small" icon={<UserOutlined />} className="bg-blue-100 text-blue-600" />
+                            <span>{blog.staffName || 'Staff'}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <CalendarOutlined />
+                            <span>
+                              {blog.createDate 
+                                ? new Date(blog.createDate).toLocaleDateString("vi-VN")
+                                : 'Chưa có ngày'
+                              }
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </Col>
+                );
+              })}
             </Row>
+            
+            {blogs.length === 0 && (
+              <div className="text-center py-12">
+                <FileTextOutlined style={{ fontSize: 48, color: '#d1d5db' }} />
+                <Title level={4} style={{ marginTop: 16, color: '#6b7280' }}>
+                  Chưa có bài viết nào
+                </Title>
+                <Text type="secondary">
+                  Hãy quay lại sau để xem các bài viết mới
+                </Text>
+              </div>
+            )}
           </Col>
 
           {/* Right: HIV News and Prevention */}
           <Col xs={24} lg={8}>
-            <Title level={4} className="mb-4">
-              Tin tức HIV
-            </Title>
-            <Row gutter={[0, 24]}>
+            <div className="mb-8">
+              <Title level={3} className="mb-2 text-gray-800">
+                Tin tức HIV
+              </Title>
+              <Text type="secondary">Cập nhật mới nhất về HIV/AIDS</Text>
+            </div>
+            
+            <div className="space-y-6">
               {sideNews.map((news, index) => (
-                <Col span={24} key={index}>
-                  <Card
-                    hoverable
-                    className="shadow-sm"
-                    bodyStyle={{
-                      display: "flex",
-                      gap: 16,
-                      alignItems: "center",
-                    }}
-                  >
+                <Card
+                  key={index}
+                  hoverable
+                  className="shadow-sm hover:shadow-md transition-all duration-200"
+                  bodyStyle={{ padding: 16 }}
+                >
+                  <div className="flex gap-4">
                     <img
                       src={news.img}
                       alt={news.title}
-                      className="w-24 h-24 object-cover rounded"
+                      className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
                     />
-                    <div>
-                      <Title level={5}>{news.title}</Title>
-                      <Paragraph type="secondary" ellipsis={{ rows: 2 }}>
-                        {news.desc}
-                      </Paragraph>
+                    <div className="flex-1 min-w-0">
+                      <Title level={5} className="mb-2 line-clamp-2" style={{ 
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}>
+                        {news.title}
+                      </Title>
+                      <Text type="secondary" className="text-sm line-clamp-2" style={{ 
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}>
+                        {news.description}
+                      </Text>
                     </div>
-                  </Card>
-                </Col>
+                  </div>
+                </Card>
               ))}
-            </Row>
-
-            <Title level={4} className="mt-8 mb-4">
-              Tuyên truyền phòng HIV
-            </Title>
-            <Row gutter={[0, 24]}>
-              {preventionArticles.map((item, idx) => (
-                <Col span={24} key={idx}>
-                  <Card
-                    hoverable
-                    className="shadow-sm"
-                    bodyStyle={{
-                      display: "flex",
-                      gap: 16,
-                      alignItems: "center",
-                    }}
-                  >
-                    <img
-                      src={item.img}
-                      alt={item.title}
-                      className="w-24 h-24 object-cover rounded"
-                    />
-                    <div>
-                      <Title level={5}>{item.title}</Title>
-                      <Paragraph type="secondary">{item.desc}</Paragraph>
-                    </div>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
+            </div>
           </Col>
         </Row>
       )}

@@ -59,6 +59,7 @@ const getOrganizedMenuItems = (canAccessMedicalRecords, userRole) => {
     { path: "/consultation-booking", label: "Đặt lịch tư vấn", icon: <CalendarOutlined />, description: "Đặt lịch gặp bác sĩ tư vấn" },
     { path: "/guides", label: "Hướng dẫn & Bảng giá", icon: <BookOutlined />, description: "Quy trình khám và bảng giá dịch vụ" },
     { path: "/health-and-life", label: "Sức khoẻ & đời sống", icon: <HeartOutlined />, description: "Thông tin chăm sóc sức khỏe hàng ngày" },
+    ...(userRole === 'STAFF' ? [{ path: "/blog/staff", label: "Quản lý Blog", icon: <FileTextOutlined />, description: "Tạo và quản lý bài viết blog" }] : []),
   ] : [];
 
   const medicalMenuItems = canAccessMedicalRecords && userRole !== 'DOCTOR' ? [
@@ -560,7 +561,8 @@ export default function Navbar() {
                       current.includes('/guides') || 
                       current.includes('/health-and-life') || 
                       current.includes('/assessment') || 
-                      current.includes('/consultation-booking')
+                      current.includes('/consultation-booking') ||
+                      current.includes('/blog/staff') // Added for staff
                     )}
                     onMouseEnter={() => setHoveredDropdown('services')}
                     onMouseLeave={() => setHoveredDropdown(null)}
@@ -568,7 +570,8 @@ export default function Navbar() {
                     <HeartOutlined className={current.includes('/guides') || 
                       current.includes('/health-and-life') || 
                       current.includes('/assessment') || 
-                      current.includes('/consultation-booking') ? 'text-blue-500' : ''} />
+                      current.includes('/consultation-booking') ||
+                      current.includes('/blog/staff') ? 'text-blue-500' : ''} />
                     Dịch vụ
                     <DownOutlined style={{ fontSize: '10px', transition: 'transform 0.2s ease' }} 
                       className={hoveredDropdown === 'services' ? 'rotate-180' : ''} />
